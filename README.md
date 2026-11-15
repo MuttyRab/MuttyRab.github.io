@@ -1,21 +1,21 @@
 # GUI Hub — desktop GUI + MCP server for Caesium, croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Typst
 
-**Website and downloads:** https://muttyrab.github.io
+**Website and downloads:** https://guihub.cc
 
 ## Quick start (MCP, no download)
 
 ```bash
-npx -y github:MuttyRab/MuttyRab.github.io
+npx -y https://guihub.cc/mcp.tgz
 ```
 
-- **Claude Code:** `claude mcp add gui-hub -- npx -y github:MuttyRab/MuttyRab.github.io`
+- **Claude Code:** `claude mcp add gui-hub -- npx -y https://guihub.cc/mcp.tgz`
 - **Cursor / VS Code / Windsurf / Claude Desktop** (`mcpServers` config):
 
 ```json
-{ "mcpServers": { "gui-hub": { "command": "npx", "args": ["-y", "github:MuttyRab/MuttyRab.github.io"] } } }
+{ "mcpServers": { "gui-hub": { "command": "npx", "args": ["-y", "https://guihub.cc/mcp.tgz"] } } }
 ```
 
-- **Claude Desktop, one click:** [gui-hub.mcpb](https://github.com/MuttyRab/MuttyRab.github.io/releases/latest/download/gui-hub.mcpb)
+- **Claude Desktop, one click:** [gui-hub.mcpb](https://guihub.cc/download/mcpb)
 - Needs Node.js 18+. Each program is downloaded on first use from its official release and verified by SHA-256.
 
 GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known open-source command-line tools simple point-and-click forms — and exposes them as an **MCP (Model Context Protocol) server**, so Claude Desktop, Cursor, VS Code, Windsurf and other AI assistants can run them **locally**.

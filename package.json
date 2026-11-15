@@ -1,7 +1,7 @@
 {
   "name": "gui-hub-mcp",
-  "version": "0.9.0",
-  "description": "GUI Hub MCP server: FFmpeg, Pandoc, Typst, pdfcpu, Caesium and more as local tools for AI assistants (Claude, Cursor, VS Code, Windsurf). Run: npx -y github:MuttyRab/MuttyRab.github.io",
+  "version": "0.9.1",
+  "description": "GUI Hub MCP server: FFmpeg, Pandoc, Typst, DuckDB, pdfcpu, Caesium and more as local tools for AI assistants (Claude, Cursor, VS Code, Windsurf). Run: npx -y https://guihub.cc/mcp.tgz",
   "bin": {
     "gui-hub-mcp": "source/app/src/mcp-entry.js"
   },
@@ -27,10 +27,6 @@
     "claude",
     "cursor"
   ],
-  "homepage": "https://muttyrab.github.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/MuttyRab/MuttyRab.github.io"
-  },
-  "license": "SEE LICENSE IN https://muttyrab.github.io/legal.html"
+  "homepage": "https://guihub.cc",
+  "license": "SEE LICENSE IN https://guihub.cc/legal.html"
 }

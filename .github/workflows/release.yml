@@ -1,5 +1,5 @@
 name: release
-# Lives in the public MuttyRab.github.io repo (copied there by scripts/publish.sh from Gui-hub).
+# Lives in the public website repo (copied there by scripts/publish.sh from Gui-hub).
 # Builds installers from source/ on all three OSes and publishes them as a GitHub release
 # whenever source/app/package.json changes (i.e. the version was bumped), or on manual run.
 on:
@@ -68,7 +68,7 @@ jobs:
           if gh release view "$v" >/dev/null 2>&1; then
             gh release upload "$v" out/* --clobber
           else
-            gh release create "$v" out/* --title "GUI Hub $v" --notes "Download for your computer at https://muttyrab.github.io" --latest
+            gh release create "$v" out/* --title "GUI Hub $v" --notes "Download for your computer at https://guihub.cc" --latest
           fi
 
   # One-file MCP bundle (Claude Desktop extension) + listing in the official MCP Registry.

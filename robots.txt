@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://muttyrab.github.io/sitemap.xml
+Sitemap: https://guihub.cc/sitemap.xml

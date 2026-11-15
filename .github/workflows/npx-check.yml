@@ -1,5 +1,5 @@
 name: npx-check
-# Proves `npx -y github:MuttyRab/MuttyRab.github.io` starts the MCP server on all 3 OSes.
+# Proves the npx install (from this repo and from the site tarball) starts the MCP server on all 3 OSes.
 on:
   push:
     branches: [main]

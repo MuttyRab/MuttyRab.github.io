@@ -2,9 +2,9 @@
   "productName": "GUI Hub",
   "polarOrganizationId": "27332264-5cea-4bfb-8a7c-f4cdb352de40",
   "checkoutUrl": "https://buy.polar.sh/polar_cl_5W9WEBwxNsjjbHRYb9j4hhD8bKUCG4sohMrZW17awUN",
-  "siteUrl": "https://muttyrab.github.io",
-  "supportEmail": "",
+  "siteUrl": "https://guihub.cc",
+  "supportEmail": "support@guihub.cc",
   "trialRuns": 3,
-  "catalogUrl": "https://muttyrab.github.io/catalog-v2.json",
+  "catalogUrl": "https://guihub.cc/catalog-v2.json",
   "price": "$9"
 }
