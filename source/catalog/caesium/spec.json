@@ -51,7 +51,7 @@
       "label": "Compress images",
       "runLabel": "Compress",
       "description": "Make photos and images smaller. Compressed copies go to a folder you choose; originals stay untouched.",
-      "mcpDescription": "Compress, resize and/or convert image files (JPG, PNG, WebP, GIF, TIFF) on the user's computer. Writes compressed copies (same file names) into outDir; never modifies originals or overwrites existing files. Use mode=size with maxSize (bytes) to fit upload limits.",
+      "mcpDescription": "Compress, resize and/or convert image files (JPG, PNG, WebP, GIF, TIFF) on the user's computer. Writes compressed copies (same file names) into outDir; never modifies originals or overwrites existing files. Use mode=size with maxSize (bytes) to fit upload limits. File dates are kept by default (keepDates).",
       "fields": [
         {
           "id": "inputs",
@@ -215,6 +215,13 @@
           "type": "checkbox"
         },
         {
+          "id": "keepDates",
+          "label": "Keep original file dates",
+          "type": "checkbox",
+          "default": true,
+          "help": "So photos keep their place in timelines after upload."
+        },
+        {
           "id": "outDir",
           "label": "Save compressed copies in",
           "type": "folder",
@@ -251,6 +258,10 @@
           "field": "exif",
           "flag": "--exif"
         },
+        {
+          "field": "keepDates",
+          "flag": "--keep-dates"
+        },
         "--output",
         {
           "field": "outDir"
@@ -274,7 +285,7 @@
       "label": "Compress a folder",
       "runLabel": "Compress",
       "description": "Compress every image in a folder (and optionally its subfolders) in one go.",
-      "mcpDescription": "Compress, resize and/or convert every image in a folder on the user's computer, optionally including subfolders (folder structure is kept). Copies go to outDir; originals are never modified.",
+      "mcpDescription": "Compress, resize and/or convert every image in a folder on the user's computer, optionally including subfolders (folder structure is kept). Copies go to outDir; originals are never modified. File dates are kept by default (keepDates).",
       "fields": [
         {
           "id": "folder",
@@ -429,6 +440,13 @@
           "type": "checkbox"
         },
         {
+          "id": "keepDates",
+          "label": "Keep original file dates",
+          "type": "checkbox",
+          "default": true,
+          "help": "So photos keep their place in timelines after upload."
+        },
+        {
           "id": "outDir",
           "label": "Save compressed copies in",
           "type": "folder",
@@ -471,6 +489,10 @@
         {
           "field": "exif",
           "flag": "--exif"
+        },
+        {
+          "field": "keepDates",
+          "flag": "--keep-dates"
         },
         "--output",
         {

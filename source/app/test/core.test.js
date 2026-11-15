@@ -129,9 +129,9 @@ test('pandoc write turns Markdown on stdin into the chosen format', () => {
 test('caesium never overwrites, only sends the chosen compression mode, inputs last', () => {
   const base = { inputs: ['/a.jpg', '/b.png'], outDir: '/out' };
   assert.deepStrictEqual(buildCommand(action('caesium', 'compress'), base).argv,
-    ['--quality', '80', '--no-upscale', '--format', 'original', '--output', '/out', '--overwrite', 'never', '/a.jpg', '/b.png']);
+    ['--quality', '80', '--no-upscale', '--format', 'original', '--keep-dates', '--output', '/out', '--overwrite', 'never', '/a.jpg', '/b.png']);
   assert.deepStrictEqual(buildCommand(action('caesium', 'compress'), { ...base, mode: 'size', maxSize: '200000', resize: '1280', format: 'webp', exif: true }).argv,
-    ['--max-size', '200000', '--long-edge', '1280', '--no-upscale', '--format', 'webp', '--exif', '--output', '/out', '--overwrite', 'never', '/a.jpg', '/b.png']);
+    ['--max-size', '200000', '--long-edge', '1280', '--no-upscale', '--format', 'webp', '--exif', '--keep-dates', '--output', '/out', '--overwrite', 'never', '/a.jpg', '/b.png']);
   assert.deepStrictEqual(buildCommand(action('caesium', 'compress'), { ...base, mode: 'lossless' }).argv.slice(0, 2), ['--lossless', '--no-upscale']);
   const f = buildCommand(action('caesium', 'folder'), { folder: '/pics', recursive: true, outDir: '/out' }).argv;
   assert.deepStrictEqual([f[0], f[1], f[f.length - 1]], ['--recursive', '--keep-structure', '/pics']);
