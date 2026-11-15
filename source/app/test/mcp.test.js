@@ -42,7 +42,7 @@ test('MCP: initialize, list tools from the catalog, call a tool, enforce trials'
   c.note('notifications/initialized');
   const list = await c.req('tools/list', {});
   const names = list.result.tools.map((t) => t.name);
-  for (const n of ['ffmpeg_compress', 'pdfcpu_merge', 'f2_rename', 'croc_send', 'immich-go_from-folder'.replace('-', '_').replace('-', '_')]) assert.ok(names.includes(n), `missing ${n}`);
+  for (const n of ['ffmpeg_compress', 'pdfcpu_merge', 'f2_rename', 'croc_receive', 'immich-go_from-folder'.replace('-', '_').replace('-', '_')]) assert.ok(names.includes(n), `missing ${n}`);
   const rename = list.result.tools.find((t) => t.name === 'f2_rename');
   assert.deepStrictEqual(rename.inputSchema.required, ['folder', 'find']);
   assert.strictEqual(rename.inputSchema.properties.apply.type, 'boolean');

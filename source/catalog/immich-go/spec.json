@@ -126,7 +126,8 @@
           "from-google-photos",
           "--help"
         ]
-      ]
+      ],
+      "mcpDescription": "Import Google Photos Takeout .zip files into an Immich server (keeps albums, dates, GPS). dryRun defaults to true: run it first and report the summary before uploading for real."
     },
     {
       "id": "from-folder",

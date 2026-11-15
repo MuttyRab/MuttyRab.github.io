@@ -31,6 +31,7 @@ function toolsFromSpecs(specs) {
   const tools = [];
   for (const spec of specs) {
     for (const action of spec.actions) {
+      if (action.mcp === false) continue; // GUI-only (e.g. needs to show a live code before finishing)
       const properties = {};
       const required = [];
       for (const f of action.fields || []) {
@@ -41,7 +42,7 @@ function toolsFromSpecs(specs) {
       tools.push({
         name: toolName(spec, action),
         title: `${spec.name}: ${action.label}`,
-        description: `${action.description || action.label} (${spec.name}, powered by ${spec.upstream.displayName || spec.id}. Runs locally on this computer; file paths must be absolute.)`,
+        description: `${action.mcpDescription || action.description || action.label} (${spec.name}, powered by ${spec.upstream.displayName || spec.id}. Runs locally on this computer; file paths must be absolute.)`,
         inputSchema: { type: 'object', properties, required, additionalProperties: false },
         annotations: { title: `${spec.name}: ${action.label}`, readOnlyHint: false, openWorldHint: spec.id === 'croc' || spec.id === 'immich-go' },
         _spec: spec, _action: action,

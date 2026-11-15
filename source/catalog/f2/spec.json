@@ -142,7 +142,8 @@
         [
           "--help"
         ]
-      ]
+      ],
+      "mcpDescription": "Bulk-rename files in a folder by find & replace (regex unless literal=true; variables like {%03d} counter and {ext}). Without apply=true it is a dry run that returns the old→new table — show it to the user before applying."
     },
     {
       "id": "undo",
@@ -168,7 +169,8 @@
         [
           "--help"
         ]
-      ]
+      ],
+      "mcpDescription": "Undo the most recent rename that was applied in this folder."
     }
   ]
 }
