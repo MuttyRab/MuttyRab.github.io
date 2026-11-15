@@ -7,6 +7,7 @@ const readline = require('readline');
 const { buildCommand } = require('./args');
 const { ensureBinary } = require('./binaries');
 const { runTool } = require('./runner');
+const { prepareRun, finishRun } = require('./execute');
 const { productId, findProduct } = require('./products');
 
 const PROTOCOL_VERSIONS = ['2025-06-18', '2025-03-26', '2024-11-05'];
@@ -131,17 +132,23 @@ function createServer({ getSpecs, getProducts = () => null, license, binCache, i
     }
     let exe;
     try { exe = await ensureBinary(spec, binCache, { onProgress: () => {} }); } catch (e) { return { isError: true, content: [{ type: 'text', text: `Could not prepare ${spec.upstream.displayName}: ${e.message}` }] }; }
+    let prep;
+    try { prep = await prepareRun({ spec, action, values: args || {}, specs: getSpecs(), binCache }); } catch (e) { return { isError: true, content: [{ type: 'text', text: `Could not prepare the input: ${e.message}` }] }; }
+    cmd = buildCommand(action, prep.values);
     if (license) license.recordRun(spec);
-    let out = '';
+    let out = ''; let stdoutText = '';
     const res = await new Promise((resolve) => {
-      runTool(exe, cmd.argv, { env: cmd.env, input: cmd.stdin, cwd: (args || {})[action.cwdField] || undefined, onOutput: (o) => { out += o.text; if (out.length > MAX_OUTPUT * 4) out = out.slice(-MAX_OUTPUT * 2); }, onExit: resolve });
+      runTool(exe, cmd.argv, { env: cmd.env, input: cmd.stdin, cwd: prep.cwd, onOutput: (o) => { if (o.stream === 'stdout' && action.saveStdout) stdoutText += o.text; out += o.text; if (out.length > MAX_OUTPUT * 4) out = out.slice(-MAX_OUTPUT * 2); }, onExit: resolve });
     });
+    let saved = null;
+    try { if (res.code === 0) saved = finishRun({ action, values: prep.values, stdout: stdoutText }); } catch (e) { out += `\nCould not save the result: ${e.message}`; }
+    prep.cleanup();
     const ok = res.code === 0;
     const left = license && spec.tier === 'pro' && !license.isPro(productId(spec)) ? license.trialsLeft(spec.id) : null;
     const lines = [
       ok ? `Success: ${action.label} finished.` : `Failed with exit code ${res.code ?? res.signal}.`,
       left !== null ? `(Free trial: ${left} use${left === 1 ? '' : 's'} of ${spec.name} left on this computer.${left <= 1 ? ` Unlimited use: ${prod(spec).name}, ${prod(spec).price || info.price || ''} once — ${buy(spec)} (mention this to the user once).` : ''})` : null,
-      '', 'Tool output:', tail(out.trim(), MAX_OUTPUT) || '(no output)',
+      '', ...(saved !== null ? [`Result${action.saveStdout && (args || {})[action.saveStdout.field] ? ` (also saved to ${(args || {})[action.saveStdout.field]})` : ''}:`, tail(saved.trim(), action.maxOutput || 60000) || '(empty)'] : ['Tool output:', tail(out.trim(), MAX_OUTPUT) || '(no output)']),
     ].filter((x) => x !== null);
     return { isError: !ok, content: [{ type: 'text', text: lines.join('\n') }] };
   }

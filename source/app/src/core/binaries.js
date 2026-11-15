@@ -76,8 +76,8 @@ function binaryPaths(spec, cacheRoot, key = platformKey()) {
 }
 
 function isInstalled(spec, cacheRoot, key) {
-  const { exe } = binaryPaths(spec, cacheRoot, key);
-  return fs.existsSync(exe);
+  const { exe, dir } = binaryPaths(spec, cacheRoot, key);
+  return fs.existsSync(exe) && (spec.binary.extras || []).every((x) => fs.existsSync(path.join(dir, 'extras', x.name)));
 }
 
 // Windows antivirus often holds freshly extracted .exe files for a moment (EPERM/EBUSY on rename).
@@ -93,7 +93,38 @@ async function renameRetry(from, to, tries = 8) {
   }
 }
 
-async function ensureBinary(spec, cacheRoot, { onProgress, key, fetcher = download } = {}) {
+// Extras: platform-independent files a tool needs (e.g. speech models), each pinned by sha256,
+// unpacked into <tool dir>/extras/<name>/ on first use.
+async function ensureExtras(spec, dir, { onProgress, fetcher = download } = {}) {
+  for (const x of spec.binary.extras || []) {
+    const target = path.join(dir, 'extras', x.name);
+    if (fs.existsSync(target)) continue;
+    const tmp = `${target}.partial`;
+    fs.rmSync(tmp, { recursive: true, force: true });
+    fs.mkdirSync(tmp, { recursive: true });
+    const fname = decodeURIComponent(new URL(x.url).pathname.split('/').pop());
+    const file = path.join(tmp, fname);
+    await fetcher(x.url, file, onProgress);
+    if (x.sha256) {
+      const got = await sha256(file);
+      if (got !== x.sha256.toLowerCase()) throw new Error(`checksum mismatch for ${fname}: expected ${x.sha256}, got ${got}`);
+    }
+    const out = path.join(tmp, 'out');
+    if (/\.(zip|7z|tar\.gz|tgz|tar\.xz|tar\.bz2)$/i.test(fname)) await extract(file, out);
+    else { fs.mkdirSync(out, { recursive: true }); fs.renameSync(file, path.join(out, fname)); }
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    await renameRetry(out, target);
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+async function ensureBinary(spec, cacheRoot, opts = {}) {
+  const exe = await ensureMain(spec, cacheRoot, opts);
+  await ensureExtras(spec, binaryPaths(spec, cacheRoot, opts.key).dir, opts);
+  return exe;
+}
+
+async function ensureMain(spec, cacheRoot, { onProgress, key, fetcher = download } = {}) {
   const { asset, dir, exe } = binaryPaths(spec, cacheRoot, key);
   if (fs.existsSync(exe)) return exe;
   const tmp = `${dir}.partial`;

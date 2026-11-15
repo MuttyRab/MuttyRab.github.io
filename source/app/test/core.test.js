@@ -152,6 +152,16 @@ test('7-Zip switches are glued to their values (-o/dir, -pSECRET) and never over
   assert.deepStrictEqual(buildCommand(action('7zip', 'create'), { folder: '/f', format: '7z', out: '/o.7z' }).argv, ['a', '-t7z', '-y', '/o.7z', '/f']);
 });
 
+test('transcription: segments become a clean transcript; argv points at the downloaded model', () => {
+  const { segmentsToText } = require('../src/core/execute');
+  assert.strictEqual(segmentsToText('log line\n0.210 -- 5.120: Hello there\n3725.5 -- 3730: Bye\n', true), '[00:00:00] Hello there\n[01:02:05] Bye');
+  assert.strictEqual(segmentsToText('0.2 -- 1: a\n1.5 -- 2: b', false), 'a\nb');
+  const a = action('transcribe', 'transcribe');
+  const argv = buildCommand(a, { input: '/t/in.wav', language: 'de' }).argv;
+  assert.ok(argv.includes('--whisper-language=de') && argv[argv.length - 1] === '/t/in.wav');
+  assert.strictEqual(a.cwd, 'tool'); assert.strictEqual(a.prepare.tool, 'ffmpeg');
+});
+
 test('clean strips ANSI codes', () => {
   assert.strictEqual(clean('\x1b[32mok\x1b[0m done'), 'ok done');
 });

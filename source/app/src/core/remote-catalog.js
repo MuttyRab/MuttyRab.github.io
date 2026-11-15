@@ -15,6 +15,11 @@ function remoteProblems(spec) {
     if (!a.url.startsWith(prefix)) problems.push(`${plat}: remote specs may only download from ${prefix}`);
     if (!/^[0-9a-f]{64}$/.test(a.sha256 || '')) problems.push(`${plat}: remote specs need a sha256`);
   }
+  for (const x of spec.binary.extras || []) {
+    if (!x.url.startsWith(`https://github.com/${spec.binary.sourceRepo || spec.upstream.repo}/releases/download/`)) problems.push(`extra ${x.name}: must come from the upstream GitHub releases`);
+    if (!/^[0-9a-f]{64}$/.test(x.sha256 || '')) problems.push(`extra ${x.name}: remote specs need a sha256`);
+    if (!/^[a-z0-9-]+$/.test(x.name || '')) problems.push('extra: bad name');
+  }
   return problems;
 }
 

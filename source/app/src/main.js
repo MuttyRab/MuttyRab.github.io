@@ -13,6 +13,7 @@ const { loadCatalog } = require('./core/spec');
 const { buildCommand } = require('./core/args');
 const { ensureBinary, isInstalled } = require('./core/binaries');
 const { runTool } = require('./core/runner');
+const { prepareRun, finishRun } = require('./core/execute');
 const { LicenseStore } = require('./core/license');
 const { loadRemote, mergeCatalog, newerVersion } = require('./core/remote-catalog');
 const { loadProducts, mergeProducts, productId, findProduct } = require('./core/products');
@@ -113,22 +114,31 @@ ipcMain.handle('tool:run', async (e, { runId, toolId, actionId, values }) => {
   if (!action) throw new Error('Unknown action');
   const gate = license.canRun(spec);
   if (!gate.ok) throw new Error('LOCKED');
-  const { argv, env, stdin } = buildCommand(action, values); // throws with fieldErrors on bad input
+  buildCommand(action, values); // validates first: throws with fieldErrors on bad input
   const send = (ch, payload) => { if (!e.sender.isDestroyed()) e.sender.send(ch, { runId, ...payload }); };
   send('run:status', { text: `Preparing ${spec.name} ${spec.binary.version}…` });
   const exe = await ensureBinary(spec, binCache, {
     onProgress: (got, total) => send('run:status', { text: total ? `Downloading ${spec.name}… ${Math.round((got / total) * 100)}%` : `Downloading ${spec.name}… ${Math.round(got / 1e6)} MB` }),
   });
+  let prep;
+  try { prep = await prepareRun({ spec, action, values, specs, binCache, onOutput: (o) => send('run:output', o) }); } catch (err) { send('run:output', { stream: 'stderr', text: `${err.message}\n` }); send('run:exit', { code: 1 }); return { started: true, trial: null }; }
+  const { argv, env, stdin } = buildCommand(action, prep.values);
   license.recordRun(spec);
   send('run:status', { text: 'Running…' });
   const secrets = (action.fields || []).filter((f) => f.type === 'password' && values[f.id]).map((f) => String(values[f.id]));
   const shown = argv.map((a) => secrets.reduce((s, x) => s.split(x).join('••••'), a));
   send('run:output', { stream: 'meta', text: `$ ${spec.binary.name} ${shown.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(' ')}\n` });
-  const cwd = values[action.cwdField] || undefined;
+  const { cwd } = prep;
+  let stdoutText = '';
   const handle = runTool(exe, argv, {
     env, cwd, input: stdin,
-    onOutput: (o) => send('run:output', o),
-    onExit: ({ code, signal }) => { running.delete(runId); send('run:exit', { code, signal }); },
+    onOutput: (o) => { if (o.stream === 'stdout') stdoutText += o.text; send('run:output', o); },
+    onExit: ({ code, signal }) => {
+      running.delete(runId);
+      try { if (code === 0) finishRun({ action, values: prep.values, stdout: stdoutText }); } catch (err) { send('run:output', { stream: 'stderr', text: `Could not save: ${err.message}\n` }); }
+      prep.cleanup();
+      send('run:exit', { code, signal });
+    },
   });
   running.set(runId, handle);
   return { started: true, trial: gate.reason === 'trial' ? license.trialsLeft(spec.id) : null };

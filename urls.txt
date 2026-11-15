@@ -20,6 +20,7 @@ https://guihub.cc/ai/pdfcpu-merge.html
 https://guihub.cc/ai/pdfcpu-split.html
 https://guihub.cc/ai/pdfcpu-optimize.html
 https://guihub.cc/ai/pdfcpu-encrypt.html
+https://guihub.cc/ai/transcribe-transcribe.html
 https://guihub.cc/ai/typst-write.html
 https://guihub.cc/free/
 https://guihub.cc/free/compress-image-to-50kb.html
@@ -51,6 +52,7 @@ https://guihub.cc/tools/ffmpeg.html
 https://guihub.cc/tools/immich-go.html
 https://guihub.cc/tools/pandoc.html
 https://guihub.cc/tools/pdfcpu.html
+https://guihub.cc/tools/transcribe.html
 https://guihub.cc/tools/typst.html
 https://guihub.cc/guides/
 https://guihub.cc/guides/merge-compress-protect-pdf-offline.html
@@ -72,4 +74,5 @@ https://guihub.cc/guides/ilovepdf-alternative-offline.html
 https://guihub.cc/guides/handbrake-alternative-simple-video-compressor.html
 https://guihub.cc/guides/csv-to-excel-without-uploading.html
 https://guihub.cc/guides/open-rar-7z-files-mac-windows-zip-with-password.html
+https://guihub.cc/guides/transcribe-audio-video-to-text-offline.html
 https://guihub.cc/legal.html

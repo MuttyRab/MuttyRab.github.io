@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Typst
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Whisper (sherpa-onnx), Typst
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (33)
+## MCP tools (34)
 
 | Tool | What it does |
 |---|---|
@@ -61,6 +61,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `pdfcpu_encrypt` | Protect a PDF with AES-256 encryption. |
 | `pdfcpu_decrypt` | Remove the password from a PDF you have the password for. |
 | `pdfcpu_extract_pages` | Save selected pages as separate PDF files. |
+| `transcribe_transcribe` | Transcribe an audio or video file on the user's computer (mp3, m4a, wav, mp4, mov, …) to text with Whisper, offline. Returns the full transcript (optionally with [hh:mm:ss] timestamps) and can also save it to a .txt file (`out`). Set `translate` to get an English translation instead. Use this whenever the user wants a recording, voice memo, meeting or video turned into text, notes or a summary. |
 | `typst_write` | Create a typeset PDF file on the user's computer from Typst markup you write (pass the full document in `source`). Typst syntax: `= Heading`, `*bold*`, `_italic_`, `- item`, `#table(columns: 2, [a], [b])`, `#set page(paper: "a4")`, `#set text(font: "New Computer Modern")`. Built-in fonts work offline. Relative image paths resolve inside `assets`. |
 | `typst_compile` | Compile an existing .typ (Typst) file on the user's computer to PDF. |
 

@@ -1,0 +1,258 @@
+{
+  "id": "transcribe",
+  "name": "Transcribe Audio & Video",
+  "tagline": "Turn recordings, voice memos, meetings and videos into text — with timestamps, in 90+ languages, privately on your own computer.",
+  "keywords": [
+    "transcribe audio",
+    "speech to text",
+    "transcribe video",
+    "voice memo to text",
+    "meeting transcription",
+    "whisper offline",
+    "transcription mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "k2-fsa/sherpa-onnx",
+    "stars": 16000,
+    "displayName": "Whisper (sherpa-onnx)",
+    "license": "Apache-2.0 (Whisper model: MIT)",
+    "homepage": "https://k2-fsa.github.io/sherpa/onnx/"
+  },
+  "binary": {
+    "name": "sherpa-onnx-vad-with-offline-asr",
+    "version": "2.0.1",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-linux-x64-static.tar.bz2",
+        "path": "bin/sherpa-onnx-vad-with-offline-asr",
+        "sha256": "8b34cf773b65e4be3e7ace12fb6a65fcd8f4e8fe06516ae9b7bcaf405dcb308c"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-osx-universal2-static.tar.bz2",
+        "path": "bin/sherpa-onnx-vad-with-offline-asr",
+        "sha256": "149d4dbb1bb450b88d65097ba2477564a0ddeb99dad91666a2411cd738ef831f"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-osx-universal2-static.tar.bz2",
+        "path": "bin/sherpa-onnx-vad-with-offline-asr",
+        "sha256": "149d4dbb1bb450b88d65097ba2477564a0ddeb99dad91666a2411cd738ef831f"
+      },
+      "win32-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-win-x64-static-MT-Release.tar.bz2",
+        "path": "bin/sherpa-onnx-vad-with-offline-asr.exe",
+        "sha256": "58c810ac46f20e3828968175606063a31df4cff21a1931fe5b69a03e70c5a5b7"
+      }
+    },
+    "extras": [
+      {
+        "name": "model",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-base.tar.bz2",
+        "sha256": "911b2083efd7c0dca2ac3b358b75222660dc09fb716d64fbfc417ba6c99ff3de"
+      },
+      {
+        "name": "vad",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
+        "sha256": "9e2449e1087496d8d4caba907f23e0bd3f78d91fa552479bb9c23ac09cbb1fd6"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "transcribe",
+      "label": "Transcribe",
+      "runLabel": "Transcribe",
+      "description": "Pick any audio or video file. The first run downloads the speech model once (about 200 MB); after that everything works offline.",
+      "mcpDescription": "Transcribe an audio or video file on the user's computer (mp3, m4a, wav, mp4, mov, …) to text with Whisper, offline. Returns the full transcript (optionally with [hh:mm:ss] timestamps) and can also save it to a .txt file (`out`). Set `translate` to get an English translation instead. Use this whenever the user wants a recording, voice memo, meeting or video turned into text, notes or a summary.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Recording or video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio & video",
+              "extensions": [
+                "mp3",
+                "m4a",
+                "wav",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "wma",
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "avi",
+                "m4v",
+                "3gp",
+                "amr"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "language",
+          "label": "Spoken language",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Detect automatically"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "he",
+              "label": "Hebrew"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            }
+          ]
+        },
+        {
+          "id": "translate",
+          "label": "Translate to English",
+          "type": "checkbox"
+        },
+        {
+          "id": "timestamps",
+          "label": "Add timestamps",
+          "type": "checkbox",
+          "default": true
+        },
+        {
+          "id": "out",
+          "label": "Save transcript as (optional)",
+          "type": "savefile",
+          "filters": [
+            {
+              "name": "Text",
+              "extensions": [
+                "txt"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": {
+        "tool": "ffmpeg",
+        "argv": [
+          "-y",
+          "-i",
+          "{input}",
+          "-vn",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-c:a",
+          "pcm_s16le",
+          "{tmp}"
+        ],
+        "replaces": "input",
+        "ext": ".wav"
+      },
+      "cwd": "tool",
+      "saveStdout": {
+        "field": "out",
+        "transform": "segments",
+        "stampsField": "timestamps"
+      },
+      "maxOutput": 80000,
+      "argv": [
+        "--silero-vad-model=extras/vad/silero_vad.onnx",
+        "--whisper-encoder=extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+        "--whisper-decoder=extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+        "--tokens=extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+        "--num-threads=4",
+        {
+          "field": "language",
+          "flag": "--whisper-language",
+          "join": "="
+        },
+        {
+          "when": "translate",
+          "argv": [
+            "--whisper-task=translate"
+          ]
+        },
+        {
+          "field": "input"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Transcribed.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    }
+  ]
+}
