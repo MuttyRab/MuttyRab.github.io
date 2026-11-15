@@ -16,6 +16,7 @@ const catalog = path.join(appDir, '..', 'catalog');
 const shots = process.argv[2] || fs.mkdtempSync(path.join(os.tmpdir(), 'gh-shots-'));
 fs.mkdirSync(shots, { recursive: true });
 const userData = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-e2e-'));
+const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-home-'));
 const key = platformKey();
 
 function seed(id) {
@@ -34,11 +35,11 @@ function seed(id) {
   const packaged = process.env.E2E_PACKAGED;
   const app = await electron.launch(packaged ? {
     executablePath: packaged, args: ['--no-sandbox'],
-    env: { ...process.env, GUIHUB_USER_DATA: userData },
+    env: { ...process.env, GUIHUB_USER_DATA: userData, HOME: fakeHome, XDG_CONFIG_HOME: path.join(fakeHome, '.config') },
   } : {
     executablePath: require('electron'),
     args: [appDir, '--no-sandbox'],
-    env: { ...process.env, GUIHUB_USER_DATA: userData, GUIHUB_CATALOG: catalog },
+    env: { ...process.env, GUIHUB_USER_DATA: userData, GUIHUB_CATALOG: catalog, HOME: fakeHome, XDG_CONFIG_HOME: path.join(fakeHome, '.config') },
   });
   // Native file dialogs cannot be driven; stub them in the main process.
   await app.evaluate(({ ipcMain }, dir) => {
@@ -88,6 +89,31 @@ function seed(id) {
   await page.waitForFunction(() => document.querySelector('#license-error').textContent.length > 0);
   assert.match(await page.textContent('#license-error'), /not set up|not found|License (check|server)/);
   await page.screenshot({ path: path.join(shots, '4-license.png') });
+
+  // Use with AI: one-click install into Claude Desktop's config, then start the server exactly as
+  // Claude would from that config and check it answers MCP initialize + tools/list.
+  await page.click('#license-dialog button[value=cancel]');
+  await page.click('#mcp-btn');
+  await page.waitForSelector('#mcp-dialog[open]');
+  assert.match(await page.textContent('#mcp-json'), /gui-hub/);
+  await page.click('#mcp-claude');
+  await page.waitForFunction(() => /Added to Claude Desktop/.test(document.querySelector('#mcp-result').textContent));
+  await page.screenshot({ path: path.join(shots, '5-mcp.png') });
+  const cfgFile = process.platform === 'darwin' ? path.join(fakeHome, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json') : path.join(fakeHome, '.config', 'Claude', 'claude_desktop_config.json');
+  const cfg = JSON.parse(fs.readFileSync(cfgFile, 'utf8')).mcpServers['gui-hub'];
+  const { spawn } = require('child_process');
+  const srv = spawn(cfg.command, cfg.args, { env: { ...process.env, ...cfg.env, GUIHUB_USER_DATA: userData, ...(packaged ? {} : { GUIHUB_CATALOG: catalog }) }, stdio: ['pipe', 'pipe', 'inherit'] });
+  const answers = await new Promise((resolve, reject) => {
+    let buf = ''; const got = [];
+    const timer = setTimeout(() => reject(new Error(`MCP server did not answer: ${buf}`)), 30000);
+    srv.stdout.on('data', (d) => { buf += d; const lines = buf.split('\n').filter(Boolean); if (lines.length >= 2) { clearTimeout(timer); resolve(lines.map((l) => JSON.parse(l))); } });
+    srv.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'e2e', version: '1' } } })}\n`);
+    srv.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/list' })}\n`);
+  });
+  srv.stdin.end();
+  assert.strictEqual(answers[0].result.serverInfo.name, 'gui-hub');
+  assert.ok(answers[1].result.tools.length >= 10, 'tools listed');
+  console.log(`mcp ok: ${answers[1].result.tools.length} tools via ${path.basename(cfg.command)}`);
 
   await app.close();
   console.log(`e2e ok; screenshots in ${shots}`);

@@ -15,6 +15,7 @@
       <nav id="tool-list" class="tool-list" aria-label="Tools"></nav>
       <div class="sidebar-foot">
         <div id="license-badge" class="badge"></div>
+        <button id="mcp-btn" type="button" class="ai-btn">Use with AI (MCP)</button>
         <button id="license-btn" class="link-btn" type="button">Enter license key</button>
         <button id="update-btn" class="link-btn small" type="button" hidden></button>
         <button id="legal-btn" class="link-btn small" type="button">Terms &amp; privacy</button>
@@ -68,6 +69,19 @@
         <button id="activate-btn" type="button">Activate</button>
       </div>
       <button id="deactivate-btn" class="link-btn small" type="button" hidden>Remove license from this computer</button>
+    </form>
+  </dialog>
+  <dialog id="mcp-dialog">
+    <form method="dialog">
+      <h2>Let your AI assistant use these tools</h2>
+      <p class="muted">Every tool here is also an <b>MCP server</b>. Connect it once, then ask Claude, Cursor or any MCP-capable assistant things like <i>“shrink every video in my Downloads folder to 720p”</i> or <i>“merge these three PDFs”</i>. The work runs on this computer, with the same tools, license and free tries as this window.</p>
+      <div class="dialog-actions"><button id="mcp-claude" class="primary" type="button">Add to Claude Desktop</button><button id="mcp-cursor" type="button">Add to Cursor</button></div>
+      <p id="mcp-result" class="small" role="status"></p>
+      <details><summary class="small">Other apps (VS Code, Windsurf, Zed, …): copy the settings</summary>
+        <pre id="mcp-json" class="output" style="min-height:0;max-height:180px"></pre>
+        <button id="mcp-copy" type="button">Copy</button></details>
+      <details><summary class="small" id="mcp-count">Tools your AI gets</summary><ul id="mcp-tools" class="small muted"></ul></details>
+      <div class="dialog-actions"><span class="spacer"></span><button value="cancel" type="submit">Close</button></div>
     </form>
   </dialog>
   <script src="app.js"></script>

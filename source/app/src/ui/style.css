@@ -68,3 +68,5 @@ dialog input { width: 100%; padding: 8px 10px; border: 1px solid var(--line); bo
 .dialog-actions { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
 .spacer { flex: 1; }
 .error { color: var(--danger); min-height: 1.2em; margin: 6px 0 0; }
+.ai-btn{width:100%;margin-bottom:6px;font-weight:600;border-color:var(--accent);color:var(--accent);background:transparent}
+#mcp-dialog{width:min(560px,94vw)}#mcp-dialog details{margin-top:10px}#mcp-tools{columns:2;padding-left:18px}

@@ -1,5 +1,12 @@
 'use strict';
+// `GUI Hub --mcp` runs the MCP server for AI clients instead of opening a window.
+if (process.argv.includes('--mcp')) {
+  try { require('electron').app.dock?.hide(); } catch (_) { /* not macOS */ }
+  require('./mcp-entry');
+  return;
+}
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
+const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const { loadCatalog } = require('./core/spec');
@@ -127,3 +134,38 @@ ipcMain.handle('shell:open', (_e, { target }) => {
   if (target && fs.existsSync(target)) return shell.openPath(target);
   return null;
 });
+
+// ---- Use with AI (MCP) -------------------------------------------------------------------
+function mcpServerConfig() {
+  const appPath = app.getAppPath();
+  const root = appPath.endsWith('.asar') ? `${appPath}.unpacked` : appPath;
+  return { command: process.execPath, args: [path.join(root, 'src', 'mcp-entry.js')], env: { ELECTRON_RUN_AS_NODE: '1' } };
+}
+const clientConfigFiles = {
+  claude: () => (process.platform === 'darwin' ? path.join(os.homedir(), 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json')
+    : process.platform === 'win32' ? path.join(process.env.APPDATA || '', 'Claude', 'claude_desktop_config.json')
+      : path.join(os.homedir(), '.config', 'Claude', 'claude_desktop_config.json')),
+  cursor: () => path.join(os.homedir(), '.cursor', 'mcp.json'),
+};
+ipcMain.handle('mcp:info', () => {
+  const { toolsFromSpecs } = require('./core/mcp');
+  return {
+    config: { mcpServers: { 'gui-hub': mcpServerConfig() } },
+    tools: toolsFromSpecs(specs).map((t) => ({ name: t.name, title: t.title })),
+    clients: Object.fromEntries(Object.entries(clientConfigFiles).map(([k, f]) => [k, fs.existsSync(path.dirname(f()))])),
+  };
+});
+ipcMain.handle('mcp:install', async (_e, { client }) => {
+  const file = clientConfigFiles[client] && clientConfigFiles[client]();
+  if (!file) throw new Error('Unknown app');
+  let cfg = {};
+  if (fs.existsSync(file)) {
+    try { cfg = JSON.parse(fs.readFileSync(file, 'utf8') || '{}'); } catch (_) { throw new Error(`Could not read ${file}. Fix or remove it, then try again.`); }
+    fs.copyFileSync(file, `${file}.backup-${Date.now()}`);
+  }
+  cfg.mcpServers = { ...(cfg.mcpServers || {}), 'gui-hub': mcpServerConfig() };
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `${JSON.stringify(cfg, null, 2)}\n`);
+  return { file };
+});
+ipcMain.handle('clipboard:write', (_e, { text }) => { require('electron').clipboard.writeText(String(text)); return true; });

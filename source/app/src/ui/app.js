@@ -271,6 +271,24 @@ async function init() {
     }
     await refreshTools();
   });
+  $('mcp-btn').addEventListener('click', async () => {
+    const info = await api.mcpInfo();
+    const json = JSON.stringify(info.config, null, 2);
+    $('mcp-json').textContent = json;
+    $('mcp-tools').replaceChildren(...info.tools.map((t) => el('li', {}, `${t.name} — ${t.title}`)));
+    $('mcp-count').textContent = `The ${info.tools.length} tools your AI gets`;
+    $('mcp-result').textContent = '';
+    $('mcp-dialog').showModal();
+    $('mcp-copy').onclick = async () => { await api.copy(json); $('mcp-result').textContent = 'Copied. Paste it into your AI app’s MCP settings.'; };
+    const install = (client, label) => async () => {
+      try {
+        const r = await api.mcpInstall(client);
+        $('mcp-result').textContent = `Added to ${label} (${r.file}). Quit and reopen ${label} to start using the tools.`;
+      } catch (e) { $('mcp-result').textContent = String(e.message || e).replace(/^Error invoking remote method '[^']+': (Error: )?/, ''); }
+    };
+    $('mcp-claude').onclick = install('claude', 'Claude Desktop');
+    $('mcp-cursor').onclick = install('cursor', 'Cursor');
+  });
   api.onLicenseChanged(refreshTools);
   api.onCatalogChanged(refreshTools);
   $('update-btn').addEventListener('click', () => api.open(state.info.update.url));
