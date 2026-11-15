@@ -68,7 +68,17 @@ footer{border-top:1px solid var(--line);padding:40px 0 56px;color:var(--ink3);fo
 <h2>How it works</h2><p>Your browser redraws the photo and tries lower JPEG qualities (and, if needed, smaller dimensions) until the file is under 500 KB, keeping the best quality that fits. It works offline once the page has loaded.</p>
 <h2>Other sizes</h2><ul class="jobs"><li><a href="/free/compress-image-to-50kb.html">Compress an image to 50 KB</a></li><li><a href="/free/compress-image-to-100kb.html">Compress an image to 100 KB</a></li><li><a href="/free/compress-image-to-200kb.html">Compress an image to 200 KB</a></li><li><a href="/guides/tinypng-alternative-offline-batch.html">Compress a whole folder offline</a></li></ul>
 </article></main>
-<script>(function(){var pick=document.getElementById('pick'),res=document.getElementById('res');
+<script>window.GH={"org":"27332264-5cea-4bfb-8a7c-f4cdb352de40","pid":"essentials","name":"GUI Hub Essentials","price":"$9","buy":"https://buy.polar.sh/polar_cl_5W9WEBwxNsjjbHRYb9j4hhD8bKUCG4sohMrZW17awUN","ben":["07d8e0f4-fb9c-4d40-96f3-d1caa2ba21a2","7b1a475b-904a-4e37-9394-48ae8e8addb9"],"all":{"name":"GUI Hub All-Access","price":"$19","buy":"https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD"},"limit":3};
+GH.unlocked=function(){try{return localStorage.getItem('guihub-unlock-'+GH.pid)==='1'}catch(e){return false}};
+GH.gate=function(files,res){files=[...files];if(files.length<=GH.limit||GH.unlocked())return files;
+ var box=document.createElement('div');box.className='cta';box.style.margin='0 0 12px';
+ box.innerHTML='<h3 style="margin:0 0 6px">You picked '+files.length+' files — the free version does '+GH.limit+' at a time</h3><p class="small" style="margin:0 0 12px">The first '+GH.limit+' are done below. Unlock unlimited batches here <b>and</b> get the '+GH.name+' desktop app + AI tools: <b>'+GH.price+' once</b>, no subscription, 30-day refund.</p><div class="ctarow"><a class="btn primary" href="'+GH.buy+'">Unlock for '+GH.price+'</a>'+(GH.all?'<a class="btn" href="'+GH.all.buy+'">All apps: '+GH.all.price+'</a>':'')+'</div><p class="small muted" style="margin:14px 0 6px">Already bought? Paste your license key:</p><div class="ctarow"><input id="ghkey" placeholder="License key from your email" style="flex:1;min-width:220px;padding:10px;border:1px solid var(--line2);border-radius:8px"><button class="btn sm" type="button" id="ghgo">Unlock</button></div><p id="ghmsg" class="small" style="margin:8px 0 0"></p>';
+ res.prepend(box);
+ box.querySelector('#ghgo').onclick=async function(){var m=box.querySelector('#ghmsg'),k=box.querySelector('#ghkey').value.trim();if(!k){m.textContent='Paste the key first.';return}m.textContent='Checking…';
+  try{var r=await fetch('https://api.polar.sh/v1/customer-portal/license-keys/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,organization_id:GH.org})});var j=await r.json();
+   if(r.ok&&j.status==='granted'&&(!j.benefit_id||GH.ben.indexOf(j.benefit_id)>=0)){try{localStorage.setItem('guihub-unlock-'+GH.pid,'1')}catch(e){}m.textContent='Unlocked on this browser. Choose your files again to process them all.';}
+   else m.textContent=r.status===404?'That key was not found — check it was copied completely.':'This key is not for '+GH.name+'.';}catch(e){m.textContent='Could not reach the license server. Try again in a moment.'}};
+ return files.slice(0,GH.limit);};</script><script>(function(){var pick=document.getElementById('pick'),res=document.getElementById('res');
 function load(file){return new Promise(function(ok,no){var img=new Image();img.onload=function(){ok(img)};img.onerror=no;img.src=URL.createObjectURL(file);});}
 function blob(c,q){return new Promise(function(ok){c.toBlob(ok,'image/jpeg',q);});}
 async function squeeze(file,limit){var img=await load(file),scale=Math.min(1,2400/Math.max(img.width,img.height)),best=null;
@@ -78,7 +88,7 @@ async function squeeze(file,limit){var img=await load(file),scale=Math.min(1,240
   scale*=0.8;}
  return best;}
 pick.addEventListener('change',async function(){res.innerHTML='';var limit=+document.getElementById('kb').value*1024;
- for(var f of pick.files){var row=document.createElement('div');row.className='files';row.textContent='Compressing '+f.name+'…';res.appendChild(row);
+ for(var f of GH.gate(pick.files,res)){var row=document.createElement('div');row.className='files';row.textContent='Compressing '+f.name+'…';res.appendChild(row);
   try{var r=await squeeze(f,limit);if(!r){row.textContent=f.name+': could not get under the limit.';continue;}
    var a=document.createElement('a');a.href=URL.createObjectURL(r.b);a.download=f.name.replace(/.[^.]+$/,'')+'-'+Math.round(limit/1024)+'kb.jpg';a.className='btn sm primary';a.textContent='Download';
    row.innerHTML='<div class="row"><span>'+f.name+'</span><span class="ok">'+Math.round(f.size/1024)+' KB → '+Math.round(r.b.size/1024)+' KB · '+r.w+'×'+r.h+'</span></div>';row.appendChild(a);}
