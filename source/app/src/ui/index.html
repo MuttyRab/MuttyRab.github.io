@@ -56,15 +56,16 @@
   <dialog id="license-dialog">
     <form method="dialog" id="license-form">
       <h2>Unlock every tool</h2>
-      <p class="muted">One purchase unlocks all current and future tools on up to 3 computers.</p>
+      <p class="muted">Pay once — no subscription. Unlocks every tool, including future ones, on up to 3 computers. 30-day money-back guarantee.</p>
+      <p class="muted small">After buying, your license key arrives by email. Paste it below.</p>
       <label for="license-key">License key</label>
       <input id="license-key" autocomplete="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX">
       <p id="license-error" class="error" role="alert"></p>
       <div class="dialog-actions">
-        <button id="buy-btn" type="button">Buy a license</button>
+        <button id="buy-btn" class="primary" type="button">Buy Pro</button>
         <span class="spacer"></span>
         <button value="cancel" type="submit" formnovalidate>Close</button>
-        <button id="activate-btn" class="primary" type="button">Activate</button>
+        <button id="activate-btn" type="button">Activate</button>
       </div>
       <button id="deactivate-btn" class="link-btn small" type="button" hidden>Remove license from this computer</button>
     </form>

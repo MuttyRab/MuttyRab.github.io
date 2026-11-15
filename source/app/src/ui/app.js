@@ -193,7 +193,7 @@ async function run() {
   if (errs.length) return;
   if (state.action.confirm && !window.confirm(state.action.confirm)) return;
   const t = state.tool;
-  if (!t.access.ok) { openLicense(`${t.name} needs a license. You have used your free runs.`); return; }
+  if (!t.access.ok) { openLicense(`You’ve used your 3 free tries of ${t.name}. Pro unlocks it — and every other tool — forever.`); return; }
   state.runId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   $('output').replaceChildren();
   setRunning(true);
@@ -259,6 +259,12 @@ async function init() {
     const ok = code === 0;
     $('run-status').textContent = ok ? (state.action.successMessage || 'Done.') : signal ? 'Stopped.' : `Finished with an error (exit code ${code}).`;
     appendOut(`\n${ok ? '✓ Done' : `✗ Exit code ${code ?? signal}`}\n`, 'meta');
+    // Gentle, honest nudge after a successful free try of a Pro tool.
+    if (ok && state.tool.tier === 'pro' && !(state.info && state.info.pro) && state.info.checkoutUrl) {
+      const left = Math.max(0, (state.tool.access.left ?? 1) - 1);
+      $('run-status').append(' ', el('span', { class: 'muted' }, left ? `(${left} free ${left === 1 ? 'try' : 'tries'} left)` : '(that was your last free try)'), ' ',
+        el('button', { class: 'link-btn', type: 'button', onclick: () => openLicense() }, 'Get Pro — unlimited use'));
+    }
     if (ok && state.action.openAfter && state.values[state.action.openAfter]) {
       const target = state.values[state.action.openAfter];
       $('run-status').append(' ', el('button', { class: 'link-btn', type: 'button', onclick: () => api.open(Array.isArray(target) ? target[0] : target) }, 'Show result'));
