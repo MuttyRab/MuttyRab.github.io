@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for Caesium, croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Typst
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Typst
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,10 +26,14 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (29)
+## MCP tools (33)
 
 | Tool | What it does |
 |---|---|
+| `7zip_extract` | Extract an archive (ZIP, RAR, 7z, TAR/GZ/XZ, ISO, …) on the user's computer into outDir. Give `password` for encrypted archives (it fails instead of prompting if one is needed). Existing files are not overwritten unless existing='a'. |
+| `7zip_create` | Create a ZIP or 7z archive on the user's computer from files and/or a folder, optionally password-protected (7z: AES-256; ZIP: AES-256 by default, or classic ZipCrypto for compatibility with Windows Explorer). |
+| `7zip_list` | List the contents (names, sizes, dates) of an archive on the user's computer without extracting it. |
+| `7zip_test` | Test an archive's integrity (and password) on the user's computer without extracting. |
 | `caesium_compress` | Compress, resize and/or convert image files (JPG, PNG, WebP, GIF, TIFF) on the user's computer. Writes compressed copies (same file names) into outDir; never modifies originals or overwrites existing files. Use mode=size with maxSize (bytes) to fit upload limits. File dates are kept by default (keepDates). |
 | `caesium_folder` | Compress, resize and/or convert every image in a folder on the user's computer, optionally including subfolders (folder structure is kept). Copies go to outDir; originals are never modified. File dates are kept by default (keepDates). |
 | `croc_receive` | Receive files sent with croc: give the code phrase from the sender and a destination folder. Existing files are kept (renamed) unless existing="overwrite". |

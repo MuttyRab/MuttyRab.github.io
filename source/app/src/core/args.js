@@ -96,7 +96,7 @@ function expand(items, vals, fields, out) {
     if (f.type === 'checkbox') { if (item.flag) out.push(item.flag); continue; }
     const list = Array.isArray(v) ? v : [String(v)];
     if (item.flag) {
-      if (item.join) out.push(`${item.flag}${item.join}${list.join(',')}`);
+      if (item.join !== undefined) out.push(`${item.flag}${item.join}${list.join(',')}`);
       else { out.push(item.flag); out.push(list.join(',')); }
     } else {
       out.push(...list);

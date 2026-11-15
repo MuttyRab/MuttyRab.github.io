@@ -1,0 +1,376 @@
+{
+  "id": "7zip",
+  "name": "Zip & Unzip",
+  "tagline": "Open ZIP, RAR, 7z and TAR files, and make password-protected ZIP or 7z archives — on Mac, Windows and Linux, or by asking your AI.",
+  "keywords": [
+    "unzip",
+    "open rar file",
+    "extract 7z",
+    "zip with password",
+    "7-zip for mac",
+    "7zip mcp",
+    "rar extractor mac"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "ip7z/7zip",
+    "stars": 4000,
+    "displayName": "7-Zip",
+    "license": "LGPL-2.1 (+ unRAR restriction)",
+    "homepage": "https://www.7-zip.org"
+  },
+  "binary": {
+    "name": "7zz",
+    "version": "26.06",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-linux-x64.tar.xz",
+        "path": "7zz",
+        "sha256": "2b539cf067b2ad48e1baa5093dbaa8818b73542d1222a0ffde9dc5f2922ea62e"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-mac.tar.xz",
+        "path": "7zz",
+        "sha256": "b6f17920b4240940461dac8ef4009891881ac44d2a5ead625ede2ec8472185dd"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-mac.tar.xz",
+        "path": "7zz",
+        "sha256": "b6f17920b4240940461dac8ef4009891881ac44d2a5ead625ede2ec8472185dd"
+      },
+      "win32-x64": {
+        "url": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-extra.7z",
+        "path": "x64/7za.exe",
+        "sha256": "396c180f12d2247c24b0b1fcd482c6fc2a2700f61211ffede1061dd971f5e104"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "extract",
+      "label": "Extract",
+      "runLabel": "Extract",
+      "description": "Unpack a ZIP, RAR, 7z, TAR or ISO into a folder. Existing files are kept: new copies get a number.",
+      "mcpDescription": "Extract an archive (ZIP, RAR, 7z, TAR/GZ/XZ, ISO, …) on the user's computer into outDir. Give `password` for encrypted archives (it fails instead of prompting if one is needed). Existing files are not overwritten unless existing='a'.",
+      "fields": [
+        {
+          "id": "archive",
+          "label": "Archive",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Archives",
+              "extensions": [
+                "zip",
+                "7z",
+                "rar",
+                "tar",
+                "gz",
+                "tgz",
+                "bz2",
+                "xz",
+                "zst",
+                "iso",
+                "cab",
+                "wim",
+                "lzh",
+                "arj"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "outDir",
+          "label": "Extract into",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "password",
+          "label": "Password (only if the archive has one)",
+          "type": "password"
+        },
+        {
+          "id": "existing",
+          "label": "If a file already exists",
+          "type": "select",
+          "default": "u",
+          "options": [
+            {
+              "value": "u",
+              "label": "Keep both (number the new one)"
+            },
+            {
+              "value": "s",
+              "label": "Skip it"
+            },
+            {
+              "value": "a",
+              "label": "Overwrite it"
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "x",
+        {
+          "field": "archive"
+        },
+        {
+          "field": "outDir",
+          "flag": "-o",
+          "join": ""
+        },
+        {
+          "field": "password",
+          "flag": "-p",
+          "join": ""
+        },
+        {
+          "field": "existing",
+          "flag": "-ao",
+          "join": ""
+        },
+        "-y"
+      ],
+      "openAfter": "outDir",
+      "successMessage": "Extracted.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "create",
+      "label": "Create ZIP / 7z",
+      "runLabel": "Create",
+      "description": "Pack files (and optionally a folder) into a ZIP or 7z archive, with an optional password.",
+      "mcpDescription": "Create a ZIP or 7z archive on the user's computer from files and/or a folder, optionally password-protected (7z: AES-256; ZIP: AES-256 by default, or classic ZipCrypto for compatibility with Windows Explorer).",
+      "fields": [
+        {
+          "id": "inputs",
+          "label": "Files",
+          "type": "files"
+        },
+        {
+          "id": "folder",
+          "label": "…and/or a folder",
+          "type": "folder"
+        },
+        {
+          "id": "format",
+          "label": "Format",
+          "type": "select",
+          "default": "zip",
+          "options": [
+            {
+              "value": "zip",
+              "label": "ZIP — opens everywhere"
+            },
+            {
+              "value": "7z",
+              "label": "7z — smaller files"
+            }
+          ]
+        },
+        {
+          "id": "password",
+          "label": "Password (optional)",
+          "type": "password"
+        },
+        {
+          "id": "zipEnc",
+          "label": "ZIP encryption",
+          "type": "select",
+          "default": "em=AES256",
+          "showIf": {
+            "field": "format",
+            "equals": "zip"
+          },
+          "options": [
+            {
+              "value": "em=AES256",
+              "label": "AES-256 (strong; needs 7-Zip/WinRAR/macOS to open)"
+            },
+            {
+              "value": "em=ZipCrypto",
+              "label": "Classic (weak, but opens in Windows Explorer)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save archive as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Archive",
+              "extensions": [
+                "zip",
+                "7z"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "a",
+        {
+          "field": "format",
+          "flag": "-t",
+          "join": ""
+        },
+        {
+          "field": "password",
+          "flag": "-p",
+          "join": ""
+        },
+        {
+          "when": "password",
+          "argv": [
+            {
+              "field": "zipEnc",
+              "flag": "-m",
+              "join": ""
+            }
+          ]
+        },
+        "-y",
+        {
+          "field": "out"
+        },
+        {
+          "field": "inputs"
+        },
+        {
+          "field": "folder"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Archive created.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "list",
+      "label": "See what’s inside",
+      "runLabel": "List",
+      "description": "List the files in an archive without extracting it.",
+      "mcpDescription": "List the contents (names, sizes, dates) of an archive on the user's computer without extracting it.",
+      "fields": [
+        {
+          "id": "archive",
+          "label": "Archive",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Archives",
+              "extensions": [
+                "zip",
+                "7z",
+                "rar",
+                "tar",
+                "gz",
+                "tgz",
+                "bz2",
+                "xz",
+                "zst",
+                "iso",
+                "cab",
+                "wim",
+                "lzh",
+                "arj"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "password",
+          "label": "Password (only if the archive has one)",
+          "type": "password"
+        }
+      ],
+      "argv": [
+        "l",
+        {
+          "field": "archive"
+        },
+        {
+          "field": "password",
+          "flag": "-p",
+          "join": ""
+        }
+      ],
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "test",
+      "label": "Check for damage",
+      "runLabel": "Check",
+      "description": "Test that every file in an archive can be read (and that the password is right).",
+      "mcpDescription": "Test an archive's integrity (and password) on the user's computer without extracting.",
+      "fields": [
+        {
+          "id": "archive",
+          "label": "Archive",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Archives",
+              "extensions": [
+                "zip",
+                "7z",
+                "rar",
+                "tar",
+                "gz",
+                "tgz",
+                "bz2",
+                "xz",
+                "zst",
+                "iso",
+                "cab",
+                "wim",
+                "lzh",
+                "arj"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "password",
+          "label": "Password (only if the archive has one)",
+          "type": "password"
+        }
+      ],
+      "argv": [
+        "t",
+        {
+          "field": "archive"
+        },
+        {
+          "field": "password",
+          "flag": "-p",
+          "join": ""
+        }
+      ],
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    }
+  ]
+}

@@ -106,7 +106,7 @@ async function ensureBinary(spec, cacheRoot, { onProgress, key, fetcher = downlo
     const got = await sha256(archive);
     if (got !== asset.sha256.toLowerCase()) throw new Error(`checksum mismatch for ${fname}: expected ${asset.sha256}, got ${got}`);
   }
-  const isArchive = /\.(zip|tar\.gz|tgz|tar\.xz|tar\.bz2)$/i.test(fname);
+  const isArchive = /\.(zip|7z|tar\.gz|tgz|tar\.xz|tar\.bz2)$/i.test(fname);
   const out = path.join(tmp, 'out');
   if (isArchive) { await extract(archive, out); } else { fs.mkdirSync(out, { recursive: true }); fs.renameSync(archive, path.join(out, asset.path)); }
   const inner = path.join(out, asset.path);

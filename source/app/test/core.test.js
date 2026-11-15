@@ -146,6 +146,12 @@ test('sql templates quote paths safely and keep enum options raw', () => {
   assert.strictEqual(spec('duckdb').product, 'data');
 });
 
+test('7-Zip switches are glued to their values (-o/dir, -pSECRET) and never overwrite by default', () => {
+  assert.deepStrictEqual(buildCommand(action('7zip', 'extract'), { archive: '/a.rar', outDir: '/o' }).argv, ['x', '/a.rar', '-o/o', '-aou', '-y']);
+  assert.deepStrictEqual(buildCommand(action('7zip', 'create'), { inputs: ['/x'], password: 'pw', out: '/o.zip' }).argv, ['a', '-tzip', '-ppw', '-mem=AES256', '-y', '/o.zip', '/x']);
+  assert.deepStrictEqual(buildCommand(action('7zip', 'create'), { folder: '/f', format: '7z', out: '/o.7z' }).argv, ['a', '-t7z', '-y', '/o.7z', '/f']);
+});
+
 test('clean strips ANSI codes', () => {
   assert.strictEqual(clean('\x1b[32mok\x1b[0m done'), 'ok done');
 });

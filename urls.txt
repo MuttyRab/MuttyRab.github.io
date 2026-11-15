@@ -21,6 +21,7 @@ https://guihub.cc/free/rotate-pdf.html
 https://guihub.cc/support.html
 https://guihub.cc/essentials/
 https://guihub.cc/data/
+https://guihub.cc/tools/7zip.html
 https://guihub.cc/tools/caesium.html
 https://guihub.cc/tools/croc.html
 https://guihub.cc/tools/duckdb.html
@@ -49,4 +50,5 @@ https://guihub.cc/guides/tinypng-alternative-offline-batch.html
 https://guihub.cc/guides/ilovepdf-alternative-offline.html
 https://guihub.cc/guides/handbrake-alternative-simple-video-compressor.html
 https://guihub.cc/guides/csv-to-excel-without-uploading.html
+https://guihub.cc/guides/open-rar-7z-files-mac-windows-zip-with-password.html
 https://guihub.cc/legal.html
