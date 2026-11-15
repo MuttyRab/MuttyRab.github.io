@@ -1,0 +1,31 @@
+{
+  "name": "gui-hub",
+  "productName": "GUI Hub",
+  "version": "0.1.0",
+  "description": "Friendly desktop windows for great open-source command-line tools.",
+  "main": "src/main.js",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.js",
+    "e2e": "node test/e2e.js",
+    "dist": "electron-builder --publish never"
+  },
+  "devDependencies": {
+    "electron": "38.2.0",
+    "electron-builder": "26.0.12",
+    "playwright": "1.63.0"
+  },
+  "build": {
+    "appId": "app.guihub.desktop",
+    "productName": "GUI Hub",
+    "files": ["src/**/*", "config.json", "package.json"],
+    "extraResources": [{ "from": "../catalog", "to": "catalog", "filter": ["*/spec.json"] }],
+    "artifactName": "GUI-Hub-${os}-${arch}.${ext}",
+    "mac": { "target": [{ "target": "dmg", "arch": ["arm64", "x64"] }], "category": "public.app-category.utilities" },
+    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }] },
+    "nsis": { "oneClick": true, "perMachine": false },
+    "linux": { "target": ["AppImage"], "category": "Utility" }
+  }
+}

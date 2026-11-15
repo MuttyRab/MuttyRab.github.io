@@ -1,0 +1,110 @@
+'use strict';
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
+const path = require('path');
+const fs = require('fs');
+const { loadCatalog } = require('./core/spec');
+const { buildCommand } = require('./core/args');
+const { ensureBinary, isInstalled } = require('./core/binaries');
+const { runTool } = require('./core/runner');
+const { LicenseStore } = require('./core/license');
+
+const isDev = !app.isPackaged;
+const resources = isDev ? path.join(__dirname, '..', '..') : process.resourcesPath;
+const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config.json'), 'utf8'));
+// Overrides exist for automated end-to-end tests only.
+if (process.env.GUIHUB_USER_DATA) app.setPath('userData', process.env.GUIHUB_USER_DATA);
+const catalogDir = process.env.GUIHUB_CATALOG || path.join(resources, 'catalog');
+const userDir = app.getPath('userData');
+const binCache = path.join(userDir, 'tools');
+fs.mkdirSync(binCache, { recursive: true });
+
+let specs = [];
+let license;
+let win;
+const running = new Map();
+
+function loadSpecs() {
+  const { specs: s, errors } = loadCatalog(catalogDir, { includeBeta: isDev || process.env.GUIHUB_BETA === '1' });
+  for (const e of errors) console.error('spec error', e.file, e.problems);
+  specs = s;
+}
+
+function toolSummary(spec) {
+  return { ...spec, installed: isInstalled(spec, binCache), access: license.canRun(spec) };
+}
+
+function createWindow() {
+  win = new BrowserWindow({
+    width: 1100, height: 760, minWidth: 820, minHeight: 560,
+    title: config.productName,
+    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true },
+  });
+  win.removeMenu();
+  win.loadFile(path.join(__dirname, 'ui', 'index.html'));
+  win.webContents.setWindowOpenHandler(({ url }) => { if (/^https:\/\//.test(url)) shell.openExternal(url); return { action: 'deny' }; });
+}
+
+app.whenReady().then(async () => {
+  license = new LicenseStore(path.join(userDir, 'license.json'), config);
+  loadSpecs();
+  createWindow();
+  license.refresh().then(() => win && win.webContents.send('license:changed')).catch(() => {});
+});
+app.on('window-all-closed', () => { for (const r of running.values()) r.cancel(); app.quit(); });
+
+ipcMain.handle('app:info', () => ({
+  productName: config.productName, version: app.getVersion(), checkoutUrl: config.checkoutUrl, siteUrl: config.siteUrl,
+  supportEmail: config.supportEmail, licensing: license.configured(), pro: license.isPro(),
+}));
+ipcMain.handle('catalog:list', () => specs.map(toolSummary));
+
+ipcMain.handle('dialog:pick', async (_e, { type, filters, title }) => {
+  if (type === 'savefile') {
+    const r = await dialog.showSaveDialog(win, { title, filters });
+    return r.canceled ? null : r.filePath;
+  }
+  const props = type === 'folder' ? ['openDirectory', 'createDirectory'] : type === 'files' ? ['openFile', 'multiSelections'] : ['openFile'];
+  const r = await dialog.showOpenDialog(win, { title, properties: props, filters });
+  if (r.canceled) return null;
+  return type === 'files' ? r.filePaths : r.filePaths[0];
+});
+
+ipcMain.handle('tool:run', async (e, { runId, toolId, actionId, values }) => {
+  const spec = specs.find((s) => s.id === toolId);
+  if (!spec) throw new Error('Unknown tool');
+  const action = spec.actions.find((a) => a.id === actionId);
+  if (!action) throw new Error('Unknown action');
+  const gate = license.canRun(spec);
+  if (!gate.ok) throw new Error('LOCKED');
+  const { argv, env } = buildCommand(action, values); // throws with fieldErrors on bad input
+  const send = (ch, payload) => { if (!e.sender.isDestroyed()) e.sender.send(ch, { runId, ...payload }); };
+  send('run:status', { text: `Preparing ${spec.name} ${spec.binary.version}…` });
+  const exe = await ensureBinary(spec, binCache, {
+    onProgress: (got, total) => send('run:status', { text: total ? `Downloading ${spec.name}… ${Math.round((got / total) * 100)}%` : `Downloading ${spec.name}… ${Math.round(got / 1e6)} MB` }),
+  });
+  license.recordRun(spec);
+  send('run:status', { text: 'Running…' });
+  const secrets = (action.fields || []).filter((f) => f.type === 'password' && values[f.id]).map((f) => String(values[f.id]));
+  const shown = argv.map((a) => secrets.reduce((s, x) => s.split(x).join('••••'), a));
+  send('run:output', { stream: 'meta', text: `$ ${spec.binary.name} ${shown.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(' ')}\n` });
+  const cwd = values[action.cwdField] || undefined;
+  const handle = runTool(exe, argv, {
+    env, cwd,
+    onOutput: (o) => send('run:output', o),
+    onExit: ({ code, signal }) => { running.delete(runId); send('run:exit', { code, signal }); },
+  });
+  running.set(runId, handle);
+  return { started: true, trial: gate.reason === 'trial' ? license.trialsLeft(spec.id) : null };
+});
+
+ipcMain.handle('tool:cancel', (_e, { runId }) => { const r = running.get(runId); if (r) r.cancel(); return true; });
+ipcMain.handle('tool:stdin', (_e, { runId, text }) => { const r = running.get(runId); if (r) r.write(text); return true; });
+
+ipcMain.handle('license:activate', async (_e, { key }) => { await license.activate(key); return true; });
+ipcMain.handle('license:deactivate', () => { license.deactivate(); return true; });
+
+ipcMain.handle('shell:open', (_e, { target }) => {
+  if (/^https:\/\//.test(target)) return shell.openExternal(target);
+  if (target && fs.existsSync(target)) return shell.openPath(target);
+  return null;
+});

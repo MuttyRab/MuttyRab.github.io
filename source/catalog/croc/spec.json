@@ -1,0 +1,215 @@
+{
+  "id": "croc",
+  "name": "Send Files (croc)",
+  "tagline": "Send files or folders to any computer with a short code phrase. End-to-end encrypted, no accounts.",
+  "keywords": [
+    "file transfer",
+    "send files",
+    "share",
+    "encrypted",
+    "croc"
+  ],
+  "tier": "free",
+  "status": "live",
+  "upstream": {
+    "repo": "schollz/croc",
+    "displayName": "croc",
+    "license": "MIT",
+    "homepage": "https://github.com/schollz/croc"
+  },
+  "binary": {
+    "name": "croc",
+    "version": "11.6.5",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/schollz/croc/releases/download/v11.6.5/croc_v11.6.5_Linux-64bit.tar.gz",
+        "path": "croc",
+        "sha256": "01bbbb4eafe12c01ddb84ddebf556c35ea9989a976f4abc7e72933c2a6e5e61e"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/schollz/croc/releases/download/v11.6.5/croc_v11.6.5_macOS-ARM64.tar.gz",
+        "path": "croc",
+        "sha256": "b6a6da6c6a21bd5a3723003295cf232da281d3767687f5731725c6c4360e1015"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/schollz/croc/releases/download/v11.6.5/croc_v11.6.5_macOS-64bit.tar.gz",
+        "path": "croc",
+        "sha256": "4fccdb6516f4e15226a08693df02598478b7863db21395af66aa74f08781d940"
+      },
+      "win32-x64": {
+        "url": "https://github.com/schollz/croc/releases/download/v11.6.5/croc_v11.6.5_Windows-64bit.zip",
+        "path": "croc.exe",
+        "sha256": "ae5b9d249099ff159f6a4b91824a2bf7d2b32f0dd77342aef51b34154aa4fffb"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "send",
+      "label": "Send files",
+      "runLabel": "Send",
+      "description": "Pick files or folders, press Send, then give the code phrase shown below to the receiver. Keep this window open until the transfer finishes.",
+      "fields": [
+        {
+          "id": "paths",
+          "label": "Files or folders",
+          "type": "files",
+          "required": true
+        },
+        {
+          "id": "relay",
+          "label": "Custom relay (optional)",
+          "type": "text",
+          "placeholder": "myrelay.example.com:9009",
+          "help": "Leave empty to use the public relay. Both sides must use the same relay."
+        }
+      ],
+      "env": {
+        "CROC_NO_UPDATE_CHECK": "1"
+      },
+      "argv": [
+        {
+          "field": "relay",
+          "flag": "--relay"
+        },
+        "send",
+        {
+          "field": "paths"
+        }
+      ],
+      "successMessage": "Transfer complete.",
+      "helpArgs": [
+        [
+          "--help"
+        ],
+        [
+          "send",
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "send-text",
+      "label": "Send text",
+      "runLabel": "Send",
+      "description": "Send a short piece of text, such as a link or a password, to another computer.",
+      "fields": [
+        {
+          "id": "text",
+          "label": "Text",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "relay",
+          "label": "Custom relay (optional)",
+          "type": "text",
+          "placeholder": "myrelay.example.com:9009"
+        }
+      ],
+      "env": {
+        "CROC_NO_UPDATE_CHECK": "1"
+      },
+      "argv": [
+        {
+          "field": "relay",
+          "flag": "--relay"
+        },
+        "send",
+        {
+          "field": "text",
+          "flag": "--text"
+        }
+      ],
+      "successMessage": "Text sent.",
+      "helpArgs": [
+        [
+          "--help"
+        ],
+        [
+          "send",
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "receive",
+      "label": "Receive",
+      "runLabel": "Receive",
+      "description": "Enter the code phrase the sender gave you and choose where to save.",
+      "fields": [
+        {
+          "id": "code",
+          "label": "Code phrase",
+          "type": "text",
+          "required": true,
+          "minLength": 6,
+          "placeholder": "e.g. talon-opal-santa"
+        },
+        {
+          "id": "dest",
+          "label": "Save to folder",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "existing",
+          "label": "If a file already exists",
+          "type": "select",
+          "default": "rename",
+          "options": [
+            {
+              "value": "rename",
+              "label": "Keep both (rename the new file)"
+            },
+            {
+              "value": "overwrite",
+              "label": "Overwrite"
+            }
+          ]
+        },
+        {
+          "id": "relay",
+          "label": "Custom relay (optional)",
+          "type": "text",
+          "placeholder": "myrelay.example.com:9009"
+        }
+      ],
+      "cwdField": "dest",
+      "env": {
+        "CROC_SECRET": {
+          "field": "code"
+        },
+        "CROC_NO_UPDATE_CHECK": "1"
+      },
+      "argv": [
+        "--yes",
+        {
+          "when": "existing",
+          "equals": "overwrite",
+          "argv": [
+            "--overwrite"
+          ]
+        },
+        {
+          "when": "existing",
+          "equals": "rename",
+          "argv": [
+            "--rename"
+          ]
+        },
+        {
+          "field": "relay",
+          "flag": "--relay"
+        }
+      ],
+      "openAfter": "dest",
+      "successMessage": "Received.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,597 @@
+{
+  "id": "pdfcpu",
+  "name": "PDF Toolkit (pdfcpu)",
+  "tagline": "Merge, split, compress, rotate, watermark and password-protect PDFs. Works offline; your files never leave your computer.",
+  "keywords": [
+    "pdf",
+    "merge pdf",
+    "split pdf",
+    "compress pdf",
+    "encrypt pdf",
+    "watermark",
+    "pdfcpu"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "pdfcpu/pdfcpu",
+    "displayName": "pdfcpu",
+    "license": "Apache-2.0",
+    "homepage": "https://pdfcpu.io"
+  },
+  "binary": {
+    "name": "pdfcpu",
+    "version": "0.16.4",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/pdfcpu/pdfcpu/releases/download/v0.16.4/pdfcpu_0.16.4_Linux_x86_64.tar.xz",
+        "path": "pdfcpu",
+        "sha256": "3271fdd66f4ec32f5a6282f85630f83b92e98d4db7e407cc0f56d9b543f63ecd"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/pdfcpu/pdfcpu/releases/download/v0.16.4/pdfcpu_0.16.4_Darwin_arm64.tar.xz",
+        "path": "pdfcpu",
+        "sha256": "1e6232848fcb3d13060e3e8f5d95c4fdd6334cd66a7a547f5f451ca6dc5459d0"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/pdfcpu/pdfcpu/releases/download/v0.16.4/pdfcpu_0.16.4_Darwin_x86_64.tar.xz",
+        "path": "pdfcpu",
+        "sha256": "5b0d83326a7e70cbf4feca4df14f90a2066527a4a6b50e80a7276f6d4fbc1702"
+      },
+      "win32-x64": {
+        "url": "https://github.com/pdfcpu/pdfcpu/releases/download/v0.16.4/pdfcpu_0.16.4_Windows_x86_64.zip",
+        "path": "pdfcpu.exe",
+        "sha256": "faf6c51d6f54d96a8c1ad5beee02143460b8ae97bd9630cbab1a253adaa43558"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "merge",
+      "label": "Merge",
+      "description": "Combine several PDFs into one, in the order listed.",
+      "fields": [
+        {
+          "id": "inputs",
+          "label": "PDFs to merge",
+          "type": "files",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save merged PDF as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "merge",
+        {
+          "field": "out"
+        },
+        {
+          "field": "inputs"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Merged.",
+      "helpArgs": [
+        [
+          "help",
+          "merge"
+        ]
+      ]
+    },
+    {
+      "id": "split",
+      "label": "Split",
+      "description": "Split a PDF into smaller files.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "PDF",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "outDir",
+          "label": "Output folder",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "mode",
+          "label": "Split by",
+          "type": "select",
+          "default": "span",
+          "options": [
+            {
+              "value": "span",
+              "label": "Every N pages"
+            },
+            {
+              "value": "bookmark",
+              "label": "Bookmarks / chapters"
+            }
+          ]
+        },
+        {
+          "id": "span",
+          "label": "Pages per file",
+          "type": "number",
+          "default": "1",
+          "showIf": {
+            "field": "mode",
+            "equals": "span"
+          }
+        }
+      ],
+      "argv": [
+        "split",
+        {
+          "field": "mode",
+          "flag": "--mode"
+        },
+        {
+          "field": "input"
+        },
+        {
+          "field": "outDir"
+        },
+        {
+          "field": "span"
+        }
+      ],
+      "openAfter": "outDir",
+      "successMessage": "Split.",
+      "helpArgs": [
+        [
+          "help",
+          "split"
+        ]
+      ]
+    },
+    {
+      "id": "optimize",
+      "label": "Compress",
+      "description": "Shrink a PDF by removing duplicate and unused data. Text and images stay the same quality.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "PDF",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "optimize",
+        {
+          "field": "input"
+        },
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Compressed.",
+      "helpArgs": [
+        [
+          "help",
+          "optimize"
+        ]
+      ]
+    },
+    {
+      "id": "rotate",
+      "label": "Rotate",
+      "description": "Rotate all pages or a range of pages.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "PDF",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rotation",
+          "label": "Rotation",
+          "type": "select",
+          "default": "90",
+          "options": [
+            {
+              "value": "90",
+              "label": "90° clockwise"
+            },
+            {
+              "value": "180",
+              "label": "180°"
+            },
+            {
+              "value": "-90",
+              "label": "90° counter-clockwise"
+            }
+          ]
+        },
+        {
+          "id": "pages",
+          "label": "Pages (optional)",
+          "type": "text",
+          "placeholder": "e.g. 1-3,7",
+          "help": "Leave empty for all pages."
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "rotate",
+        {
+          "field": "pages",
+          "flag": "--pages"
+        },
+        {
+          "field": "input"
+        },
+        {
+          "field": "rotation"
+        },
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Rotated.",
+      "helpArgs": [
+        [
+          "help",
+          "rotate"
+        ]
+      ]
+    },
+    {
+      "id": "watermark",
+      "label": "Watermark",
+      "description": "Stamp text such as DRAFT or CONFIDENTIAL across every page.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "PDF",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "text",
+          "label": "Watermark text",
+          "type": "text",
+          "required": true,
+          "default": "CONFIDENTIAL"
+        },
+        {
+          "id": "style",
+          "label": "Style",
+          "type": "select",
+          "default": "rot:45, op:.25, scale:.8",
+          "options": [
+            {
+              "value": "rot:45, op:.25, scale:.8",
+              "label": "Diagonal, light"
+            },
+            {
+              "value": "rot:45, op:.6, scale:.8",
+              "label": "Diagonal, strong"
+            },
+            {
+              "value": "rot:0, op:.25, scale:.6",
+              "label": "Horizontal, light"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "watermark",
+        "add",
+        "--mode",
+        "text",
+        {
+          "field": "text"
+        },
+        {
+          "field": "style"
+        },
+        {
+          "field": "input"
+        },
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Watermarked.",
+      "helpArgs": [
+        [
+          "help",
+          "watermark"
+        ]
+      ]
+    },
+    {
+      "id": "encrypt",
+      "label": "Add password",
+      "description": "Protect a PDF with AES-256 encryption.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "PDF",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "upw",
+          "label": "Password to open",
+          "type": "password",
+          "required": true
+        },
+        {
+          "id": "opw",
+          "label": "Owner password (for changing permissions)",
+          "type": "password",
+          "required": true,
+          "help": "Use a different password from the one above."
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "encrypt",
+        {
+          "field": "upw",
+          "flag": "--upw"
+        },
+        {
+          "field": "opw",
+          "flag": "--opw"
+        },
+        {
+          "field": "input"
+        },
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Password added.",
+      "helpArgs": [
+        [
+          "help",
+          "encrypt"
+        ]
+      ]
+    },
+    {
+      "id": "decrypt",
+      "label": "Remove password",
+      "description": "Remove the password from a PDF you have the password for.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "PDF",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "upw",
+          "label": "Current password",
+          "type": "password",
+          "help": "Leave empty if the PDF opens without a password but has editing restrictions."
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "decrypt",
+        {
+          "field": "upw",
+          "flag": "--upw"
+        },
+        {
+          "field": "input"
+        },
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Password removed.",
+      "helpArgs": [
+        [
+          "help",
+          "decrypt"
+        ]
+      ]
+    },
+    {
+      "id": "extract-pages",
+      "label": "Extract pages",
+      "description": "Save selected pages as separate PDF files.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "PDF",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pages",
+          "label": "Pages",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g. 1-3,7"
+        },
+        {
+          "id": "outDir",
+          "label": "Output folder",
+          "type": "folder",
+          "required": true
+        }
+      ],
+      "argv": [
+        "extract",
+        "--mode",
+        "page",
+        {
+          "field": "pages",
+          "flag": "--pages"
+        },
+        {
+          "field": "input"
+        },
+        {
+          "field": "outDir"
+        }
+      ],
+      "openAfter": "outDir",
+      "successMessage": "Pages extracted.",
+      "helpArgs": [
+        [
+          "help",
+          "extract"
+        ]
+      ]
+    }
+  ]
+}

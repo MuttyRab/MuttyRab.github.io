@@ -1,0 +1,174 @@
+{
+  "id": "f2",
+  "name": "Bulk Rename (F2)",
+  "tagline": "Rename hundreds of files at once with find-and-replace, numbering and photo dates. Preview every change first, undo any time.",
+  "keywords": [
+    "bulk rename",
+    "batch rename",
+    "rename files",
+    "file renamer",
+    "f2"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "ayoisaiah/f2",
+    "displayName": "F2",
+    "license": "MIT",
+    "homepage": "https://f2.freshman.tech"
+  },
+  "binary": {
+    "name": "f2",
+    "version": "2.2.2",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/ayoisaiah/f2/releases/download/v2.2.2/f2_2.2.2_linux_amd64.tar.gz",
+        "path": "f2",
+        "sha256": "d44bca9d9a08721655e0fd4a3459f4c2b844abb896de3e6a74551e8bf5f51432"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/ayoisaiah/f2/releases/download/v2.2.2/f2_2.2.2_darwin_arm64.tar.gz",
+        "path": "f2",
+        "sha256": "18d7cf76719b335b1b12ec7605b89637d6d832ec196beca9a0436e270252dd8c"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/ayoisaiah/f2/releases/download/v2.2.2/f2_2.2.2_darwin_amd64.tar.gz",
+        "path": "f2",
+        "sha256": "2a037a55f25ee6c083af38ce3aafce885ecedfb13b17c867c2dc930320b5fae5"
+      },
+      "win32-x64": {
+        "url": "https://github.com/ayoisaiah/f2/releases/download/v2.2.2/f2_2.2.2_windows_amd64.zip",
+        "path": "f2.exe",
+        "sha256": "64eba7ddbadeca9cd5657b344058311f3c42d342c5e88f93a68d8f07fb8d0a53"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "rename",
+      "label": "Find & replace",
+      "runLabel": "Preview",
+      "description": "Nothing is renamed until you tick “Apply changes”. Run once to preview the table of old → new names.",
+      "fields": [
+        {
+          "id": "folder",
+          "label": "Folder",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "find",
+          "label": "Find",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g. IMG_ or \\s+",
+          "help": "A regular expression unless “Plain text” is ticked. Use .* to match whole names."
+        },
+        {
+          "id": "replace",
+          "label": "Replace with",
+          "type": "text",
+          "placeholder": "e.g. holiday-{%03d}{ext}",
+          "help": "Leave empty to delete the match. Variables: {f} original name, {ext} extension, {%03d} counter 001, 002…"
+        },
+        {
+          "id": "literal",
+          "label": "Plain text (not a regular expression)",
+          "type": "checkbox"
+        },
+        {
+          "id": "ignoreCase",
+          "label": "Ignore upper/lower case",
+          "type": "checkbox"
+        },
+        {
+          "id": "recursive",
+          "label": "Include subfolders",
+          "type": "checkbox"
+        },
+        {
+          "id": "dirs",
+          "label": "Rename folders too",
+          "type": "checkbox"
+        },
+        {
+          "id": "hidden",
+          "label": "Include hidden files",
+          "type": "checkbox"
+        },
+        {
+          "id": "apply",
+          "label": "Apply changes (otherwise preview only)",
+          "type": "checkbox"
+        }
+      ],
+      "cwdField": "folder",
+      "argv": [
+        {
+          "field": "find",
+          "flag": "-f"
+        },
+        {
+          "field": "replace",
+          "flag": "-r"
+        },
+        {
+          "field": "literal",
+          "flag": "-s"
+        },
+        {
+          "field": "ignoreCase",
+          "flag": "-i"
+        },
+        {
+          "field": "recursive",
+          "flag": "-R"
+        },
+        {
+          "field": "dirs",
+          "flag": "-d"
+        },
+        {
+          "field": "hidden",
+          "flag": "-H"
+        },
+        {
+          "field": "apply",
+          "flag": "-x"
+        }
+      ],
+      "successMessage": "Done. If you previewed, tick “Apply changes” and run again.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "undo",
+      "label": "Undo last rename",
+      "runLabel": "Undo",
+      "description": "Reverse the most recent rename applied in a folder.",
+      "fields": [
+        {
+          "id": "folder",
+          "label": "Folder",
+          "type": "folder",
+          "required": true
+        }
+      ],
+      "cwdField": "folder",
+      "confirm": "Undo the last rename in this folder?",
+      "argv": [
+        "-u",
+        "-x"
+      ],
+      "successMessage": "Undone.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    }
+  ]
+}

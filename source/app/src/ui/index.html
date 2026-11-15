@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GUI Hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="logo" aria-hidden="true">▣</span> <span id="product-name">GUI Hub</span></div>
+      <input id="search" class="search" type="search" placeholder="Search tools" aria-label="Search tools">
+      <nav id="tool-list" class="tool-list" aria-label="Tools"></nav>
+      <div class="sidebar-foot">
+        <div id="license-badge" class="badge"></div>
+        <button id="license-btn" class="link-btn" type="button">Enter license key</button>
+      </div>
+    </aside>
+    <main class="main">
+      <section id="empty" class="empty">
+        <h1>Pick a tool</h1>
+        <p>Each tool is a friendly window around a well-known open-source command-line program. The program itself is downloaded from its official release page the first time you use it.</p>
+      </section>
+      <section id="tool" class="tool" hidden>
+        <header class="tool-head">
+          <div>
+            <h1 id="tool-name"></h1>
+            <p id="tool-tagline" class="muted"></p>
+          </div>
+          <div class="tool-meta">
+            <span id="tool-access" class="pill"></span>
+            <a id="tool-upstream" class="muted small" href="#" target="_blank" rel="noopener"></a>
+          </div>
+        </header>
+        <div id="action-tabs" class="tabs" role="tablist"></div>
+        <p id="action-desc" class="muted"></p>
+        <form id="action-form" class="form" novalidate></form>
+        <div class="run-bar">
+          <button id="run-btn" class="primary" type="button">Run</button>
+          <button id="cancel-btn" type="button" hidden>Stop</button>
+          <span id="run-status" class="muted" role="status"></span>
+        </div>
+        <div class="output-wrap">
+          <div class="output-head"><span>Output</span><button id="copy-out" class="link-btn" type="button">Copy</button></div>
+          <pre id="output" class="output" aria-live="polite"></pre>
+        </div>
+        <p class="disclaimer small muted">Unofficial interface. <span id="tool-credit"></span></p>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="license-dialog">
+    <form method="dialog" id="license-form">
+      <h2>Unlock every tool</h2>
+      <p class="muted">One purchase unlocks all current and future tools on up to 3 computers.</p>
+      <label for="license-key">License key</label>
+      <input id="license-key" autocomplete="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX">
+      <p id="license-error" class="error" role="alert"></p>
+      <div class="dialog-actions">
+        <button id="buy-btn" type="button">Buy a license</button>
+        <span class="spacer"></span>
+        <button value="cancel" type="submit" formnovalidate>Close</button>
+        <button id="activate-btn" class="primary" type="button">Activate</button>
+      </div>
+      <button id="deactivate-btn" class="link-btn small" type="button" hidden>Remove license from this computer</button>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>

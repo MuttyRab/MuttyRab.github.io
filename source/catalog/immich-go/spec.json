@@ -1,0 +1,229 @@
+{
+  "id": "immich-go",
+  "name": "Google Photos → Immich (immich-go)",
+  "tagline": "Move your Google Photos Takeout or any photo folder into your Immich server, keeping albums, dates and locations.",
+  "keywords": [
+    "immich",
+    "google photos",
+    "takeout",
+    "photo migration",
+    "self-hosted",
+    "immich-go"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "simulot/immich-go",
+    "displayName": "immich-go",
+    "license": "AGPL-3.0",
+    "homepage": "https://github.com/simulot/immich-go"
+  },
+  "binary": {
+    "name": "immich-go",
+    "version": "0.32.0",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/simulot/immich-go/releases/download/v0.32.0/immich-go_Linux_x86_64.tar.gz",
+        "path": "immich-go",
+        "sha256": "6e2ad86bafdadb9466d6515de7cb882726c0aea1a21d51164dff361d7d480a97"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/simulot/immich-go/releases/download/v0.32.0/immich-go_Darwin_arm64.tar.gz",
+        "path": "immich-go",
+        "sha256": "0c1ce06932a21a738d9adaf2ddafdbf654113fc2791d31b6d2ea0044928e2f43"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/simulot/immich-go/releases/download/v0.32.0/immich-go_Darwin_x86_64.tar.gz",
+        "path": "immich-go",
+        "sha256": "35b9456d36c0bbb7d5087d08622b087f849f4f6d9631b15737a22cef39e5a314"
+      },
+      "win32-x64": {
+        "url": "https://github.com/simulot/immich-go/releases/download/v0.32.0/immich-go_Windows_x86_64.zip",
+        "path": "immich-go.exe",
+        "sha256": "37326f95d6654f7f67a5fde3263e96aa8f9cf288dcbb9a2164aafae0aaa144af"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "from-google-photos",
+      "label": "From Google Takeout",
+      "runLabel": "Upload",
+      "description": "Select all the Takeout .zip files Google gave you. Try a dry run first: it reports what would be uploaded without changing anything.",
+      "fields": [
+        {
+          "id": "server",
+          "label": "Immich server address",
+          "type": "text",
+          "required": true,
+          "placeholder": "http://192.168.1.10:2283"
+        },
+        {
+          "id": "apiKey",
+          "label": "Immich API key",
+          "type": "password",
+          "required": true,
+          "help": "Create one in Immich: Account Settings → API Keys."
+        },
+        {
+          "id": "takeout",
+          "label": "Takeout files",
+          "type": "files",
+          "required": true,
+          "filters": [
+            {
+              "name": "Takeout archives",
+              "extensions": [
+                "zip",
+                "tgz"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dryRun",
+          "label": "Dry run (don't upload, just report)",
+          "type": "checkbox",
+          "default": true
+        },
+        {
+          "id": "includeUnmatched",
+          "label": "Also upload files that have no Google metadata",
+          "type": "checkbox",
+          "default": false
+        }
+      ],
+      "argv": [
+        "upload",
+        "from-google-photos",
+        "--no-ui",
+        {
+          "field": "server",
+          "flag": "--server",
+          "join": "="
+        },
+        {
+          "field": "apiKey",
+          "flag": "--api-key",
+          "join": "="
+        },
+        {
+          "field": "dryRun",
+          "flag": "--dry-run"
+        },
+        {
+          "field": "includeUnmatched",
+          "flag": "--include-unmatched"
+        },
+        {
+          "field": "takeout"
+        }
+      ],
+      "successMessage": "Finished. Check the summary above.",
+      "helpArgs": [
+        [
+          "upload",
+          "from-google-photos",
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "from-folder",
+      "label": "From a folder",
+      "runLabel": "Upload",
+      "description": "Upload every photo and video in a folder and its subfolders.",
+      "fields": [
+        {
+          "id": "server",
+          "label": "Immich server address",
+          "type": "text",
+          "required": true,
+          "placeholder": "http://192.168.1.10:2283"
+        },
+        {
+          "id": "apiKey",
+          "label": "Immich API key",
+          "type": "password",
+          "required": true
+        },
+        {
+          "id": "folder",
+          "label": "Photo folder",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "albums",
+          "label": "Create albums from",
+          "type": "select",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "Don't create albums"
+            },
+            {
+              "value": "FOLDER",
+              "label": "Each folder's name"
+            },
+            {
+              "value": "PATH",
+              "label": "Each folder's full path"
+            }
+          ]
+        },
+        {
+          "id": "dryRun",
+          "label": "Dry run (don't upload, just report)",
+          "type": "checkbox",
+          "default": true
+        }
+      ],
+      "argv": [
+        "upload",
+        "from-folder",
+        "--no-ui",
+        {
+          "field": "server",
+          "flag": "--server",
+          "join": "="
+        },
+        {
+          "field": "apiKey",
+          "flag": "--api-key",
+          "join": "="
+        },
+        {
+          "when": "albums",
+          "equals": "FOLDER",
+          "argv": [
+            "--folder-as-album=FOLDER"
+          ]
+        },
+        {
+          "when": "albums",
+          "equals": "PATH",
+          "argv": [
+            "--folder-as-album=PATH"
+          ]
+        },
+        {
+          "field": "dryRun",
+          "flag": "--dry-run"
+        },
+        {
+          "field": "folder"
+        }
+      ],
+      "successMessage": "Finished. Check the summary above.",
+      "helpArgs": [
+        [
+          "upload",
+          "from-folder",
+          "--help"
+        ]
+      ]
+    }
+  ]
+}
