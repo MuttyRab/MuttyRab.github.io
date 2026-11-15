@@ -42,6 +42,7 @@ function checkSpec(spec) {
       }
     };
     walk(a.argv);
+    if (a.stdinField) need((a.fields || []).some((f) => f.id === a.stdinField && f.type === 'textarea'), `${a.id}: stdinField must name a textarea field`);
     for (const [k, v] of Object.entries(a.env || {})) {
       if (typeof v !== 'string') need(ids.has(v.field), `${a.id}: env ${k} references unknown field`);
     }

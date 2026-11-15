@@ -15,6 +15,7 @@
   "status": "live",
   "upstream": {
     "repo": "jgm/pandoc",
+    "stars": 46940,
     "displayName": "Pandoc",
     "license": "GPL-2.0",
     "homepage": "https://pandoc.org"
@@ -150,6 +151,103 @@
       ],
       "openAfter": "out",
       "successMessage": "Converted."
+    },
+    {
+      "id": "write",
+      "label": "Write a document",
+      "runLabel": "Create",
+      "description": "Type or paste Markdown (# headings, **bold**, - lists, tables) and save it as a Word, PowerPoint, OpenDocument, web page or e-book file.",
+      "mcpDescription": "Create a real document file on the user's computer from Markdown you write (pass the full text in `text`): Word (.docx), PowerPoint (.pptx — each `## heading` starts a new slide), OpenDocument (.odt), HTML, EPUB or RTF. The `out` file extension should match `to`.",
+      "stdinField": "text",
+      "fields": [
+        {
+          "id": "text",
+          "label": "Text (Markdown)",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "# Meeting notes\n\n**Decisions**\n\n- Ship on Friday\n- Budget approved"
+        },
+        {
+          "id": "to",
+          "label": "Save as",
+          "type": "select",
+          "default": "docx",
+          "options": [
+            {
+              "value": "docx",
+              "label": "Word document (.docx)"
+            },
+            {
+              "value": "pptx",
+              "label": "PowerPoint slides (.pptx)"
+            },
+            {
+              "value": "odt",
+              "label": "OpenDocument (.odt)"
+            },
+            {
+              "value": "html",
+              "label": "Web page (.html)"
+            },
+            {
+              "value": "epub",
+              "label": "E-book (.epub)"
+            },
+            {
+              "value": "rtf",
+              "label": "Rich text (.rtf)"
+            }
+          ]
+        },
+        {
+          "id": "toc",
+          "label": "Add a table of contents",
+          "type": "checkbox"
+        },
+        {
+          "id": "out",
+          "label": "File name",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Documents",
+              "extensions": [
+                "docx",
+                "pptx",
+                "odt",
+                "html",
+                "epub",
+                "rtf"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "--standalone",
+        "-f",
+        "markdown",
+        {
+          "field": "to",
+          "flag": "-t"
+        },
+        {
+          "field": "toc",
+          "flag": "--toc"
+        },
+        "-o",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Document saved.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
     }
   ]
 }

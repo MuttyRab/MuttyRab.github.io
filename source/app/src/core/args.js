@@ -98,7 +98,10 @@ function buildCommand(action, values) {
     const v = vals[spec.field];
     if (!isEmpty(v)) env[k] = String(v);
   }
-  return { argv, env };
+  // stdinField: the named field's text is piped to the tool's stdin (e.g. `typst compile -`),
+  // so an AI assistant can hand over a whole document without writing a file first.
+  const stdin = action.stdinField ? String(vals[action.stdinField] ?? '') : undefined;
+  return { argv, env, stdin };
 }
 
 module.exports = { buildCommand, validate, resolveValues, isVisible };

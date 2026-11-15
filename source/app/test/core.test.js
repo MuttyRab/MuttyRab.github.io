@@ -98,6 +98,45 @@ test('stdin is closed so tools that read it when not a TTY do not hang', async (
   assert.strictEqual(out.join('').trim(), 'eof 0');
 });
 
+test('stdinField pipes text to the tool and closes stdin', async () => {
+  const a = { id: 'w', fields: [{ id: 'src', type: 'textarea', required: true }], argv: ['-'], stdinField: 'src' };
+  const cmd = buildCommand(a, { src: 'héllo\nworld' });
+  assert.strictEqual(cmd.stdin, 'héllo\nworld');
+  assert.strictEqual(buildCommand({ ...a, stdinField: undefined }, { src: 'x' }).stdin, undefined);
+  const out = await new Promise((resolve) => {
+    let o = '';
+    runTool(process.execPath, ['-e', "let s='';process.stdin.setEncoding('utf8').on('data',d=>s+=d).on('end',()=>console.log(JSON.stringify(s)))"], {
+      input: cmd.stdin, onOutput: (x) => { o += x.text; }, onExit: () => resolve(o),
+    });
+  });
+  assert.strictEqual(JSON.parse(out.trim()), 'héllo\nworld');
+});
+
+test('typst write reads the document from stdin; compile takes a file', () => {
+  const w = buildCommand(action('typst', 'write'), { source: '= Hi', out: '/t/o.pdf' });
+  assert.deepStrictEqual(w.argv, ['compile', '-', '/t/o.pdf']);
+  assert.strictEqual(w.stdin, '= Hi');
+  assert.deepStrictEqual(buildCommand(action('typst', 'write'), { source: 'x', out: '/o.pdf', assets: '/img' }).argv, ['compile', '--root', '/img', '-', '/o.pdf']);
+  assert.deepStrictEqual(buildCommand(action('typst', 'compile'), { input: '/a.typ', out: '/a.pdf' }).argv, ['compile', '/a.typ', '/a.pdf']);
+});
+
+test('pandoc write turns Markdown on stdin into the chosen format', () => {
+  const c = buildCommand(action('pandoc', 'write'), { text: '# T', to: 'pptx', out: '/d.pptx' });
+  assert.deepStrictEqual(c.argv, ['--standalone', '-f', 'markdown', '-t', 'pptx', '-o', '/d.pptx']);
+  assert.strictEqual(c.stdin, '# T');
+});
+
+test('caesium never overwrites, only sends the chosen compression mode, inputs last', () => {
+  const base = { inputs: ['/a.jpg', '/b.png'], outDir: '/out' };
+  assert.deepStrictEqual(buildCommand(action('caesium', 'compress'), base).argv,
+    ['--quality', '80', '--no-upscale', '--format', 'original', '--output', '/out', '--overwrite', 'never', '/a.jpg', '/b.png']);
+  assert.deepStrictEqual(buildCommand(action('caesium', 'compress'), { ...base, mode: 'size', maxSize: '200000', resize: '1280', format: 'webp', exif: true }).argv,
+    ['--max-size', '200000', '--long-edge', '1280', '--no-upscale', '--format', 'webp', '--exif', '--output', '/out', '--overwrite', 'never', '/a.jpg', '/b.png']);
+  assert.deepStrictEqual(buildCommand(action('caesium', 'compress'), { ...base, mode: 'lossless' }).argv.slice(0, 2), ['--lossless', '--no-upscale']);
+  const f = buildCommand(action('caesium', 'folder'), { folder: '/pics', recursive: true, outDir: '/out' }).argv;
+  assert.deepStrictEqual([f[0], f[1], f[f.length - 1]], ['--recursive', '--keep-structure', '/pics']);
+});
+
 test('clean strips ANSI codes', () => {
   assert.strictEqual(clean('\x1b[32mok\x1b[0m done'), 'ok done');
 });

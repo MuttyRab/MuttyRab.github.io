@@ -1,0 +1,162 @@
+{
+  "id": "typst",
+  "name": "PDF Maker",
+  "tagline": "Turn text into beautifully typeset PDFs — reports, letters, invoices, CVs. Your AI writes it; Typst makes the PDF, right on your computer.",
+  "keywords": [
+    "make pdf",
+    "create pdf",
+    "typst",
+    "typst gui",
+    "text to pdf",
+    "pdf generator",
+    "typst mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "typst/typst",
+    "stars": 57200,
+    "displayName": "Typst",
+    "license": "Apache-2.0",
+    "homepage": "https://typst.app"
+  },
+  "binary": {
+    "name": "typst",
+    "version": "0.15.1",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/typst/typst/releases/download/v0.15.1/typst-x86_64-unknown-linux-musl.tar.xz",
+        "path": "typst",
+        "sha256": "a6d077d0a95eed5a2eba715b2dae06be954f624ccbf85758a03f389ded33118c"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/typst/typst/releases/download/v0.15.1/typst-aarch64-apple-darwin.tar.xz",
+        "path": "typst",
+        "sha256": "48f62ed034aa3a7978309579ac6ca00045e2ef0da73114e8af27cfd8e74dc05a"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/typst/typst/releases/download/v0.15.1/typst-x86_64-apple-darwin.tar.xz",
+        "path": "typst",
+        "sha256": "7f9fdd9584866245de9a79e0add8f9236fae6f40a8a45e2c4771ccc14db4e0fa"
+      },
+      "win32-x64": {
+        "url": "https://github.com/typst/typst/releases/download/v0.15.1/typst-x86_64-pc-windows-msvc.zip",
+        "path": "typst.exe",
+        "sha256": "19ce3551153c2fe7ee9fa2f95208310c8f4d3209fedb699e0333faf8913f6736"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "write",
+      "label": "Write a PDF",
+      "runLabel": "Make PDF",
+      "description": "Paste or type a document in Typst markup (headings with =, *bold*, _italic_, - lists) and save it as a PDF.",
+      "mcpDescription": "Create a typeset PDF file on the user's computer from Typst markup you write (pass the full document in `source`). Typst syntax: `= Heading`, `*bold*`, `_italic_`, `- item`, `#table(columns: 2, [a], [b])`, `#set page(paper: \"a4\")`, `#set text(font: \"New Computer Modern\")`. Built-in fonts work offline. Relative image paths resolve inside `assets`.",
+      "stdinField": "source",
+      "fields": [
+        {
+          "id": "source",
+          "label": "Document (Typst markup)",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "= Quarterly report\n\nRevenue grew *12%*.\n\n- Item one\n- Item two"
+        },
+        {
+          "id": "out",
+          "label": "Save PDF as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "assets",
+          "label": "Folder with images (optional)",
+          "type": "folder",
+          "help": "Only needed if the document includes images by file name."
+        }
+      ],
+      "cwdField": "assets",
+      "argv": [
+        "compile",
+        {
+          "field": "assets",
+          "flag": "--root"
+        },
+        "-",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "PDF saved.",
+      "helpArgs": [
+        [
+          "compile",
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "compile",
+      "label": "Typst file → PDF",
+      "runLabel": "Make PDF",
+      "description": "Turn a .typ file into a PDF. Images and other files next to it are found automatically.",
+      "mcpDescription": "Compile an existing .typ (Typst) file on the user's computer to PDF.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Typst file",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Typst",
+              "extensions": [
+                "typ"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save PDF as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "compile",
+        {
+          "field": "input"
+        },
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "PDF saved.",
+      "helpArgs": [
+        [
+          "compile",
+          "--help"
+        ]
+      ]
+    }
+  ]
+}

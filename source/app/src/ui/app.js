@@ -94,7 +94,7 @@ function pickerField(f) {
   const paint = () => {
     const v = state.values[f.id];
     const empty = isEmpty(v);
-    box.classList.toggle('empty', empty);
+    box.classList.toggle('is-empty', empty);
     box.textContent = empty ? (f.placeholder || (f.type === 'folder' ? 'No folder chosen' : 'No file chosen — drop files here')) : (Array.isArray(v) ? v.join('\n') : v);
   };
   const choose = async () => {
@@ -127,7 +127,7 @@ function control(f) {
     case 'select':
       return el('select', { id, onchange: (e) => set(e.target.value) }, ...f.options.map((o) => el('option', { value: o.value, selected: state.values[f.id] === o.value }, o.label)));
     case 'textarea':
-      return el('textarea', { id, placeholder: f.placeholder || '', oninput: (e) => set(e.target.value) }, state.values[f.id] || '');
+      return el('textarea', { id, class: state.action.stdinField === f.id ? 'doc' : '', placeholder: f.placeholder || '', oninput: (e) => set(e.target.value) }, state.values[f.id] || '');
     case 'file': case 'files': case 'folder': case 'savefile':
       return pickerField(f);
     default: {

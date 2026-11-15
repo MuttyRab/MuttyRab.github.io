@@ -75,7 +75,7 @@ function createServer({ getSpecs, license, binCache, info, log = (m) => process.
     if (license) license.recordRun(spec);
     let out = '';
     const res = await new Promise((resolve) => {
-      runTool(exe, cmd.argv, { env: cmd.env, cwd: (args || {})[action.cwdField] || undefined, onOutput: (o) => { out += o.text; if (out.length > MAX_OUTPUT * 4) out = out.slice(-MAX_OUTPUT * 2); }, onExit: resolve });
+      runTool(exe, cmd.argv, { env: cmd.env, input: cmd.stdin, cwd: (args || {})[action.cwdField] || undefined, onOutput: (o) => { out += o.text; if (out.length > MAX_OUTPUT * 4) out = out.slice(-MAX_OUTPUT * 2); }, onExit: resolve });
     });
     const ok = res.code === 0;
     const left = license && spec.tier === 'pro' && !license.isPro() ? license.trialsLeft(spec.id) : null;

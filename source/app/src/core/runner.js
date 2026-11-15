@@ -11,13 +11,15 @@ function clean(text) {
 // stdin is closed by default: several CLIs (f2, croc) read file lists or data from stdin when it
 // is not a terminal, and would wait forever on an open pipe. Pass {stdin: true} only for tools
 // that genuinely take input.
-function runTool(exe, argv, { env = {}, cwd, onOutput, onExit, stdin = false } = {}) {
+// Pass {input: '...'} to send a fixed text on stdin and then close it.
+function runTool(exe, argv, { env = {}, cwd, onOutput, onExit, stdin = false, input } = {}) {
   const child = spawn(exe, argv, {
     cwd,
     env: { ...process.env, NO_COLOR: '1', TERM: 'dumb', ...env },
     windowsHide: true,
-    stdio: [stdin ? 'pipe' : 'ignore', 'pipe', 'pipe'],
+    stdio: [stdin || input !== undefined ? 'pipe' : 'ignore', 'pipe', 'pipe'],
   });
+  if (input !== undefined) { child.stdin.on('error', () => {}); child.stdin.end(input); }
   const emit = (stream) => (d) => onOutput && onOutput({ stream, text: clean(d.toString()) });
   child.stdout.on('data', emit('stdout'));
   child.stderr.on('data', emit('stderr'));

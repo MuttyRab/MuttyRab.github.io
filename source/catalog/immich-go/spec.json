@@ -14,6 +14,7 @@
   "status": "live",
   "upstream": {
     "repo": "simulot/immich-go",
+    "stars": 7195,
     "displayName": "immich-go",
     "license": "AGPL-3.0",
     "homepage": "https://github.com/simulot/immich-go"

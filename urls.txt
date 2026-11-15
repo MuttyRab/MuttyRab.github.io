@@ -1,10 +1,13 @@
 https://muttyrab.github.io/
+https://muttyrab.github.io/llms.txt
+https://muttyrab.github.io/tools/caesium.html
 https://muttyrab.github.io/tools/croc.html
 https://muttyrab.github.io/tools/f2.html
 https://muttyrab.github.io/tools/ffmpeg.html
 https://muttyrab.github.io/tools/immich-go.html
 https://muttyrab.github.io/tools/pandoc.html
 https://muttyrab.github.io/tools/pdfcpu.html
+https://muttyrab.github.io/tools/typst.html
 https://muttyrab.github.io/guides/
 https://muttyrab.github.io/guides/merge-compress-protect-pdf-offline.html
 https://muttyrab.github.io/guides/bulk-rename-files-with-preview.html
@@ -15,4 +18,7 @@ https://muttyrab.github.io/guides/video-to-gif-high-quality.html
 https://muttyrab.github.io/guides/extract-audio-from-video-mp3.html
 https://muttyrab.github.io/guides/convert-word-to-markdown-for-chatgpt-claude.html
 https://muttyrab.github.io/guides/convert-markdown-to-word-docx.html
+https://muttyrab.github.io/guides/compress-images-for-email-and-web.html
+https://muttyrab.github.io/guides/ai-create-word-powerpoint-files.html
+https://muttyrab.github.io/guides/make-pdf-from-text-with-ai.html
 https://muttyrab.github.io/legal.html

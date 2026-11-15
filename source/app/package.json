@@ -1,7 +1,7 @@
 {
   "name": "gui-hub",
   "productName": "GUI Hub",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Friendly desktop windows for great open-source command-line tools.",
   "main": "src/main.js",
   "private": true,

@@ -13,6 +13,7 @@
   "status": "live",
   "upstream": {
     "repo": "schollz/croc",
+    "stars": 40941,
     "displayName": "croc",
     "license": "MIT",
     "homepage": "https://github.com/schollz/croc"

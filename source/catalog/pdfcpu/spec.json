@@ -15,6 +15,7 @@
   "status": "live",
   "upstream": {
     "repo": "pdfcpu/pdfcpu",
+    "stars": 8909,
     "displayName": "pdfcpu",
     "license": "Apache-2.0",
     "homepage": "https://pdfcpu.io"

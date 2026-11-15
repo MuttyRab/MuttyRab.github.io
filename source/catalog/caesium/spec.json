@@ -1,0 +1,494 @@
+{
+  "id": "caesium",
+  "name": "Image Compressor",
+  "tagline": "Shrink photos and images for email, websites and upload limits — compress, resize and convert to JPG or WebP, a whole folder at a time.",
+  "keywords": [
+    "compress images",
+    "reduce image size",
+    "resize photos",
+    "image compressor",
+    "jpg to webp",
+    "caesium"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "Lymphatus/caesium-clt",
+    "stars": 585,
+    "displayName": "Caesium",
+    "license": "Apache-2.0",
+    "homepage": "https://saerasoft.com/caesium"
+  },
+  "binary": {
+    "name": "caesiumclt",
+    "version": "1.5.0",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/Lymphatus/caesium-clt/releases/download/v1.5.0/caesiumclt-v1.5.0-x86_64-unknown-linux-musl.tar.gz",
+        "path": "caesiumclt",
+        "sha256": "215a9e9ecde54d1ca5701ee0299d0916aa0a153b8ecd63ca0e832c8efdca2cd5"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/Lymphatus/caesium-clt/releases/download/v1.5.0/caesiumclt-v1.5.0-aarch64-apple-darwin.tar.gz",
+        "path": "caesiumclt",
+        "sha256": "9fc192ee1f7190d238ff8bf684ce502ceb652040544ee4a1b4bd10a6bf1b783e"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/Lymphatus/caesium-clt/releases/download/v1.5.0/caesiumclt-v1.5.0-x86_64-apple-darwin.tar.gz",
+        "path": "caesiumclt",
+        "sha256": "a9e6dab8de3b3b024dd6bbf26fd99047355dad9235984faf8fa707b636b7e117"
+      },
+      "win32-x64": {
+        "url": "https://github.com/Lymphatus/caesium-clt/releases/download/v1.5.0/caesiumclt-v1.5.0-x86_64-pc-windows-msvc.zip",
+        "path": "caesiumclt.exe",
+        "sha256": "4d8469be5d2c0ff07a08cc48a166f6130837c4cbd4cd77fa04cb9f25fd76b790"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "compress",
+      "label": "Compress images",
+      "runLabel": "Compress",
+      "description": "Make photos and images smaller. Compressed copies go to a folder you choose; originals stay untouched.",
+      "mcpDescription": "Compress, resize and/or convert image files (JPG, PNG, WebP, GIF, TIFF) on the user's computer. Writes compressed copies (same file names) into outDir; never modifies originals or overwrites existing files. Use mode=size with maxSize (bytes) to fit upload limits.",
+      "fields": [
+        {
+          "id": "inputs",
+          "label": "Images",
+          "type": "files",
+          "required": true,
+          "filters": [
+            {
+              "name": "Images",
+              "extensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp",
+                "gif",
+                "tif",
+                "tiff"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mode",
+          "label": "How small",
+          "type": "select",
+          "default": "quality",
+          "options": [
+            {
+              "value": "quality",
+              "label": "Choose a quality"
+            },
+            {
+              "value": "size",
+              "label": "Fit under a file size"
+            },
+            {
+              "value": "lossless",
+              "label": "Lossless (no visible change, smaller savings)"
+            }
+          ]
+        },
+        {
+          "id": "quality",
+          "label": "Quality",
+          "type": "select",
+          "default": "80",
+          "showIf": {
+            "field": "mode",
+            "equals": "quality"
+          },
+          "options": [
+            {
+              "value": "92",
+              "label": "Best (larger files)"
+            },
+            {
+              "value": "80",
+              "label": "Good — recommended"
+            },
+            {
+              "value": "65",
+              "label": "Smaller"
+            },
+            {
+              "value": "50",
+              "label": "Smallest"
+            }
+          ]
+        },
+        {
+          "id": "maxSize",
+          "label": "Each image under",
+          "type": "select",
+          "default": "1000000",
+          "showIf": {
+            "field": "mode",
+            "equals": "size"
+          },
+          "options": [
+            {
+              "value": "2000000",
+              "label": "2 MB"
+            },
+            {
+              "value": "1000000",
+              "label": "1 MB"
+            },
+            {
+              "value": "500000",
+              "label": "500 KB"
+            },
+            {
+              "value": "200000",
+              "label": "200 KB — e.g. web forms"
+            },
+            {
+              "value": "100000",
+              "label": "100 KB"
+            }
+          ]
+        },
+        {
+          "id": "resize",
+          "label": "Resize (longest side)",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Keep original size"
+            },
+            {
+              "value": "3840",
+              "label": "3840 px (4K)"
+            },
+            {
+              "value": "2560",
+              "label": "2560 px"
+            },
+            {
+              "value": "1920",
+              "label": "1920 px (Full HD)"
+            },
+            {
+              "value": "1280",
+              "label": "1280 px — web & email"
+            },
+            {
+              "value": "800",
+              "label": "800 px — thumbnails"
+            }
+          ]
+        },
+        {
+          "id": "format",
+          "label": "Format",
+          "type": "select",
+          "default": "original",
+          "options": [
+            {
+              "value": "original",
+              "label": "Keep each file's format"
+            },
+            {
+              "value": "jpeg",
+              "label": "Convert to JPG"
+            },
+            {
+              "value": "webp",
+              "label": "Convert to WebP (smallest for websites)"
+            },
+            {
+              "value": "png",
+              "label": "Convert to PNG"
+            }
+          ]
+        },
+        {
+          "id": "exif",
+          "label": "Keep photo info (date, camera, location)",
+          "type": "checkbox"
+        },
+        {
+          "id": "outDir",
+          "label": "Save compressed copies in",
+          "type": "folder",
+          "required": true,
+          "help": "Pick an empty or new folder. Originals are never changed, and existing files are never overwritten."
+        }
+      ],
+      "argv": [
+        {
+          "when": "mode",
+          "equals": "lossless",
+          "argv": [
+            "--lossless"
+          ]
+        },
+        {
+          "field": "quality",
+          "flag": "--quality"
+        },
+        {
+          "field": "maxSize",
+          "flag": "--max-size"
+        },
+        {
+          "field": "resize",
+          "flag": "--long-edge"
+        },
+        "--no-upscale",
+        {
+          "field": "format",
+          "flag": "--format"
+        },
+        {
+          "field": "exif",
+          "flag": "--exif"
+        },
+        "--output",
+        {
+          "field": "outDir"
+        },
+        "--overwrite",
+        "never",
+        {
+          "field": "inputs"
+        }
+      ],
+      "openAfter": "outDir",
+      "successMessage": "Compressed copies saved.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "folder",
+      "label": "Compress a folder",
+      "runLabel": "Compress",
+      "description": "Compress every image in a folder (and optionally its subfolders) in one go.",
+      "mcpDescription": "Compress, resize and/or convert every image in a folder on the user's computer, optionally including subfolders (folder structure is kept). Copies go to outDir; originals are never modified.",
+      "fields": [
+        {
+          "id": "folder",
+          "label": "Folder with images",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "recursive",
+          "label": "Include subfolders",
+          "type": "checkbox"
+        },
+        {
+          "id": "mode",
+          "label": "How small",
+          "type": "select",
+          "default": "quality",
+          "options": [
+            {
+              "value": "quality",
+              "label": "Choose a quality"
+            },
+            {
+              "value": "size",
+              "label": "Fit under a file size"
+            },
+            {
+              "value": "lossless",
+              "label": "Lossless (no visible change, smaller savings)"
+            }
+          ]
+        },
+        {
+          "id": "quality",
+          "label": "Quality",
+          "type": "select",
+          "default": "80",
+          "showIf": {
+            "field": "mode",
+            "equals": "quality"
+          },
+          "options": [
+            {
+              "value": "92",
+              "label": "Best (larger files)"
+            },
+            {
+              "value": "80",
+              "label": "Good — recommended"
+            },
+            {
+              "value": "65",
+              "label": "Smaller"
+            },
+            {
+              "value": "50",
+              "label": "Smallest"
+            }
+          ]
+        },
+        {
+          "id": "maxSize",
+          "label": "Each image under",
+          "type": "select",
+          "default": "1000000",
+          "showIf": {
+            "field": "mode",
+            "equals": "size"
+          },
+          "options": [
+            {
+              "value": "2000000",
+              "label": "2 MB"
+            },
+            {
+              "value": "1000000",
+              "label": "1 MB"
+            },
+            {
+              "value": "500000",
+              "label": "500 KB"
+            },
+            {
+              "value": "200000",
+              "label": "200 KB — e.g. web forms"
+            },
+            {
+              "value": "100000",
+              "label": "100 KB"
+            }
+          ]
+        },
+        {
+          "id": "resize",
+          "label": "Resize (longest side)",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Keep original size"
+            },
+            {
+              "value": "3840",
+              "label": "3840 px (4K)"
+            },
+            {
+              "value": "2560",
+              "label": "2560 px"
+            },
+            {
+              "value": "1920",
+              "label": "1920 px (Full HD)"
+            },
+            {
+              "value": "1280",
+              "label": "1280 px — web & email"
+            },
+            {
+              "value": "800",
+              "label": "800 px — thumbnails"
+            }
+          ]
+        },
+        {
+          "id": "format",
+          "label": "Format",
+          "type": "select",
+          "default": "original",
+          "options": [
+            {
+              "value": "original",
+              "label": "Keep each file's format"
+            },
+            {
+              "value": "jpeg",
+              "label": "Convert to JPG"
+            },
+            {
+              "value": "webp",
+              "label": "Convert to WebP (smallest for websites)"
+            },
+            {
+              "value": "png",
+              "label": "Convert to PNG"
+            }
+          ]
+        },
+        {
+          "id": "exif",
+          "label": "Keep photo info (date, camera, location)",
+          "type": "checkbox"
+        },
+        {
+          "id": "outDir",
+          "label": "Save compressed copies in",
+          "type": "folder",
+          "required": true,
+          "help": "Pick an empty or new folder. Originals are never changed, and existing files are never overwritten."
+        }
+      ],
+      "argv": [
+        {
+          "when": "recursive",
+          "argv": [
+            "--recursive",
+            "--keep-structure"
+          ]
+        },
+        {
+          "when": "mode",
+          "equals": "lossless",
+          "argv": [
+            "--lossless"
+          ]
+        },
+        {
+          "field": "quality",
+          "flag": "--quality"
+        },
+        {
+          "field": "maxSize",
+          "flag": "--max-size"
+        },
+        {
+          "field": "resize",
+          "flag": "--long-edge"
+        },
+        "--no-upscale",
+        {
+          "field": "format",
+          "flag": "--format"
+        },
+        {
+          "field": "exif",
+          "flag": "--exif"
+        },
+        "--output",
+        {
+          "field": "outDir"
+        },
+        "--overwrite",
+        "never",
+        {
+          "field": "folder"
+        }
+      ],
+      "openAfter": "outDir",
+      "successMessage": "Compressed copies saved.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    }
+  ]
+}

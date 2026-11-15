@@ -102,7 +102,7 @@ ipcMain.handle('tool:run', async (e, { runId, toolId, actionId, values }) => {
   if (!action) throw new Error('Unknown action');
   const gate = license.canRun(spec);
   if (!gate.ok) throw new Error('LOCKED');
-  const { argv, env } = buildCommand(action, values); // throws with fieldErrors on bad input
+  const { argv, env, stdin } = buildCommand(action, values); // throws with fieldErrors on bad input
   const send = (ch, payload) => { if (!e.sender.isDestroyed()) e.sender.send(ch, { runId, ...payload }); };
   send('run:status', { text: `Preparing ${spec.name} ${spec.binary.version}…` });
   const exe = await ensureBinary(spec, binCache, {
@@ -115,7 +115,7 @@ ipcMain.handle('tool:run', async (e, { runId, toolId, actionId, values }) => {
   send('run:output', { stream: 'meta', text: `$ ${spec.binary.name} ${shown.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(' ')}\n` });
   const cwd = values[action.cwdField] || undefined;
   const handle = runTool(exe, argv, {
-    env, cwd,
+    env, cwd, input: stdin,
     onOutput: (o) => send('run:output', o),
     onExit: ({ code, signal }) => { running.delete(runId); send('run:exit', { code, signal }); },
   });

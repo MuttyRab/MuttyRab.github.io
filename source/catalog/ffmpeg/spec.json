@@ -16,6 +16,7 @@
   "status": "live",
   "upstream": {
     "repo": "FFmpeg/FFmpeg",
+    "stars": 67340,
     "displayName": "FFmpeg",
     "license": "GPL-3.0 (static build)",
     "homepage": "https://ffmpeg.org"

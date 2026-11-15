@@ -16,6 +16,8 @@ const shots = [
   { file: 'video-compress.png', tool: 'Video Toolkit', tab: 'Compress', fill: { quality: '28', size: '720' }, picks: { Video: '/Users/you/Movies/birthday-party.mov', 'Save as': '/Users/you/Movies/birthday-party-small.mp4' } },
   { file: 'pdf-merge.png', tool: 'PDF Toolkit', tab: 'Merge', picks: { 'PDFs to merge': ['/Users/you/Documents/contract.pdf', '/Users/you/Documents/appendix.pdf', '/Users/you/Documents/signatures.pdf'], 'Save merged PDF as': '/Users/you/Documents/contract-complete.pdf' } },
   { file: 'rename.png', tool: 'Rename Many Files', tab: 'Find & replace', text: { find: 'IMG_', replace: 'italy-2026-{%03d}' }, picks: { Folder: '/Users/you/Pictures/Italy trip' } },
+  { file: 'image-compress.png', tool: 'Image Compressor', tab: 'Compress images', fill: { mode: 'size', maxSize: '500000', resize: '1920', format: 'webp' }, picks: { Images: ['/Users/you/Pictures/beach.jpg', '/Users/you/Pictures/dinner.jpg', '/Users/you/Pictures/sunset.png'], 'Save compressed copies in': '/Users/you/Pictures/for-website' } },
+  { file: 'pdf-maker.png', tool: 'PDF Maker', tab: 'Write a PDF', text: { source: '#set page(paper: "a4", margin: 2cm)\n#set text(font: "New Computer Modern", size: 11pt)\n\n= Invoice 2026-031\n\n*Acme Ltd.* · due 29 November 2026\n\n#table(columns: (1fr, auto, auto),\n  [*Work*], [*Hours*], [*Amount*],\n  [Website redesign], [12], [$960],\n)' }, picks: { 'Save PDF as': '/Users/you/Documents/invoice-2026-031.pdf' } },
   { file: 'send-files.png', tool: 'Send Big Files', tab: 'Send files', picks: { 'Files or folders': ['/Users/you/Desktop/wedding-photos'] } },
 ];
 
