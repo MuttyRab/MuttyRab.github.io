@@ -27,4 +27,8 @@ https://guihub.cc/guides/ai-create-word-powerpoint-files.html
 https://guihub.cc/guides/make-pdf-from-text-with-ai.html
 https://guihub.cc/guides/combine-csv-files-into-one-excel.html
 https://guihub.cc/guides/ai-analyze-large-csv-excel-locally.html
+https://guihub.cc/guides/tinypng-alternative-offline-batch.html
+https://guihub.cc/guides/ilovepdf-alternative-offline.html
+https://guihub.cc/guides/handbrake-alternative-simple-video-compressor.html
+https://guihub.cc/guides/csv-to-excel-without-uploading.html
 https://guihub.cc/legal.html
