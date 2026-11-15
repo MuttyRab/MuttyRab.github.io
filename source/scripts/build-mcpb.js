@@ -51,7 +51,7 @@ const manifest = {
   icon: fs.existsSync(icon) ? 'icon.png' : undefined,
   server: { type: 'node', entry_point: 'src/mcp-entry.js', mcp_config: { command: 'node', args: ['${__dirname}/src/mcp-entry.js'] } },
   tools: tools.map((t) => ({ name: t.name, description: t.description.slice(0, 300) })),
-  keywords: ['ffmpeg', 'pdf', 'pandoc', 'video', 'documents', 'rename', 'local', 'gui'],
+  keywords: [...new Set(['mcp', 'local', 'files', ...specs.flatMap((x) => [x.upstream.displayName || x.id, ...(x.keywords || [])])])].map((k) => String(k).toLowerCase()).slice(0, 40),
   license: 'Proprietary',
   compatibility: { platforms: ['darwin', 'win32', 'linux'], runtimes: { node: '>=18.0.0' } },
 };
