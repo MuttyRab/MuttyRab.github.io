@@ -10,6 +10,7 @@ const { loadCatalog } = require('./core/spec');
 const { LicenseStore } = require('./core/license');
 const { loadRemote, mergeCatalog } = require('./core/remote-catalog');
 const { createServer } = require('./core/mcp');
+const { loadProducts, mergeProducts } = require('./core/products');
 
 const appRoot = path.join(__dirname, '..');
 // Packaged builds unpack src/ and config.json next to app.asar; package.json stays inside the asar
@@ -43,11 +44,17 @@ function catalogDir() {
 const userDir = userDataDir();
 fs.mkdirSync(path.join(userDir, 'tools'), { recursive: true });
 const { specs: bundled } = loadCatalog(catalogDir(), { includeBeta: process.env.GUIHUB_BETA === '1' });
-let specs = bundled;
-const license = new LicenseStore(path.join(userDir, 'license.json'), config);
+// `--product=<id>` (or GUIHUB_PRODUCT) serves only that product's tools, e.g. for a per-product listing.
+const onlyProduct = (process.argv.find((a) => a.startsWith('--product=')) || '').slice(10) || process.env.GUIHUB_PRODUCT || '';
+const forProduct = (list) => (onlyProduct ? list.filter((s) => (s.product || 'essentials') === onlyProduct) : list);
+let specs = forProduct(bundled);
+const bundledProducts = loadProducts(catalogDir());
+let products = bundledProducts;
+const license = new LicenseStore(path.join(userDir, 'license.json'), config, { products: () => products });
 
 const server = createServer({
   getSpecs: () => specs,
+  getProducts: () => products,
   license,
   binCache: path.join(userDir, 'tools'),
   info: { productName, version: pkg.version, checkoutUrl: config.checkoutUrl, siteUrl: config.siteUrl, price: config.price || '$9' },
@@ -56,6 +63,6 @@ server.start();
 
 if (config.catalogUrl && !process.env.GUIHUB_CATALOG) {
   loadRemote(config.catalogUrl, path.join(userDir, 'catalog-cache.json'))
-    .then((remote) => { if (remote) specs = mergeCatalog(bundled, remote).specs; })
+    .then((remote) => { if (remote) { specs = forProduct(mergeCatalog(bundled, remote).specs); products = mergeProducts(bundledProducts, remote); } })
     .catch(() => {});
 }

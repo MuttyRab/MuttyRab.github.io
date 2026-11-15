@@ -24,6 +24,7 @@ for (const f of ['mcp-entry.js']) fs.copyFileSync(path.join(appDir, 'src', f), p
 for (const f of fs.readdirSync(path.join(appDir, 'src', 'core'))) fs.copyFileSync(path.join(appDir, 'src', 'core', f), path.join(stage, 'src', 'core', f));
 fs.copyFileSync(path.join(appDir, 'config.json'), path.join(stage, 'config.json'));
 fs.writeFileSync(path.join(stage, 'package.json'), JSON.stringify({ name: pkg.name, productName: pkg.productName, version: pkg.version, private: true, license: 'UNLICENSED' }, null, 2));
+if (fs.existsSync(path.join(catalogDir, 'products.json'))) { fs.mkdirSync(path.join(stage, 'catalog'), { recursive: true }); fs.copyFileSync(path.join(catalogDir, 'products.json'), path.join(stage, 'catalog', 'products.json')); }
 for (const s of specs) { fs.mkdirSync(path.join(stage, 'catalog', s.id), { recursive: true }); fs.writeFileSync(path.join(stage, 'catalog', s.id, 'spec.json'), JSON.stringify(s, null, 2)); }
 const icon = path.join(appDir, 'build', 'icon.png');
 if (fs.existsSync(icon)) fs.copyFileSync(icon, path.join(stage, 'icon.png'));

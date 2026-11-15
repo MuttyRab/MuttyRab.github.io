@@ -137,6 +137,15 @@ test('caesium never overwrites, only sends the chosen compression mode, inputs l
   assert.deepStrictEqual([f[0], f[1], f[f.length - 1]], ['--recursive', '--keep-structure', '/pics']);
 });
 
+test('sql templates quote paths safely and keep enum options raw', () => {
+  const conv = buildCommand(action('duckdb', 'convert'), { input: "/d/it's; DROP x.csv", out: '/o.xlsx' }).argv;
+  assert.deepStrictEqual(conv, ['-cmd', 'INSTALL excel; LOAD excel;', '-c', "COPY (SELECT * FROM '/d/it''s; DROP x.csv') TO '/o.xlsx' (FORMAT xlsx, HEADER true);"]);
+  const comb = buildCommand(action('duckdb', 'combine'), { inputs: ['/a.csv', '/b.csv'], format: 'parquet', out: '/o.parquet' }).argv.slice(-1)[0];
+  assert.strictEqual(comb, "COPY (SELECT * FROM read_csv(['/a.csv', '/b.csv'], union_by_name = true)) TO '/o.parquet' (FORMAT parquet);");
+  assert.throws(() => buildCommand(action('duckdb', 'convert'), { input: '/a.csv', out: '/o', format: 'csv); DROP' }), /invalid choice/);
+  assert.strictEqual(spec('duckdb').product, 'data');
+});
+
 test('clean strips ANSI codes', () => {
   assert.strictEqual(clean('\x1b[32mok\x1b[0m done'), 'ok done');
 });
@@ -188,7 +197,30 @@ test('license: trials, activation, revocation, offline grace', async () => {
   await lic.refresh();
   assert.strictEqual(lic.isPro(), false);
   const reloaded = new LicenseStore(path.join(tmp, 'l.json'), { polarOrganizationId: 'org' }, { post, now: () => now });
-  assert.strictEqual(reloaded.state.status, 'revoked');
+  assert.strictEqual(reloaded.state.keys[0].status, 'revoked');
+});
+
+test('license: each product key unlocks only its product; All-Access unlocks all; legacy key = Essentials', async () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-lic2-'));
+  const B = { ess: '11111111-1111-1111-1111-111111111111', data: '22222222-2222-2222-2222-222222222222', all: '33333333-3333-3333-3333-333333333333' };
+  const keys = { 'k-ess': B.ess, 'k-data': B.data, 'k-all': B.all };
+  const post = async (url, body) => (url.endsWith('/activate') ? { status: 403, json: {} } : { status: 200, json: { status: 'granted', benefit_id: keys[body.key] } });
+  const products = () => ({ products: [{ id: 'essentials', name: 'Essentials', benefitIds: [B.ess] }, { id: 'data', name: 'Data', benefitIds: [B.data] }], allAccess: { name: 'All', benefitIds: [B.all] } });
+  const file = path.join(tmp, 'l.json');
+  const ess = spec('pdfcpu');
+  const dataTool = { ...spec('pdfcpu'), id: 'duck', product: 'data' };
+  let lic = new LicenseStore(file, { polarOrganizationId: 'org', trialRuns: 0 }, { post, products });
+  assert.deepStrictEqual(await lic.activate('k-data'), ['Data']);
+  assert.strictEqual(lic.canRun(dataTool).ok, true);
+  assert.strictEqual(lic.canRun(ess).ok, false);
+  await lic.activate('k-all');
+  assert.strictEqual(lic.canRun(ess).ok, true);
+  // legacy single-key file from v0.8 (no benefit known) unlocks Essentials only
+  fs.writeFileSync(file, JSON.stringify({ key: 'old', status: 'granted', lastValidAt: Date.now(), trials: {} }));
+  lic = new LicenseStore(file, { polarOrganizationId: 'org', trialRuns: 0 }, { post: async () => { throw new Error('offline'); }, products });
+  assert.strictEqual(lic.canRun(ess).ok, true);
+  assert.strictEqual(lic.canRun(dataTool).ok, false);
+  assert.deepStrictEqual(lic.unlockedProducts(), ['essentials']);
 });
 
 test('remote catalog: accepts pinned upstream specs, rejects anything else', () => {

@@ -9,6 +9,9 @@
 //                                         other:    push flag + value when non-empty
 //   {"field": "id", "flag": "--x", "join": "="} -> push "--x=value"
 //   {"when": "id", "equals": v, "argv": [...]}  -> nested items, only if field matches (truthy when no equals)
+//   {"sql": "COPY (SELECT * FROM {input}) TO {out} (FORMAT {format})"} -> ONE argument built from a
+//      template: text/path values become SQL string literals ('it''s'), files become lists
+//      (['a','b']), numbers stay numbers, select values are inserted as-is (validated enum only).
 
 const LIST_TYPES = new Set(['files']);
 
@@ -60,9 +63,25 @@ function validate(action, values) {
   return errors;
 }
 
+const sqlString = (v) => `'${String(v).replace(/'/g, "''")}'`;
+
+function sqlTemplate(tpl, vals, fields) {
+  return tpl.replace(/\{([A-Za-z0-9_]+)\}/g, (_, id) => {
+    const f = fields.get(id);
+    if (!f) throw new Error(`sql template references unknown field "${id}"`);
+    const v = vals[id];
+    if (f.type === 'select') return String(v ?? '');
+    if (f.type === 'number') { const n = Number(v); if (!Number.isFinite(n)) throw new Error(`${f.label} must be a number`); return String(n); }
+    if (LIST_TYPES.has(f.type)) return `[${(Array.isArray(v) ? v : []).map(sqlString).join(', ')}]`;
+    if (f.type === 'textarea' && f.sqlRaw) return String(v ?? ''); // a whole statement the user/AI wrote
+    return sqlString(v ?? '');
+  });
+}
+
 function expand(items, vals, fields, out) {
   for (const item of items) {
     if (typeof item === 'string') { out.push(item); continue; }
+    if (item.sql) { out.push(sqlTemplate(item.sql, vals, fields)); continue; }
     if (item.when) {
       const cur = vals[item.when];
       const hit = 'equals' in item ? cur === item.equals : !isEmpty(cur);

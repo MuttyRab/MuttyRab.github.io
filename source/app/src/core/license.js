@@ -3,6 +3,7 @@
 // Public endpoints, no secret in the app: organization_id is not a secret.
 const https = require('https');
 const fs = require('fs');
+const { productId, findProduct, DEFAULT_PRODUCT } = require('./products');
 // Privacy: the activation label is generic. We never send hostnames or user names.
 
 const POLAR_API = 'https://api.polar.sh/v1/customer-portal/license-keys';
@@ -27,23 +28,46 @@ function postJson(url, body) {
 }
 
 class LicenseStore {
-  constructor(file, config, { post = postJson, now = () => Date.now() } = {}) {
+  // products: () => { products, allAccess } (see products.js). Without it, any valid key unlocks all.
+  constructor(file, config, { post = postJson, now = () => Date.now(), products = null } = {}) {
     this.file = file;
     this.config = config;
     this.post = post;
     this.now = now;
-    this.state = { key: null, activationId: null, lastValidAt: 0, status: 'none', trials: {} };
-    try { Object.assign(this.state, JSON.parse(fs.readFileSync(file, 'utf8'))); } catch (_) { /* first run */ }
+    this.products = products;
+    this.state = { keys: [], trials: {} };
+    let saved = {};
+    try { saved = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (_) { /* first run */ }
+    this.state.trials = saved.trials || {};
+    this.state.keys = Array.isArray(saved.keys) ? saved.keys : [];
+    // v0.8 and earlier stored one key; it was always an Essentials key (benefitId null = legacy).
+    if (saved.key) this.state.keys.push({ key: saved.key, activationId: saved.activationId || null, status: saved.status || 'none', lastValidAt: saved.lastValidAt || 0, benefitId: null });
   }
 
   save() { fs.writeFileSync(this.file, JSON.stringify(this.state, null, 2)); }
 
   configured() { return Boolean(this.config.polarOrganizationId); }
 
-  isPro() {
-    if (this.state.status !== 'granted') return false;
-    const ageDays = (this.now() - this.state.lastValidAt) / 86400000;
-    return ageDays <= OFFLINE_GRACE_DAYS;
+  fresh(k) { return k.status === 'granted' && (this.now() - k.lastValidAt) / 86400000 <= OFFLINE_GRACE_DAYS; }
+
+  // Which products a key unlocks: its product's benefit, or every product for All-Access.
+  keyUnlocks(k, pid) {
+    const data = this.products && this.products();
+    if (!data) return true;
+    if (k.benefitId == null) return pid === DEFAULT_PRODUCT;
+    if (data.allAccess && (data.allAccess.benefitIds || []).includes(k.benefitId)) return true;
+    const p = findProduct(data, pid);
+    return Boolean(p && (p.benefitIds || []).includes(k.benefitId));
+  }
+
+  // isPro(productId) → that product unlocked; isPro() → any license active.
+  isPro(pid) {
+    return this.state.keys.some((k) => this.fresh(k) && (pid === undefined || this.keyUnlocks(k, pid)));
+  }
+
+  unlockedProducts() {
+    const data = this.products && this.products();
+    return data ? (data.products || []).filter((p) => this.isPro(p.id)).map((p) => p.id) : (this.isPro() ? ['*'] : []);
   }
 
   trialsLeft(toolId) {
@@ -52,13 +76,13 @@ class LicenseStore {
   }
 
   canRun(spec) {
-    if (spec.tier === 'free' || this.isPro()) return { ok: true, reason: 'licensed' };
+    if (spec.tier === 'free' || this.isPro(productId(spec))) return { ok: true, reason: 'licensed' };
     if (this.trialsLeft(spec.id) > 0) return { ok: true, reason: 'trial', left: this.trialsLeft(spec.id) };
     return { ok: false, reason: 'locked' };
   }
 
   recordRun(spec) {
-    if (spec.tier === 'free' || this.isPro()) return;
+    if (spec.tier === 'free' || this.isPro(productId(spec))) return;
     this.state.trials[spec.id] = (this.state.trials[spec.id] || 0) + 1;
     this.save();
   }
@@ -78,31 +102,33 @@ class LicenseStore {
     const val = await this.post(`${POLAR_API}/validate`, body);
     if (val.status < 200 || val.status >= 300 || !val.json) throw new Error(val.status === 404 ? 'That license key was not found.' : `License check failed (HTTP ${val.status}).`);
     if (val.json.status !== 'granted') throw new Error(`This license key is ${val.json.status}.`);
-    Object.assign(this.state, { key, activationId, status: 'granted', lastValidAt: this.now() });
+    const entry = { key, activationId, status: 'granted', lastValidAt: this.now(), benefitId: val.json.benefit_id || null };
+    this.state.keys = [...this.state.keys.filter((k) => k.key !== key), entry];
     this.save();
-    return true;
+    const data = this.products && this.products();
+    return data ? (data.products || []).filter((p) => this.keyUnlocks(entry, p.id)).map((p) => p.name) : [];
   }
 
   // Called at startup; never blocks use while offline inside the grace window.
   async refresh() {
-    if (!this.state.key || !this.configured()) return this.isPro();
-    try {
-      const body = { key: this.state.key, organization_id: this.config.polarOrganizationId };
-      if (this.state.activationId) body.activation_id = this.state.activationId;
-      const val = await this.post(`${POLAR_API}/validate`, body);
-      if (val.status >= 200 && val.status < 300 && val.json) {
-        this.state.status = val.json.status;
-        if (val.json.status === 'granted') this.state.lastValidAt = this.now();
-        this.save();
-      } else if (val.status === 404) {
-        this.state.status = 'revoked';
-        this.save();
-      }
-    } catch (_) { /* offline: keep cached state */ }
+    if (!this.state.keys.length || !this.configured()) return this.isPro();
+    for (const k of this.state.keys) {
+      try {
+        const body = { key: k.key, organization_id: this.config.polarOrganizationId };
+        if (k.activationId) body.activation_id = k.activationId;
+        const val = await this.post(`${POLAR_API}/validate`, body);
+        if (val.status >= 200 && val.status < 300 && val.json) {
+          k.status = val.json.status;
+          if (val.json.benefit_id) k.benefitId = val.json.benefit_id;
+          if (val.json.status === 'granted') k.lastValidAt = this.now();
+        } else if (val.status === 404) k.status = 'revoked';
+      } catch (_) { /* offline: keep cached state */ }
+    }
+    this.save();
     return this.isPro();
   }
 
-  deactivate() { Object.assign(this.state, { key: null, activationId: null, status: 'none', lastValidAt: 0 }); this.save(); }
+  deactivate() { this.state.keys = []; this.save(); }
 }
 
 module.exports = { LicenseStore, OFFLINE_GRACE_DAYS };

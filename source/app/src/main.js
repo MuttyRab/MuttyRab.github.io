@@ -15,6 +15,7 @@ const { ensureBinary, isInstalled } = require('./core/binaries');
 const { runTool } = require('./core/runner');
 const { LicenseStore } = require('./core/license');
 const { loadRemote, mergeCatalog, newerVersion } = require('./core/remote-catalog');
+const { loadProducts, mergeProducts, productId, findProduct } = require('./core/products');
 
 const isDev = !app.isPackaged;
 const resources = isDev ? path.join(__dirname, '..', '..') : process.resourcesPath;
@@ -28,6 +29,8 @@ fs.mkdirSync(binCache, { recursive: true });
 
 let specs = [];
 let bundledSpecs = [];
+const bundledProducts = loadProducts(catalogDir);
+let products = bundledProducts;
 let remoteInfo = null;
 let license;
 let win;
@@ -48,12 +51,14 @@ async function refreshRemoteCatalog() {
   const { specs: merged, rejected } = mergeCatalog(bundledSpecs, remote);
   for (const r of rejected) console.error('remote spec rejected', r.id, r.problems);
   specs = merged;
+  products = mergeProducts(bundledProducts, remote);
   remoteInfo = remote.app || null;
   if (win) win.webContents.send('catalog:changed');
 }
 
 function toolSummary(spec) {
-  return { ...spec, installed: isInstalled(spec, binCache), access: license.canRun(spec) };
+  const p = findProduct(products, productId(spec)) || {};
+  return { ...spec, installed: isInstalled(spec, binCache), access: license.canRun(spec), productName: p.name || config.productName, checkoutUrl: p.checkoutUrl || config.checkoutUrl, price: p.price || config.price };
 }
 
 function createWindow() {
@@ -68,7 +73,7 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  license = new LicenseStore(path.join(userDir, 'license.json'), config);
+  license = new LicenseStore(path.join(userDir, 'license.json'), config, { products: () => products });
   loadSpecs();
   createWindow();
   license.refresh().then(() => win && win.webContents.send('license:changed')).catch(() => {});
@@ -79,6 +84,7 @@ app.on('window-all-closed', () => { for (const r of running.values()) r.cancel()
 ipcMain.handle('app:info', () => ({
   productName: config.productName, version: app.getVersion(), checkoutUrl: config.checkoutUrl, siteUrl: config.siteUrl,
   supportEmail: config.supportEmail, licensing: license.configured(), pro: license.isPro(),
+  unlocked: license.unlockedProducts().map((id) => (findProduct(products, id) || { name: id }).name),
   legalUrl: config.siteUrl ? `${config.siteUrl}/legal.html` : '',
   update: remoteInfo && newerVersion(remoteInfo.version, app.getVersion()) ? { version: remoteInfo.version, url: remoteInfo.downloadUrl || config.siteUrl } : null,
 }));
@@ -126,7 +132,7 @@ ipcMain.handle('tool:run', async (e, { runId, toolId, actionId, values }) => {
 ipcMain.handle('tool:cancel', (_e, { runId }) => { const r = running.get(runId); if (r) r.cancel(); return true; });
 ipcMain.handle('tool:stdin', (_e, { runId, text }) => { const r = running.get(runId); if (r) r.write(text); return true; });
 
-ipcMain.handle('license:activate', async (_e, { key }) => { await license.activate(key); return true; });
+ipcMain.handle('license:activate', async (_e, { key }) => license.activate(key));
 ipcMain.handle('license:deactivate', () => { license.deactivate(); return true; });
 
 ipcMain.handle('shell:open', (_e, { target }) => {

@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for Caesium, croc, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Typst
+# GUI Hub — desktop GUI + MCP server for Caesium, croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Typst
 
 **Website and downloads:** https://muttyrab.github.io
 
@@ -25,13 +25,18 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (24)
+## MCP tools (29)
 
 | Tool | What it does |
 |---|---|
 | `caesium_compress` | Compress, resize and/or convert image files (JPG, PNG, WebP, GIF, TIFF) on the user's computer. Writes compressed copies (same file names) into outDir; never modifies originals or overwrites existing files. Use mode=size with maxSize (bytes) to fit upload limits. |
 | `caesium_folder` | Compress, resize and/or convert every image in a folder on the user's computer, optionally including subfolders (folder structure is kept). Copies go to outDir; originals are never modified. |
 | `croc_receive` | Receive files sent with croc: give the code phrase from the sender and a destination folder. Existing files are kept (renamed) unless existing="overwrite". |
+| `duckdb_summarize` | Inspect a local data file (CSV/TSV, Excel .xlsx, Parquet, JSON) without loading it into the chat: returns the first rows and per-column statistics (type, nulls, min, max, distinct count) as Markdown tables. Use this before writing a query. |
+| `duckdb_convert` | Convert a local data file between CSV, Excel (.xlsx), Parquet and JSON. Writes a new file; the original is not changed. |
+| `duckdb_combine` | Combine several local CSV files into one file (rows stacked, columns matched by name; missing columns become empty). Output format CSV, Excel, Parquet or JSON. |
+| `duckdb_dedupe` | Write a copy of a local data file with exact duplicate rows removed (CSV, Excel, Parquet or JSON in; chosen format out). |
+| `duckdb_query` | Run DuckDB SQL over local data files and get the answer as a Markdown table. Read files by quoted path: SELECT * FROM '/abs/path/file.csv' (also .xlsx, .parquet, .json; globs like '/dir/*.csv'). Use for totals, filters, group-bys, joins across files on data too big to paste into chat. Results are capped by the row limit; to save results use COPY (query) TO '/abs/out.xlsx' (FORMAT xlsx, HEADER true). |
 | `f2_rename` | Bulk-rename files in a folder by find & replace (regex unless literal=true; variables like {%03d} counter and {ext}). Without apply=true it is a dry run that returns the old→new table — show it to the user before applying. |
 | `f2_undo` | Undo the most recent rename that was applied in this folder. |
 | `ffmpeg_compress` | Make a video much smaller (or turn any video into a widely playable MP4). Lower quality and smaller size = smaller file. |
@@ -73,7 +78,7 @@ macOS: `/Applications/GUI Hub.app/Contents/MacOS/GUI Hub` · Windows: `%LOCALAPP
 
 ## Pricing
 
-Free to download. Send Big Files (croc) is free; every other tool has 3 free uses (GUI or MCP). A one-time $9 Pro license unlocks everything, including future tools. In an AI chat, the tools `gui_hub_status` (free uses left, purchase link) and `gui_hub_activate_license` (paste the key from the purchase email) handle upgrading without leaving the conversation.
+GUI Hub is a store of products, each a bundle of tools: **GUI Hub Essentials** (video, photos, Word/PowerPoint/PDF, renaming, sending — $9 once) and **GUI Hub Data** (CSV/Excel/Parquet/JSON with DuckDB — $9 once), or **All-Access** ($19 once, every product including future ones). One install includes everything; every tool has 3 free uses (GUI or MCP), Send Big Files is free. Serve one product to your AI with `--product=essentials` or `--product=data`. In an AI chat, the tools `gui_hub_status` (free uses left, purchase link) and `gui_hub_activate_license` (paste the key from the purchase email) handle upgrading without leaving the conversation.
 
 ## About this repository
 

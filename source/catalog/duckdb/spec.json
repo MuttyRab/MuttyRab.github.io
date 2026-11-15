@@ -1,0 +1,428 @@
+{
+  "id": "duckdb",
+  "product": "data",
+  "name": "Spreadsheet & Data Toolkit",
+  "tagline": "Open, convert, combine and analyse big CSV, Excel, Parquet and JSON files — millions of rows in seconds, on your own computer.",
+  "keywords": [
+    "csv to excel",
+    "excel to csv",
+    "merge csv files",
+    "open large csv",
+    "remove duplicates",
+    "duckdb gui",
+    "duckdb mcp",
+    "parquet viewer"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "duckdb/duckdb",
+    "stars": 43100,
+    "displayName": "DuckDB",
+    "license": "MIT",
+    "homepage": "https://duckdb.org"
+  },
+  "binary": {
+    "name": "duckdb",
+    "version": "2.0.0",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/duckdb/duckdb/releases/download/v2.0.0/duckdb-cli-linux-amd64.tar.gz",
+        "path": "duckdb",
+        "sha256": "c6507206baf7793c6013dbd82368469a45f20dc0e17a6f92f204602f652ed2bc"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/duckdb/duckdb/releases/download/v2.0.0/duckdb-cli-osx-universal.tar.gz",
+        "path": "duckdb",
+        "sha256": "8a8f67e7c7f7d1392fa63ba3971948391392fe2a25fca63e7008e33c50beb4c2"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/duckdb/duckdb/releases/download/v2.0.0/duckdb-cli-osx-universal.tar.gz",
+        "path": "duckdb",
+        "sha256": "8a8f67e7c7f7d1392fa63ba3971948391392fe2a25fca63e7008e33c50beb4c2"
+      },
+      "win32-x64": {
+        "url": "https://github.com/duckdb/duckdb/releases/download/v2.0.0/duckdb-cli-windows-amd64.tar.gz",
+        "path": "duckdb.exe",
+        "sha256": "91663c2f36c2a334b0e5e639006d8c29c29e013af0c477d80bb931df68870312"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "summarize",
+      "label": "Look inside a file",
+      "runLabel": "Show",
+      "description": "See the columns, a preview of the first rows, and per-column stats (types, empty cells, min/max, unique values) of any CSV, Excel, Parquet or JSON file — even huge ones.",
+      "mcpDescription": "Inspect a local data file (CSV/TSV, Excel .xlsx, Parquet, JSON) without loading it into the chat: returns the first rows and per-column statistics (type, nulls, min, max, distinct count) as Markdown tables. Use this before writing a query.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Data file",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Spreadsheets & data",
+              "extensions": [
+                "csv",
+                "tsv",
+                "txt",
+                "xlsx",
+                "parquet",
+                "json",
+                "jsonl",
+                "ndjson"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rows",
+          "label": "Preview rows",
+          "type": "number",
+          "default": "10"
+        }
+      ],
+      "argv": [
+        "-markdown",
+        "-c",
+        {
+          "sql": "SELECT * FROM {input} LIMIT {rows}; SUMMARIZE SELECT * FROM {input};"
+        }
+      ],
+      "helpArgs": [
+        [
+          "-help"
+        ]
+      ]
+    },
+    {
+      "id": "convert",
+      "label": "Convert",
+      "runLabel": "Convert",
+      "description": "Turn CSV into Excel, Excel into CSV, or either into Parquet or JSON.",
+      "mcpDescription": "Convert a local data file between CSV, Excel (.xlsx), Parquet and JSON. Writes a new file; the original is not changed.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Data file",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Spreadsheets & data",
+              "extensions": [
+                "csv",
+                "tsv",
+                "txt",
+                "xlsx",
+                "parquet",
+                "json",
+                "jsonl",
+                "ndjson"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "format",
+          "label": "Save as",
+          "type": "select",
+          "default": "xlsx, HEADER true",
+          "options": [
+            {
+              "value": "xlsx, HEADER true",
+              "label": "Excel (.xlsx)"
+            },
+            {
+              "value": "csv, HEADER true",
+              "label": "CSV (.csv)"
+            },
+            {
+              "value": "parquet",
+              "label": "Parquet (.parquet) — compact, for data tools"
+            },
+            {
+              "value": "json, ARRAY true",
+              "label": "JSON (.json)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as file",
+          "type": "savefile",
+          "required": true,
+          "help": "Use the extension that matches the format (.xlsx, .csv, .parquet or .json).",
+          "filters": [
+            {
+              "name": "Data",
+              "extensions": [
+                "xlsx",
+                "csv",
+                "parquet",
+                "json"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        {
+          "when": "format",
+          "equals": "xlsx, HEADER true",
+          "argv": [
+            "-cmd",
+            "INSTALL excel; LOAD excel;"
+          ]
+        },
+        "-c",
+        {
+          "sql": "COPY (SELECT * FROM {input}) TO {out} (FORMAT {format});"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Converted.",
+      "helpArgs": [
+        [
+          "-help"
+        ]
+      ]
+    },
+    {
+      "id": "combine",
+      "label": "Combine files",
+      "runLabel": "Combine",
+      "description": "Stack many CSV files (e.g. monthly exports) into one table. Columns are matched by name, so files with different column orders still line up.",
+      "mcpDescription": "Combine several local CSV files into one file (rows stacked, columns matched by name; missing columns become empty). Output format CSV, Excel, Parquet or JSON.",
+      "fields": [
+        {
+          "id": "inputs",
+          "label": "CSV files",
+          "type": "files",
+          "required": true,
+          "filters": [
+            {
+              "name": "CSV",
+              "extensions": [
+                "csv",
+                "tsv",
+                "txt"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "format",
+          "label": "Save as",
+          "type": "select",
+          "default": "xlsx, HEADER true",
+          "options": [
+            {
+              "value": "xlsx, HEADER true",
+              "label": "Excel (.xlsx)"
+            },
+            {
+              "value": "csv, HEADER true",
+              "label": "CSV (.csv)"
+            },
+            {
+              "value": "parquet",
+              "label": "Parquet (.parquet) — compact, for data tools"
+            },
+            {
+              "value": "json, ARRAY true",
+              "label": "JSON (.json)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as file",
+          "type": "savefile",
+          "required": true,
+          "help": "Use the extension that matches the format (.xlsx, .csv, .parquet or .json).",
+          "filters": [
+            {
+              "name": "Data",
+              "extensions": [
+                "xlsx",
+                "csv",
+                "parquet",
+                "json"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        {
+          "when": "format",
+          "equals": "xlsx, HEADER true",
+          "argv": [
+            "-cmd",
+            "INSTALL excel; LOAD excel;"
+          ]
+        },
+        "-c",
+        {
+          "sql": "COPY (SELECT * FROM read_csv({inputs}, union_by_name = true)) TO {out} (FORMAT {format});"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Combined.",
+      "helpArgs": [
+        [
+          "-help"
+        ]
+      ]
+    },
+    {
+      "id": "dedupe",
+      "label": "Remove duplicates",
+      "runLabel": "Clean",
+      "description": "Save a copy with exact duplicate rows removed.",
+      "mcpDescription": "Write a copy of a local data file with exact duplicate rows removed (CSV, Excel, Parquet or JSON in; chosen format out).",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Data file",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Spreadsheets & data",
+              "extensions": [
+                "csv",
+                "tsv",
+                "txt",
+                "xlsx",
+                "parquet",
+                "json",
+                "jsonl",
+                "ndjson"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "format",
+          "label": "Save as",
+          "type": "select",
+          "default": "xlsx, HEADER true",
+          "options": [
+            {
+              "value": "xlsx, HEADER true",
+              "label": "Excel (.xlsx)"
+            },
+            {
+              "value": "csv, HEADER true",
+              "label": "CSV (.csv)"
+            },
+            {
+              "value": "parquet",
+              "label": "Parquet (.parquet) — compact, for data tools"
+            },
+            {
+              "value": "json, ARRAY true",
+              "label": "JSON (.json)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as file",
+          "type": "savefile",
+          "required": true,
+          "help": "Use the extension that matches the format (.xlsx, .csv, .parquet or .json).",
+          "filters": [
+            {
+              "name": "Data",
+              "extensions": [
+                "xlsx",
+                "csv",
+                "parquet",
+                "json"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        {
+          "when": "format",
+          "equals": "xlsx, HEADER true",
+          "argv": [
+            "-cmd",
+            "INSTALL excel; LOAD excel;"
+          ]
+        },
+        "-c",
+        {
+          "sql": "COPY (SELECT DISTINCT * FROM {input}) TO {out} (FORMAT {format});"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Duplicates removed.",
+      "helpArgs": [
+        [
+          "-help"
+        ]
+      ]
+    },
+    {
+      "id": "query",
+      "label": "Ask with SQL",
+      "runLabel": "Run",
+      "description": "Answer questions about your data with SQL — totals, filters, joins across files. Refer to files by path in single quotes, e.g. SELECT region, sum(amount) FROM '/path/sales.csv' GROUP BY region.",
+      "mcpDescription": "Run DuckDB SQL over local data files and get the answer as a Markdown table. Read files by quoted path: SELECT * FROM '/abs/path/file.csv' (also .xlsx, .parquet, .json; globs like '/dir/*.csv'). Use for totals, filters, group-bys, joins across files on data too big to paste into chat. Results are capped by the row limit; to save results use COPY (query) TO '/abs/out.xlsx' (FORMAT xlsx, HEADER true).",
+      "fields": [
+        {
+          "id": "sql",
+          "label": "SQL",
+          "type": "textarea",
+          "required": true,
+          "sqlRaw": true,
+          "placeholder": "SELECT region, sum(amount) AS total\nFROM '/Users/you/Downloads/sales.csv'\nGROUP BY region ORDER BY total DESC;"
+        },
+        {
+          "id": "maxRows",
+          "label": "Show at most (rows)",
+          "type": "select",
+          "default": "100",
+          "options": [
+            {
+              "value": "40",
+              "label": "40"
+            },
+            {
+              "value": "100",
+              "label": "100"
+            },
+            {
+              "value": "1000",
+              "label": "1,000"
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "-markdown",
+        "-cmd",
+        {
+          "sql": ".maxrows {maxRows}"
+        },
+        "-c",
+        {
+          "sql": "{sql}"
+        }
+      ],
+      "helpArgs": [
+        [
+          "-help"
+        ]
+      ]
+    }
+  ]
+}

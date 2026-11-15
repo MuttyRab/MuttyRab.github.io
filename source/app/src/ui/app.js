@@ -51,7 +51,8 @@ function renderLicense() {
   if (up) $('update-btn').textContent = `Update available: v${up.version}`;
   $('legal-btn').hidden = !(state.info && state.info.legalUrl);
   const pro = state.info && state.info.pro;
-  $('license-badge').textContent = pro ? 'License active — all tools unlocked' : 'Free version';
+  const unl = (state.info && state.info.unlocked) || [];
+  $('license-badge').textContent = pro ? `Unlocked: ${unl.join(', ') || 'Pro'}` : 'Free version';
   $('license-btn').textContent = pro ? 'Manage license' : 'Enter license key';
   $('deactivate-btn').hidden = !pro;
 }
@@ -209,10 +210,13 @@ async function run() {
   }
 }
 
+const buyUrl = () => (state.tool && state.tool.checkoutUrl) || (state.info && state.info.checkoutUrl) || '';
+
 function openLicense(reason) {
   $('license-error').textContent = reason || '';
   $('license-key').value = '';
-  $('buy-btn').hidden = !(state.info && state.info.checkoutUrl);
+  $('buy-btn').hidden = !buyUrl();
+  $('buy-btn').textContent = state.tool && state.tool.productName ? `Buy ${state.tool.productName} — ${state.tool.price || ''}` : 'Buy Pro';
   $('license-dialog').showModal();
 }
 
@@ -238,7 +242,7 @@ async function init() {
   $('cancel-btn').addEventListener('click', () => state.runId && api.cancel(state.runId));
   $('copy-out').addEventListener('click', () => navigator.clipboard.writeText($('output').textContent));
   $('license-btn').addEventListener('click', () => openLicense());
-  $('buy-btn').addEventListener('click', () => api.open(state.info.checkoutUrl));
+  $('buy-btn').addEventListener('click', () => api.open(buyUrl()));
   $('deactivate-btn').addEventListener('click', async () => { await api.deactivate(); await refreshTools(); $('license-dialog').close(); });
   $('activate-btn').addEventListener('click', async () => {
     $('license-error').textContent = '';
@@ -260,10 +264,10 @@ async function init() {
     $('run-status').textContent = ok ? (state.action.successMessage || 'Done.') : signal ? 'Stopped.' : `Finished with an error (exit code ${code}).`;
     appendOut(`\n${ok ? '✓ Done' : `✗ Exit code ${code ?? signal}`}\n`, 'meta');
     // Gentle, honest nudge after a successful free try of a Pro tool.
-    if (ok && state.tool.tier === 'pro' && !(state.info && state.info.pro) && state.info.checkoutUrl) {
+    if (ok && state.tool.tier === 'pro' && state.tool.access && state.tool.access.reason === 'trial' && buyUrl()) {
       const left = Math.max(0, (state.tool.access.left ?? 1) - 1);
       $('run-status').append(' ', el('span', { class: 'muted' }, left ? `(${left} free ${left === 1 ? 'try' : 'tries'} left)` : '(that was your last free try)'), ' ',
-        el('button', { class: 'link-btn', type: 'button', onclick: () => openLicense() }, 'Get Pro — unlimited use'));
+        el('button', { class: 'link-btn', type: 'button', onclick: () => openLicense() }, `Unlock ${state.tool.productName || 'Pro'} — unlimited use`));
     }
     if (ok && state.action.openAfter && state.values[state.action.openAfter]) {
       const target = state.values[state.action.openAfter];

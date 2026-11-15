@@ -1,7 +1,10 @@
 https://muttyrab.github.io/
 https://muttyrab.github.io/llms.txt
+https://muttyrab.github.io/essentials/
+https://muttyrab.github.io/data/
 https://muttyrab.github.io/tools/caesium.html
 https://muttyrab.github.io/tools/croc.html
+https://muttyrab.github.io/tools/duckdb.html
 https://muttyrab.github.io/tools/f2.html
 https://muttyrab.github.io/tools/ffmpeg.html
 https://muttyrab.github.io/tools/immich-go.html
@@ -21,4 +24,6 @@ https://muttyrab.github.io/guides/convert-markdown-to-word-docx.html
 https://muttyrab.github.io/guides/compress-images-for-email-and-web.html
 https://muttyrab.github.io/guides/ai-create-word-powerpoint-files.html
 https://muttyrab.github.io/guides/make-pdf-from-text-with-ai.html
+https://muttyrab.github.io/guides/combine-csv-files-into-one-excel.html
+https://muttyrab.github.io/guides/ai-analyze-large-csv-excel-locally.html
 https://muttyrab.github.io/legal.html

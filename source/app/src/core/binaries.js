@@ -80,6 +80,19 @@ function isInstalled(spec, cacheRoot, key) {
   return fs.existsSync(exe);
 }
 
+// Windows antivirus often holds freshly extracted .exe files for a moment (EPERM/EBUSY on rename).
+async function renameRetry(from, to, tries = 8) {
+  for (let i = 0; ; i++) {
+    try { fs.renameSync(from, to); return; } catch (e) {
+      if (i >= tries || !['EPERM', 'EBUSY', 'EACCES'].includes(e.code)) {
+        if (['EPERM', 'EBUSY', 'EACCES'].includes(e.code)) { fs.cpSync(from, to, { recursive: true }); return; }
+        throw e;
+      }
+      await new Promise((r) => setTimeout(r, 250 * (i + 1)));
+    }
+  }
+}
+
 async function ensureBinary(spec, cacheRoot, { onProgress, key, fetcher = download } = {}) {
   const { asset, dir, exe } = binaryPaths(spec, cacheRoot, key);
   if (fs.existsSync(exe)) return exe;
@@ -107,7 +120,7 @@ async function ensureBinary(spec, cacheRoot, { onProgress, key, fetcher = downlo
   if (process.platform !== 'win32') fs.chmodSync(inner, 0o755);
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(path.dirname(dir), { recursive: true });
-  fs.renameSync(out, dir);
+  await renameRetry(out, dir);
   fs.rmSync(tmp, { recursive: true, force: true });
   return exe;
 }

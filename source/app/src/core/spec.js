@@ -38,6 +38,7 @@ function checkSpec(spec) {
       for (const it of items || []) {
         if (typeof it === 'string') continue;
         if (it.when) { need(ids.has(it.when), `${a.id}: when references unknown field ${it.when}`); walk(it.argv); continue; }
+        if (it.sql) { for (const m of it.sql.matchAll(/\{([A-Za-z0-9_]+)\}/g)) need(ids.has(m[1]), `${a.id}: sql references unknown field ${m[1]}`); continue; }
         need(ids.has(it.field), `${a.id}: argv references unknown field ${it.field}`);
       }
     };

@@ -18,6 +18,7 @@ const shots = [
   { file: 'rename.png', tool: 'Rename Many Files', tab: 'Find & replace', text: { find: 'IMG_', replace: 'italy-2026-{%03d}' }, picks: { Folder: '/Users/you/Pictures/Italy trip' } },
   { file: 'image-compress.png', tool: 'Image Compressor', tab: 'Compress images', fill: { mode: 'size', maxSize: '500000', resize: '1920', format: 'webp' }, picks: { Images: ['/Users/you/Pictures/beach.jpg', '/Users/you/Pictures/dinner.jpg', '/Users/you/Pictures/sunset.png'], 'Save compressed copies in': '/Users/you/Pictures/for-website' } },
   { file: 'pdf-maker.png', tool: 'PDF Maker', tab: 'Write a PDF', text: { source: '#set page(paper: "a4", margin: 2cm)\n#set text(font: "New Computer Modern", size: 11pt)\n\n= Invoice 2026-031\n\n*Acme Ltd.* · due 29 November 2026\n\n#table(columns: (1fr, auto, auto),\n  [*Work*], [*Hours*], [*Amount*],\n  [Website redesign], [12], [$960],\n)' }, picks: { 'Save PDF as': '/Users/you/Documents/invoice-2026-031.pdf' } },
+  { file: 'data-convert.png', tool: 'Spreadsheet & Data Toolkit', tab: 'Combine files', fill: { format: 'xlsx, HEADER true' }, picks: { 'CSV files': ['/Users/you/Downloads/sales-jan.csv', '/Users/you/Downloads/sales-feb.csv', '/Users/you/Downloads/sales-mar.csv'], 'Save as file': '/Users/you/Documents/sales-q1.xlsx' } },
   { file: 'send-files.png', tool: 'Send Big Files', tab: 'Send files', picks: { 'Files or folders': ['/Users/you/Desktop/wedding-photos'] } },
 ];
 
