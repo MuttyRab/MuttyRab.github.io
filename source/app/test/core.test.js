@@ -170,3 +170,22 @@ test('remote catalog: accepts pinned upstream specs, rejects anything else', () 
   assert.strictEqual(newerVersion('0.10.0', '0.9.9'), true);
   assert.strictEqual(newerVersion('0.2.0', '0.2.0'), false);
 });
+
+test('ffmpeg compress builds a safe argv with scale and audio choices', () => {
+  const a = action('ffmpeg', 'compress');
+  let { argv } = buildCommand(a, { input: '/v/in.mov', out: '/v/out.mp4' });
+  assert.deepStrictEqual(argv, ['-y', '-i', '/v/in.mov', '-vcodec', 'libx264', '-crf', '28', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-acodec', 'aac', '-ab', '128k', '-movflags', '+faststart', '/v/out.mp4']);
+  ({ argv } = buildCommand(a, { input: '/v/in.mov', out: '/v/out.mp4', size: '720', audio: 'remove', quality: '32' }));
+  assert.ok(argv.includes('scale=-2:min(720\\,ih)') && argv.includes('-an') && !argv.includes('aac'));
+  const g = buildCommand(action('ffmpeg', 'gif'), { input: '/v/in.mp4', out: '/v/o.gif', start: '3' }).argv;
+  assert.deepStrictEqual(g.slice(0, 5), ['-y', '-ss', '3', '-t', '5']);
+});
+
+test('remote catalog accepts binaries from a declared sourceRepo only', () => {
+  const { remoteProblems } = require('../src/core/remote-catalog');
+  const s = JSON.parse(JSON.stringify(spec('ffmpeg')));
+  for (const a of Object.values(s.binary.assets)) a.sha256 = 'a'.repeat(64);
+  assert.deepStrictEqual(remoteProblems(s), []);
+  delete s.binary.sourceRepo;
+  assert.ok(remoteProblems(s).length > 0);
+});

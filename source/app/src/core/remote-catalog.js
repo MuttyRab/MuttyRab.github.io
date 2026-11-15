@@ -11,7 +11,7 @@ function remoteProblems(spec) {
   const problems = checkSpec(spec);
   if (problems.length) return problems;
   for (const [plat, a] of Object.entries(spec.binary.assets)) {
-    const prefix = `https://github.com/${spec.upstream.repo}/releases/download/`;
+    const prefix = `https://github.com/${spec.binary.sourceRepo || spec.upstream.repo}/releases/download/`;
     if (!a.url.startsWith(prefix)) problems.push(`${plat}: remote specs may only download from ${prefix}`);
     if (!/^[0-9a-f]{64}$/.test(a.sha256 || '')) problems.push(`${plat}: remote specs need a sha256`);
   }

@@ -1,0 +1,483 @@
+{
+  "id": "ffmpeg",
+  "name": "Video Toolkit (FFmpeg)",
+  "tagline": "Shrink videos for email or Discord, convert to MP4, pull out the audio as MP3, make GIFs and trim clips — on your own computer, no uploading.",
+  "keywords": [
+    "compress video",
+    "video compressor",
+    "convert to mp4",
+    "video to mp3",
+    "video to gif",
+    "trim video",
+    "ffmpeg",
+    "discord file size"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "FFmpeg/FFmpeg",
+    "displayName": "FFmpeg",
+    "license": "GPL-3.0 (static build)",
+    "homepage": "https://ffmpeg.org"
+  },
+  "binary": {
+    "name": "ffmpeg",
+    "version": "6.1.1",
+    "sourceRepo": "eugeneware/ffmpeg-static",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64",
+        "path": "ffmpeg",
+        "sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64",
+        "path": "ffmpeg",
+        "sha256": "a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-x64",
+        "path": "ffmpeg",
+        "sha256": "ebdddc936f61e14049a2d4b549a412b8a40deeff6540e58a9f2a2da9e6b18894"
+      },
+      "win32-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64",
+        "path": "ffmpeg.exe",
+        "sha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "compress",
+      "label": "Compress / convert to MP4",
+      "runLabel": "Compress",
+      "description": "Make a video much smaller (or turn any video into a widely playable MP4). Lower quality and smaller size = smaller file.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ],
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "mkv",
+                "avi",
+                "webm",
+                "m4v",
+                "wmv",
+                "flv",
+                "3gp"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "quality",
+          "label": "Quality",
+          "type": "select",
+          "default": "28",
+          "options": [
+            {
+              "value": "20",
+              "label": "High (bigger file)"
+            },
+            {
+              "value": "24",
+              "label": "Good"
+            },
+            {
+              "value": "28",
+              "label": "Small — great for sharing"
+            },
+            {
+              "value": "32",
+              "label": "Tiny — e.g. Discord / email limits"
+            }
+          ]
+        },
+        {
+          "id": "size",
+          "label": "Resolution",
+          "type": "select",
+          "default": "keep",
+          "options": [
+            {
+              "value": "keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "1080",
+              "label": "Max 1080p"
+            },
+            {
+              "value": "720",
+              "label": "Max 720p"
+            },
+            {
+              "value": "480",
+              "label": "Max 480p (smallest)"
+            }
+          ]
+        },
+        {
+          "id": "audio",
+          "label": "Sound",
+          "type": "select",
+          "default": "keep",
+          "options": [
+            {
+              "value": "keep",
+              "label": "Keep sound"
+            },
+            {
+              "value": "remove",
+              "label": "Remove sound"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-vcodec",
+        "libx264",
+        "-crf",
+        {
+          "field": "quality"
+        },
+        "-preset",
+        "medium",
+        "-pix_fmt",
+        "yuv420p",
+        {
+          "when": "size",
+          "equals": "1080",
+          "argv": [
+            "-vf",
+            "scale=-2:min(1080\\,ih)"
+          ]
+        },
+        {
+          "when": "size",
+          "equals": "720",
+          "argv": [
+            "-vf",
+            "scale=-2:min(720\\,ih)"
+          ]
+        },
+        {
+          "when": "size",
+          "equals": "480",
+          "argv": [
+            "-vf",
+            "scale=-2:min(480\\,ih)"
+          ]
+        },
+        {
+          "when": "audio",
+          "equals": "keep",
+          "argv": [
+            "-acodec",
+            "aac",
+            "-ab",
+            "128k"
+          ]
+        },
+        {
+          "when": "audio",
+          "equals": "remove",
+          "argv": [
+            "-an"
+          ]
+        },
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Done — compare the new file size in the folder."
+    },
+    {
+      "id": "audio",
+      "label": "Extract audio (MP3)",
+      "runLabel": "Extract",
+      "description": "Save just the sound of a video as an MP3 — for music, lectures or podcasts.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ],
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true
+        },
+        {
+          "id": "bitrate",
+          "label": "Audio quality",
+          "type": "select",
+          "default": "192k",
+          "options": [
+            {
+              "value": "128k",
+              "label": "Standard (128 kbps)"
+            },
+            {
+              "value": "192k",
+              "label": "High (192 kbps)"
+            },
+            {
+              "value": "320k",
+              "label": "Best (320 kbps)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP3 audio",
+              "extensions": [
+                "mp3"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-vn",
+        "-acodec",
+        "libmp3lame",
+        "-ab",
+        {
+          "field": "bitrate"
+        },
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Audio saved."
+    },
+    {
+      "id": "gif",
+      "label": "Make a GIF",
+      "runLabel": "Make GIF",
+      "description": "Turn a short part of a video into a good-looking animated GIF.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ],
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true
+        },
+        {
+          "id": "start",
+          "label": "Start at",
+          "type": "text",
+          "default": "0",
+          "placeholder": "seconds or 00:01:30",
+          "help": "Where the GIF begins. Seconds (e.g. 12.5) or hh:mm:ss."
+        },
+        {
+          "id": "duration",
+          "label": "Length (seconds)",
+          "type": "number",
+          "default": "5"
+        },
+        {
+          "id": "width",
+          "label": "Width",
+          "type": "select",
+          "default": "480",
+          "options": [
+            {
+              "value": "320",
+              "label": "Small (320 px)"
+            },
+            {
+              "value": "480",
+              "label": "Medium (480 px)"
+            },
+            {
+              "value": "720",
+              "label": "Large (720 px)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "GIF",
+              "extensions": [
+                "gif"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "-y",
+        {
+          "field": "start",
+          "flag": "-ss"
+        },
+        {
+          "field": "duration",
+          "flag": "-t"
+        },
+        "-i",
+        {
+          "field": "input"
+        },
+        {
+          "when": "width",
+          "equals": "320",
+          "argv": [
+            "-vf",
+            "fps=12,scale=320:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse"
+          ]
+        },
+        {
+          "when": "width",
+          "equals": "480",
+          "argv": [
+            "-vf",
+            "fps=12,scale=480:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse"
+          ]
+        },
+        {
+          "when": "width",
+          "equals": "720",
+          "argv": [
+            "-vf",
+            "fps=12,scale=720:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse"
+          ]
+        },
+        "-loop",
+        "0",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "GIF saved."
+    },
+    {
+      "id": "trim",
+      "label": "Trim",
+      "runLabel": "Trim",
+      "description": "Cut out a part of a video instantly, without re-encoding (no quality loss). Cuts snap to the nearest keyframe.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ],
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true
+        },
+        {
+          "id": "start",
+          "label": "From",
+          "type": "text",
+          "required": true,
+          "default": "00:00:00",
+          "placeholder": "00:01:30 or 90"
+        },
+        {
+          "id": "end",
+          "label": "To",
+          "type": "text",
+          "required": true,
+          "placeholder": "00:02:00 or 120"
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true
+        }
+      ],
+      "argv": [
+        "-y",
+        {
+          "field": "start",
+          "flag": "-ss"
+        },
+        {
+          "field": "end",
+          "flag": "-to"
+        },
+        "-i",
+        {
+          "field": "input"
+        },
+        "-vcodec",
+        "copy",
+        "-acodec",
+        "copy",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Trimmed."
+    }
+  ]
+}
