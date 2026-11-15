@@ -2,6 +2,22 @@
 
 **Website and downloads:** https://muttyrab.github.io
 
+## Quick start (MCP, no download)
+
+```bash
+npx -y github:MuttyRab/MuttyRab.github.io
+```
+
+- **Claude Code:** `claude mcp add gui-hub -- npx -y github:MuttyRab/MuttyRab.github.io`
+- **Cursor / VS Code / Windsurf / Claude Desktop** (`mcpServers` config):
+
+```json
+{ "mcpServers": { "gui-hub": { "command": "npx", "args": ["-y", "github:MuttyRab/MuttyRab.github.io"] } } }
+```
+
+- **Claude Desktop, one click:** [gui-hub.mcpb](https://github.com/MuttyRab/MuttyRab.github.io/releases/latest/download/gui-hub.mcpb)
+- Needs Node.js 18+. Each program is downloaded on first use from its official release and verified by SHA-256.
+
 GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known open-source command-line tools simple point-and-click forms — and exposes them as an **MCP (Model Context Protocol) server**, so Claude Desktop, Cursor, VS Code, Windsurf and other AI assistants can run them **locally**.
 
 - No Node, Python or API keys to set up: one installer.
@@ -38,9 +54,9 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `typst_write` | Create a typeset PDF file on the user's computer from Typst markup you write (pass the full document in `source`). Typst syntax: `= Heading`, `*bold*`, `_italic_`, `- item`, `#table(columns: 2, [a], [b])`, `#set page(paper: "a4")`, `#set text(font: "New Computer Modern")`. Built-in fonts work offline. Relative image paths resolve inside `assets`. |
 | `typst_compile` | Compile an existing .typ (Typst) file on the user's computer to PDF. |
 
-## Manual MCP configuration
+## Using the desktop app as the MCP server
 
-The app writes this for you; for other clients use:
+The app's **Use with AI** button writes this for you:
 
 ```json
 {
@@ -57,7 +73,7 @@ macOS: `/Applications/GUI Hub.app/Contents/MacOS/GUI Hub` · Windows: `%LOCALAPP
 
 ## Pricing
 
-Free to download. Send Big Files (croc) is free; every other tool has 3 free uses (GUI or MCP). A one-time $19 Pro license unlocks everything, including future tools.
+Free to download. Send Big Files (croc) is free; every other tool has 3 free uses (GUI or MCP). A one-time $9 Pro license unlocks everything, including future tools. In an AI chat, the tools `gui_hub_status` (free uses left, purchase link) and `gui_hub_activate_license` (paste the key from the purchase email) handle upgrading without leaving the conversation.
 
 ## About this repository
 

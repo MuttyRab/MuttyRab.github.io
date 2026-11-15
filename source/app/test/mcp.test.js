@@ -57,7 +57,15 @@ test('MCP: initialize, list tools from the catalog, call a tool, enforce trials'
   }
   const locked = await c.req('tools/call', { name: 'f2_rename', arguments: { folder: userData, find: 'a' } });
   assert.strictEqual(locked.result.isError, true);
-  assert.match(locked.result.content[0].text, /free tries are used up/);
+  assert.match(locked.result.content[0].text, /free uses of Rename Many Files on this computer are used up/);
+  assert.match(locked.result.content[0].text, /gui_hub_activate_license/);
+  assert.ok(names.includes('gui_hub_status') && names.includes('gui_hub_activate_license'));
+  const status = await c.req('tools/call', { name: 'gui_hub_status', arguments: {} });
+  assert.match(status.result.content[0].text, /Rename Many Files: 0/);
+  assert.match(status.result.content[0].text, /one-time/);
+  const noKey = await c.req('tools/call', { name: 'gui_hub_activate_license', arguments: {} });
+  assert.strictEqual(noKey.result.isError, true);
+  assert.match(init.result.instructions, /free uses/);
   const unknown = await c.req('nope/nope', {});
   assert.strictEqual(unknown.error.code, -32601);
   c.close();

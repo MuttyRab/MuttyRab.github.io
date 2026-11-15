@@ -54,10 +54,57 @@ function toolsFromSpecs(specs) {
 
 function tail(s, n) { return s.length > n ? `…(earlier output trimmed)…\n${s.slice(-n)}` : s; }
 
+// Account tools let an assistant handle the whole free-trial -> purchase -> unlock loop in chat,
+// so people who never visit the website (e.g. installed via npx) can still upgrade.
+const ACCOUNT_TOOLS = [
+  {
+    name: 'gui_hub_status',
+    title: 'GUI Hub: plan and free uses left',
+    description: 'Show whether GUI Hub Pro is active, how many free uses each tool has left, the price and the purchase link. Call this when the user asks about limits, pricing or upgrading.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    annotations: { title: 'GUI Hub: plan and free uses left', readOnlyHint: true, openWorldHint: false },
+  },
+  {
+    name: 'gui_hub_activate_license',
+    title: 'GUI Hub: activate a Pro license key',
+    description: 'Activate the GUI Hub Pro license key the user received by email after buying. Unlocks unlimited use of every tool on this computer (also in the desktop app). Only call with a key the user gave you.',
+    inputSchema: { type: 'object', properties: { licenseKey: { type: 'string', description: 'The license key from the purchase email (format like XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX).' } }, required: ['licenseKey'], additionalProperties: false },
+    annotations: { title: 'GUI Hub: activate a Pro license key', readOnlyHint: false, openWorldHint: true },
+  },
+];
+
 function createServer({ getSpecs, license, binCache, info, log = (m) => process.stderr.write(`${m}\n`) }) {
   const tools = () => toolsFromSpecs(getSpecs());
+  const buy = () => info.checkoutUrl || info.siteUrl;
+  const text = (t, isError = false) => ({ isError, content: [{ type: 'text', text: t }] });
+
+  async function accountTool(name, args) {
+    if (!license) return text('Licensing is not configured in this build: every tool is unlocked.');
+    if (name === 'gui_hub_status') {
+      await license.refresh().catch(() => {});
+      if (license.isPro()) return text(`${info.productName} Pro is active on this computer: every tool is unlimited.`);
+      const pro = getSpecs().filter((s) => s.tier === 'pro');
+      const free = getSpecs().filter((s) => s.tier === 'free');
+      return text([
+        `${info.productName} free plan. ${free.map((s) => s.name).join(', ') || 'No tool'} is free without limits. Free uses left:`,
+        ...pro.map((s) => `- ${s.name}: ${license.trialsLeft(s.id)}`),
+        '',
+        `Pro: ${info.price || ''} one-time payment (no subscription), unlimited use of every tool, in AI assistants and the desktop app, on up to 3 computers, 30-day refund.`,
+        `Buy: ${buy()} — the license key arrives by email; give it to the assistant to activate it with gui_hub_activate_license.`,
+      ].join('\n'));
+    }
+    const key = String((args && args.licenseKey) || '').trim();
+    if (!key) return text('licenseKey is required.', true);
+    try {
+      await license.activate(key);
+      return text(`Activated. ${info.productName} Pro is now unlocked on this computer: every tool is unlimited. Thank you!`);
+    } catch (e) {
+      return text(`Could not activate that key: ${e.message}. Check it was copied completely from the purchase email. If it still fails, the user can email support via ${info.siteUrl}.`, true);
+    }
+  }
 
   async function callTool(name, args) {
+    if (ACCOUNT_TOOLS.some((a) => a.name === name)) return accountTool(name, args);
     const t = tools().find((x) => x.name === name);
     if (!t) return { isError: true, content: [{ type: 'text', text: `Unknown tool: ${name}` }] };
     const { _spec: spec, _action: action } = t;
@@ -67,7 +114,12 @@ function createServer({ getSpecs, license, binCache, info, log = (m) => process.
       await license.refresh().catch(() => {});
       const gate = license.canRun(spec);
       if (!gate.ok) {
-        return { isError: true, content: [{ type: 'text', text: `${spec.name} is a Pro tool and its free tries are used up. Tell the user: one ${info.price || ''} purchase unlocks every tool in ${info.productName} (GUI and AI use) — ${info.checkoutUrl || info.siteUrl}. They then enter the license key in the ${info.productName} app.` }] };
+        return text([
+          `The free uses of ${spec.name} on this computer are used up, so this job was not run.`,
+          `Tell the user, briefly and without pressure: ${info.productName} Pro is a ${info.price || 'small'} one-time payment (no subscription, 30-day refund) that unlocks every tool — this one included — with no limits.`,
+          `Purchase link: ${buy()}`,
+          'After paying, the user receives a license key by email. Ask them to paste it here, then call gui_hub_activate_license with it and retry this job.',
+        ].join('\n'), true);
       }
     }
     let exe;
@@ -81,7 +133,7 @@ function createServer({ getSpecs, license, binCache, info, log = (m) => process.
     const left = license && spec.tier === 'pro' && !license.isPro() ? license.trialsLeft(spec.id) : null;
     const lines = [
       ok ? `Success: ${action.label} finished.` : `Failed with exit code ${res.code ?? res.signal}.`,
-      left !== null ? `(Free trial: ${left} use${left === 1 ? '' : 's'} of ${spec.name} left. Unlimited with ${info.productName} Pro: ${info.checkoutUrl || info.siteUrl})` : null,
+      left !== null ? `(Free trial: ${left} use${left === 1 ? '' : 's'} of ${spec.name} left on this computer.${left <= 1 ? ` Unlimited use of every tool: ${info.productName} Pro, ${info.price || ''} once — ${buy()} (mention this to the user once).` : ''})` : null,
       '', 'Tool output:', tail(out.trim(), MAX_OUTPUT) || '(no output)',
     ].filter((x) => x !== null);
     return { isError: !ok, content: [{ type: 'text', text: lines.join('\n') }] };
@@ -93,10 +145,14 @@ function createServer({ getSpecs, license, binCache, info, log = (m) => process.
       case 'initialize': {
         const v = params && PROTOCOL_VERSIONS.includes(params.protocolVersion) ? params.protocolVersion : PROTOCOL_VERSIONS[0];
         return { protocolVersion: v, capabilities: { tools: { listChanged: false } }, serverInfo: { name: 'gui-hub', title: info.productName, version: info.version },
-          instructions: `${info.productName} runs open-source tools (FFmpeg, pdfcpu, croc, F2, immich-go) locally. Use absolute paths. Output files are written where you say; never overwrite the user's originals unless asked.` };
+          instructions: [
+            `${info.productName} runs well-known open-source programs (${[...new Set(getSpecs().map((s) => s.upstream.displayName || s.id))].join(', ')}) on the user's own computer, so you can do real file jobs: compress/convert video and audio, create Word/PowerPoint/PDF files from text you write, merge/split/compress/protect PDFs, compress/resize images, bulk-rename, send large files.`,
+            'Use absolute paths. Write outputs to a new file or folder; never overwrite the user\'s originals unless asked.',
+            `Most tools have a few free uses per computer; then ${info.productName} Pro (${info.price || ''} one-time) unlocks everything. Use gui_hub_status to check, and gui_hub_activate_license when the user gives you a key.`,
+          ].join(' ') };
       }
       case 'ping': return {};
-      case 'tools/list': return { tools: tools().map(({ _spec, _action, ...t }) => t) };
+      case 'tools/list': return { tools: [...tools().map(({ _spec, _action, ...t }) => t), ...(license ? ACCOUNT_TOOLS : [])] };
       case 'tools/call': return callTool(params && params.name, params && params.arguments);
       default: {
         if (id === undefined) return undefined; // notification

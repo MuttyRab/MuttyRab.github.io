@@ -50,7 +50,7 @@ const server = createServer({
   getSpecs: () => specs,
   license,
   binCache: path.join(userDir, 'tools'),
-  info: { productName, version: pkg.version, checkoutUrl: config.checkoutUrl, siteUrl: config.siteUrl, price: '$19' },
+  info: { productName, version: pkg.version, checkoutUrl: config.checkoutUrl, siteUrl: config.siteUrl, price: config.price || '$9' },
 });
 server.start();
 
