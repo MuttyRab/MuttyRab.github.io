@@ -45,7 +45,7 @@ const userDir = userDataDir();
 fs.mkdirSync(path.join(userDir, 'tools'), { recursive: true });
 const { specs: bundled } = loadCatalog(catalogDir(), { includeBeta: process.env.GUIHUB_BETA === '1' });
 // `--product=<id>` (or GUIHUB_PRODUCT) serves only that product's tools, e.g. for a per-product listing.
-const onlyProduct = (process.argv.find((a) => a.startsWith('--product=')) || '').slice(10) || process.env.GUIHUB_PRODUCT || '';
+const onlyProduct = (process.argv.find((a) => a.startsWith('--product=')) || '').slice(10) || process.env.GUIHUB_PRODUCT || config.product || '';
 const forProduct = (list) => (onlyProduct ? list.filter((s) => (s.product || 'essentials') === onlyProduct) : list);
 let specs = forProduct(bundled);
 const bundledProducts = loadProducts(catalogDir());

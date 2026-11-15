@@ -1,6 +1,6 @@
 {
   "name": "gui-hub-mcp",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "GUI Hub MCP server: FFmpeg, Pandoc, Typst, DuckDB, pdfcpu, Caesium and more as local tools for AI assistants (Claude, Cursor, VS Code, Windsurf). Run: npx -y https://guihub.cc/mcp.tgz",
   "bin": {
     "gui-hub-mcp": "source/app/src/mcp-entry.js"

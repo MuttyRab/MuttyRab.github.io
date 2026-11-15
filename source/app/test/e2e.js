@@ -96,11 +96,12 @@ function seed(id) {
   await page.click('#mcp-btn');
   await page.waitForSelector('#mcp-dialog[open]');
   assert.match(await page.textContent('#mcp-json'), /gui-hub/);
+  const mcpKey = (o) => Object.keys(o).find((k) => k.startsWith('gui-hub'));
   await page.click('#mcp-claude');
   await page.waitForFunction(() => /Added to Claude Desktop/.test(document.querySelector('#mcp-result').textContent));
   await page.screenshot({ path: path.join(shots, '5-mcp.png') });
   const cfgFile = process.platform === 'darwin' ? path.join(fakeHome, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json') : path.join(fakeHome, '.config', 'Claude', 'claude_desktop_config.json');
-  const cfg = JSON.parse(fs.readFileSync(cfgFile, 'utf8')).mcpServers['gui-hub'];
+  const servers = JSON.parse(fs.readFileSync(cfgFile, 'utf8')).mcpServers; const cfg = servers[mcpKey(servers)];
   const { spawn } = require('child_process');
   const srv = spawn(cfg.command, cfg.args, { env: { ...process.env, ...cfg.env, GUIHUB_USER_DATA: userData, ...(packaged ? {} : { GUIHUB_CATALOG: catalog }) }, stdio: ['pipe', 'pipe', 'inherit'] });
   const answers = await new Promise((resolve, reject) => {

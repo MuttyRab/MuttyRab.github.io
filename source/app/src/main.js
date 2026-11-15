@@ -27,6 +27,10 @@ const userDir = app.getPath('userData');
 const binCache = path.join(userDir, 'tools');
 fs.mkdirSync(binCache, { recursive: true });
 
+// Each GUI Hub product ships as its own app: config.product (set at build time) limits the tools.
+const onlyProduct = config.product || process.env.GUIHUB_PRODUCT || '';
+const forProduct = (list) => (onlyProduct ? list.filter((s) => (s.product || 'essentials') === onlyProduct) : list);
+const serverKey = onlyProduct ? `gui-hub-${onlyProduct}` : 'gui-hub';
 let specs = [];
 let bundledSpecs = [];
 const bundledProducts = loadProducts(catalogDir);
@@ -39,7 +43,7 @@ const running = new Map();
 function loadSpecs() {
   const { specs: s, errors } = loadCatalog(catalogDir, { includeBeta: isDev || process.env.GUIHUB_BETA === '1' });
   for (const e of errors) console.error('spec error', e.file, e.problems);
-  bundledSpecs = s;
+  bundledSpecs = forProduct(s);
   specs = s;
 }
 
@@ -48,7 +52,8 @@ async function refreshRemoteCatalog() {
   if (!config.catalogUrl || process.env.GUIHUB_CATALOG) return;
   const remote = await loadRemote(config.catalogUrl, path.join(userDir, 'catalog-cache.json'));
   if (!remote) return;
-  const { specs: merged, rejected } = mergeCatalog(bundledSpecs, remote);
+  const { specs: mergedAll, rejected } = mergeCatalog(bundledSpecs, remote);
+  const merged = forProduct(mergedAll);
   for (const r of rejected) console.error('remote spec rejected', r.id, r.problems);
   specs = merged;
   products = mergeProducts(bundledProducts, remote);
@@ -156,7 +161,7 @@ const clientConfigFiles = {
 ipcMain.handle('mcp:info', () => {
   const { toolsFromSpecs } = require('./core/mcp');
   return {
-    config: { mcpServers: { 'gui-hub': mcpServerConfig() } },
+    config: { mcpServers: { [serverKey]: mcpServerConfig() } },
     tools: toolsFromSpecs(specs).map((t) => ({ name: t.name, title: t.title })),
     clients: Object.fromEntries(Object.entries(clientConfigFiles).map(([k, f]) => [k, fs.existsSync(path.dirname(f()))])),
   };
@@ -169,7 +174,7 @@ ipcMain.handle('mcp:install', async (_e, { client }) => {
     try { cfg = JSON.parse(fs.readFileSync(file, 'utf8') || '{}'); } catch (_) { throw new Error(`Could not read ${file}. Fix or remove it, then try again.`); }
     fs.copyFileSync(file, `${file}.backup-${Date.now()}`);
   }
-  cfg.mcpServers = { ...(cfg.mcpServers || {}), 'gui-hub': mcpServerConfig() };
+  cfg.mcpServers = { ...(cfg.mcpServers || {}), [serverKey]: mcpServerConfig() };
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, `${JSON.stringify(cfg, null, 2)}\n`);
   return { file };

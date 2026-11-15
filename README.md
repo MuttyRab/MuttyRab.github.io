@@ -8,6 +8,7 @@
 npx -y https://guihub.cc/mcp.tgz
 ```
 
+- **One product only:** add `--product=essentials` (video, photos, Word/PowerPoint/PDF, renaming, sending) or `--product=data` (CSV/Excel/Parquet/JSON with DuckDB).
 - **Claude Code:** `claude mcp add gui-hub -- npx -y https://guihub.cc/mcp.tgz`
 - **Cursor / VS Code / Windsurf / Claude Desktop** (`mcpServers` config):
 
@@ -15,7 +16,7 @@ npx -y https://guihub.cc/mcp.tgz
 { "mcpServers": { "gui-hub": { "command": "npx", "args": ["-y", "https://guihub.cc/mcp.tgz"] } } }
 ```
 
-- **Claude Desktop, one click:** [gui-hub.mcpb](https://guihub.cc/download/mcpb)
+- **Claude Desktop, one click:** [Essentials](https://guihub.cc/download/essentials/mcpb) · [Data](https://guihub.cc/download/data/mcpb)
 - Needs Node.js 18+. Each program is downloaded on first use from its official release and verified by SHA-256.
 
 GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known open-source command-line tools simple point-and-click forms — and exposes them as an **MCP (Model Context Protocol) server**, so Claude Desktop, Cursor, VS Code, Windsurf and other AI assistants can run them **locally**.
