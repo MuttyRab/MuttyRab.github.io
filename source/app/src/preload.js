@@ -22,4 +22,5 @@ contextBridge.exposeInMainWorld('api', {
   onOutput: on('run:output'),
   onExit: on('run:exit'),
   onLicenseChanged: on('license:changed'),
+  onCatalogChanged: on('catalog:changed'),
 });

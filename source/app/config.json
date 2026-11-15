@@ -4,5 +4,6 @@
   "checkoutUrl": "https://buy.polar.sh/polar_cl_5W9WEBwxNsjjbHRYb9j4hhD8bKUCG4sohMrZW17awUN",
   "siteUrl": "https://muttyrab.github.io",
   "supportEmail": "",
-  "trialRuns": 3
+  "trialRuns": 3,
+  "catalogUrl": "https://muttyrab.github.io/catalog.json"
 }

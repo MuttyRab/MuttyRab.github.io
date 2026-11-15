@@ -7,6 +7,7 @@ const { buildCommand } = require('./core/args');
 const { ensureBinary, isInstalled } = require('./core/binaries');
 const { runTool } = require('./core/runner');
 const { LicenseStore } = require('./core/license');
+const { loadRemote, mergeCatalog, newerVersion } = require('./core/remote-catalog');
 
 const isDev = !app.isPackaged;
 const resources = isDev ? path.join(__dirname, '..', '..') : process.resourcesPath;
@@ -19,6 +20,8 @@ const binCache = path.join(userDir, 'tools');
 fs.mkdirSync(binCache, { recursive: true });
 
 let specs = [];
+let bundledSpecs = [];
+let remoteInfo = null;
 let license;
 let win;
 const running = new Map();
@@ -26,7 +29,20 @@ const running = new Map();
 function loadSpecs() {
   const { specs: s, errors } = loadCatalog(catalogDir, { includeBeta: isDev || process.env.GUIHUB_BETA === '1' });
   for (const e of errors) console.error('spec error', e.file, e.problems);
+  bundledSpecs = s;
   specs = s;
+}
+
+// New and fixed tools arrive from the website's catalog.json without reinstalling the app.
+async function refreshRemoteCatalog() {
+  if (!config.catalogUrl || process.env.GUIHUB_CATALOG) return;
+  const remote = await loadRemote(config.catalogUrl, path.join(userDir, 'catalog-cache.json'));
+  if (!remote) return;
+  const { specs: merged, rejected } = mergeCatalog(bundledSpecs, remote);
+  for (const r of rejected) console.error('remote spec rejected', r.id, r.problems);
+  specs = merged;
+  remoteInfo = remote.app || null;
+  if (win) win.webContents.send('catalog:changed');
 }
 
 function toolSummary(spec) {
@@ -49,12 +65,15 @@ app.whenReady().then(async () => {
   loadSpecs();
   createWindow();
   license.refresh().then(() => win && win.webContents.send('license:changed')).catch(() => {});
+  refreshRemoteCatalog().catch(() => {});
 });
 app.on('window-all-closed', () => { for (const r of running.values()) r.cancel(); app.quit(); });
 
 ipcMain.handle('app:info', () => ({
   productName: config.productName, version: app.getVersion(), checkoutUrl: config.checkoutUrl, siteUrl: config.siteUrl,
   supportEmail: config.supportEmail, licensing: license.configured(), pro: license.isPro(),
+  legalUrl: config.siteUrl ? `${config.siteUrl}/legal.html` : '',
+  update: remoteInfo && newerVersion(remoteInfo.version, app.getVersion()) ? { version: remoteInfo.version, url: remoteInfo.downloadUrl || config.siteUrl } : null,
 }));
 ipcMain.handle('catalog:list', () => specs.map(toolSummary));
 

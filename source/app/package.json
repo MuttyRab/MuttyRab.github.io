@@ -1,7 +1,7 @@
 {
   "name": "gui-hub",
   "productName": "GUI Hub",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Friendly desktop windows for great open-source command-line tools.",
   "main": "src/main.js",
   "private": true,
@@ -20,12 +20,56 @@
   "build": {
     "appId": "app.guihub.desktop",
     "productName": "GUI Hub",
-    "files": ["src/**/*", "config.json", "package.json"],
-    "extraResources": [{ "from": "../catalog", "to": "catalog", "filter": ["*/spec.json"] }],
+    "files": [
+      "src/**/*",
+      "config.json",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../catalog",
+        "to": "catalog",
+        "filter": [
+          "*/spec.json"
+        ]
+      }
+    ],
     "artifactName": "GUI-Hub-${os}-${arch}.${ext}",
-    "mac": { "target": [{ "target": "dmg", "arch": ["arm64", "x64"] }], "category": "public.app-category.utilities" },
-    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }] },
-    "nsis": { "oneClick": true, "perMachine": false },
-    "linux": { "target": ["AppImage"], "category": "Utility" }
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "category": "public.app-category.utilities",
+      "identity": "-"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Utility",
+      "executableArgs": [
+        "--no-sandbox"
+      ]
+    }
   }
 }

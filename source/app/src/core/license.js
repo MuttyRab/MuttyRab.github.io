@@ -3,7 +3,7 @@
 // Public endpoints, no secret in the app: organization_id is not a secret.
 const https = require('https');
 const fs = require('fs');
-const os = require('os');
+// Privacy: the activation label is generic. We never send hostnames or user names.
 
 const POLAR_API = 'https://api.polar.sh/v1/customer-portal/license-keys';
 const OFFLINE_GRACE_DAYS = 14;
@@ -68,7 +68,7 @@ class LicenseStore {
     key = String(key || '').trim();
     if (!key) throw new Error('Enter your license key.');
     const org = this.config.polarOrganizationId;
-    const act = await this.post(`${POLAR_API}/activate`, { key, organization_id: org, label: `${os.hostname()} (${process.platform})`.slice(0, 100) });
+    const act = await this.post(`${POLAR_API}/activate`, { key, organization_id: org, label: `GUI Hub on ${{ darwin: 'macOS', win32: 'Windows', linux: 'Linux' }[process.platform] || process.platform}` });
     let activationId = null;
     if (act.status >= 200 && act.status < 300 && act.json) activationId = act.json.id;
     else if (act.status !== 403 && act.status !== 404 && act.status !== 422) throw new Error(`License server error (HTTP ${act.status}). Try again later.`);

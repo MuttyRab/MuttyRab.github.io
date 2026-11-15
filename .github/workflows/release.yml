@@ -32,6 +32,17 @@ jobs:
         shell: bash
         env: { CSC_IDENTITY_AUTO_DISCOVERY: 'false' }
         run: npx electron-builder --publish never
+      - name: Test the packaged app (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: source/app
+        run: E2E_PACKAGED="$PWD/dist/linux-unpacked/gui-hub" xvfb-run -a node test/e2e.js "$RUNNER_TEMP/shots"
+      - name: Test the packaged app (macOS)
+        if: matrix.os == 'macos-latest'
+        working-directory: source/app
+        run: |
+          exe="$(ls -d dist/mac*/GUI\ Hub.app | head -1)/Contents/MacOS/GUI Hub"
+          codesign --verify --deep --strict "$(dirname "$(dirname "$(dirname "$exe")")")" && echo "ad-hoc signature valid"
+          E2E_PACKAGED="$PWD/$exe" node test/e2e.js "$RUNNER_TEMP/shots"
       - uses: actions/upload-artifact@v4
         with:
           name: installers-${{ matrix.os }}

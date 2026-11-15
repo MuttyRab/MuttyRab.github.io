@@ -29,7 +29,13 @@ function seed(id) {
 (async () => {
   seed('f2'); seed('croc');
   const work = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-work-'));
-  const app = await electron.launch({
+  // E2E_PACKAGED=<path to built app executable> tests the real installer contents (bundled
+  // catalog, asar, config) instead of the source tree.
+  const packaged = process.env.E2E_PACKAGED;
+  const app = await electron.launch(packaged ? {
+    executablePath: packaged, args: ['--no-sandbox'],
+    env: { ...process.env, GUIHUB_USER_DATA: userData },
+  } : {
     executablePath: require('electron'),
     args: [appDir, '--no-sandbox'],
     env: { ...process.env, GUIHUB_USER_DATA: userData, GUIHUB_CATALOG: catalog },

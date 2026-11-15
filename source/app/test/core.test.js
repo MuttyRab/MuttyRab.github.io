@@ -151,3 +151,22 @@ test('license: trials, activation, revocation, offline grace', async () => {
   const reloaded = new LicenseStore(path.join(tmp, 'l.json'), { polarOrganizationId: 'org' }, { post, now: () => now });
   assert.strictEqual(reloaded.state.status, 'revoked');
 });
+
+test('remote catalog: accepts pinned upstream specs, rejects anything else', () => {
+  const { mergeCatalog, newerVersion } = require('../src/core/remote-catalog');
+  const good = JSON.parse(JSON.stringify(spec('f2')));
+  good.status = 'live';
+  good.tagline = 'updated remotely';
+  const evil = JSON.parse(JSON.stringify(spec('croc')));
+  evil.binary.assets['linux-x64'].url = 'https://evil.example/croc.tar.gz';
+  const nosum = JSON.parse(JSON.stringify(spec('pdfcpu')));
+  delete nosum.binary.assets['win32-x64'].sha256;
+  const { specs: merged, rejected } = mergeCatalog(specs, { specs: [good, evil, nosum] });
+  assert.strictEqual(merged.find((s) => s.id === 'f2').tagline, 'updated remotely');
+  assert.notStrictEqual(merged.find((s) => s.id === 'croc').binary.assets['linux-x64'].url, 'https://evil.example/croc.tar.gz');
+  assert.deepStrictEqual(rejected.map((r) => r.id).sort(), ['croc', 'pdfcpu']);
+  const retired = { ...good, status: 'retired' };
+  assert.ok(!mergeCatalog(specs, { specs: [retired] }).specs.some((s) => s.id === 'f2'));
+  assert.strictEqual(newerVersion('0.10.0', '0.9.9'), true);
+  assert.strictEqual(newerVersion('0.2.0', '0.2.0'), false);
+});

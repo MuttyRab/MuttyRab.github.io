@@ -46,6 +46,10 @@ function renderList() {
 }
 
 function renderLicense() {
+  const up = state.info && state.info.update;
+  $('update-btn').hidden = !up;
+  if (up) $('update-btn').textContent = `Update available: v${up.version}`;
+  $('legal-btn').hidden = !(state.info && state.info.legalUrl);
   const pro = state.info && state.info.pro;
   $('license-badge').textContent = pro ? 'License active — all tools unlocked' : 'Free version';
   $('license-btn').textContent = pro ? 'Manage license' : 'Enter license key';
@@ -262,6 +266,9 @@ async function init() {
     await refreshTools();
   });
   api.onLicenseChanged(refreshTools);
+  api.onCatalogChanged(refreshTools);
+  $('update-btn').addEventListener('click', () => api.open(state.info.update.url));
+  $('legal-btn').addEventListener('click', () => api.open(state.info.legalUrl));
   if (state.tools.length) selectTool(state.tools[0].id);
 }
 
