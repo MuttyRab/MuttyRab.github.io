@@ -4,28 +4,41 @@
       "id": "essentials",
       "name": "GUI Hub Essentials",
       "short": "Essentials",
-      "tagline": "Video, photos, Word/PowerPoint/PDF files, renaming and sending \u2014 for you and your AI.",
+      "tagline": "Video, photos, Word/PowerPoint/PDF files, renaming and sending — for you and your AI.",
       "price": "$9",
       "checkoutUrl": "https://buy.polar.sh/polar_cl_5W9WEBwxNsjjbHRYb9j4hhD8bKUCG4sohMrZW17awUN",
       "benefitIds": [
         "07d8e0f4-fb9c-4d40-96f3-d1caa2ba21a2"
+      ],
+      "jobs": [
+        "Transcribe recordings & videos to text",
+        "Make Word, PowerPoint & PDF files",
+        "Compress videos and photos",
+        "Unzip RAR/7z, zip with a password",
+        "Merge, split & protect PDFs"
       ]
     },
     {
       "id": "data",
       "name": "GUI Hub Data",
       "short": "Data",
-      "tagline": "Open, convert, combine and analyse CSV, Excel, Parquet and JSON files \u2014 for you and your AI.",
+      "tagline": "Open, convert, combine and analyse CSV, Excel, Parquet and JSON files — for you and your AI.",
       "price": "$9",
       "checkoutUrl": "https://buy.polar.sh/polar_cl_dSIVlgdWuKKgkXrRlbhfU5Ld3N4TchEcK31HS2Cw6vy",
       "benefitIds": [
         "9902c1bc-bd43-45b5-bb2b-ef5a5c92bd98"
+      ],
+      "jobs": [
+        "Open CSV/Excel files too big for Excel",
+        "Convert CSV ↔ Excel ↔ JSON ↔ Parquet",
+        "Combine many files, remove duplicates",
+        "Ask questions about your data in plain words"
       ]
     }
   ],
   "allAccess": {
     "name": "GUI Hub All-Access",
-    "price": "$19",
+    "price": "$14",
     "checkoutUrl": "https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD",
     "benefitIds": [
       "7b1a475b-904a-4e37-9394-48ae8e8addb9"
