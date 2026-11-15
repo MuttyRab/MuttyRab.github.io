@@ -41,7 +41,10 @@ jobs:
         working-directory: source/app
         run: |
           exe="$(ls -d dist/mac*/GUI\ Hub.app | head -1)/Contents/MacOS/GUI Hub"
-          codesign --verify --deep --strict "$(dirname "$(dirname "$(dirname "$exe")")")" && echo "ad-hoc signature valid"
+          app="$(dirname "$(dirname "$(dirname "$exe")")")"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          codesign -dv "$app" 2>&1 | grep -q "Signature=adhoc"
+          echo "ad-hoc signature valid"
           E2E_PACKAGED="$PWD/$exe" node test/e2e.js "$RUNNER_TEMP/shots"
       - uses: actions/upload-artifact@v4
         with:
