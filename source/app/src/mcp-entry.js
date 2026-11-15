@@ -12,8 +12,16 @@ const { loadRemote, mergeCatalog } = require('./core/remote-catalog');
 const { createServer } = require('./core/mcp');
 
 const appRoot = path.join(__dirname, '..');
-const config = JSON.parse(fs.readFileSync(path.join(appRoot, 'config.json'), 'utf8'));
-const pkg = JSON.parse(fs.readFileSync(path.join(appRoot, 'package.json'), 'utf8'));
+// Packaged builds unpack src/ and config.json next to app.asar; package.json stays inside the asar
+// (readable here because Electron's node mode understands asar paths).
+function readJson(name) {
+  for (const dir of [appRoot, appRoot.replace(/app\.asar\.unpacked$/, 'app.asar')]) {
+    try { return JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8')); } catch (_) { /* try next */ }
+  }
+  return {};
+}
+const config = readJson('config.json');
+const pkg = readJson('package.json');
 const productName = pkg.productName || config.productName;
 
 // Same folder Electron uses for the GUI (app.getPath('userData')).
