@@ -75,12 +75,12 @@ function seed(id) {
   assert.ok(!/arg: .*alpha/.test(out2), 'code must not be in argv');
   await page.screenshot({ path: path.join(shots, '3-croc-receive.png') });
 
-  // License dialog (not configured in this build) shows a friendly error.
+  // License dialog: a fake key gets a friendly error (from Polar when configured, else "not set up").
   await page.click('#license-btn');
   await page.fill('#license-key', 'TEST-KEY');
   await page.click('#activate-btn');
   await page.waitForFunction(() => document.querySelector('#license-error').textContent.length > 0);
-  assert.match(await page.textContent('#license-error'), /not set up/);
+  assert.match(await page.textContent('#license-error'), /not set up|not found|License (check|server)/);
   await page.screenshot({ path: path.join(shots, '4-license.png') });
 
   await app.close();
