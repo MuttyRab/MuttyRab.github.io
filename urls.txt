@@ -3,6 +3,7 @@ https://muttyrab.github.io/tools/croc.html
 https://muttyrab.github.io/tools/f2.html
 https://muttyrab.github.io/tools/ffmpeg.html
 https://muttyrab.github.io/tools/immich-go.html
+https://muttyrab.github.io/tools/pandoc.html
 https://muttyrab.github.io/tools/pdfcpu.html
 https://muttyrab.github.io/guides/
 https://muttyrab.github.io/guides/merge-compress-protect-pdf-offline.html
@@ -12,4 +13,6 @@ https://muttyrab.github.io/guides/google-takeout-to-immich-without-command-line.
 https://muttyrab.github.io/guides/compress-video-for-discord-email-offline.html
 https://muttyrab.github.io/guides/video-to-gif-high-quality.html
 https://muttyrab.github.io/guides/extract-audio-from-video-mp3.html
+https://muttyrab.github.io/guides/convert-word-to-markdown-for-chatgpt-claude.html
+https://muttyrab.github.io/guides/convert-markdown-to-word-docx.html
 https://muttyrab.github.io/legal.html

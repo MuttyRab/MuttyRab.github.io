@@ -1,7 +1,7 @@
 {
   "id": "ffmpeg",
   "name": "Video Toolkit",
-  "tagline": "Shrink videos for email or Discord, convert to MP4, pull out the audio as MP3, make GIFs and trim clips — on your own computer, no uploading.",
+  "tagline": "Shrink videos for email or Discord, convert video and audio, pull out MP3s, even out volume, make GIFs and trim clips — on your own computer, no uploading.",
   "keywords": [
     "compress video",
     "video compressor",
@@ -299,6 +299,122 @@
       ],
       "openAfter": "out",
       "successMessage": "Audio saved."
+    },
+    {
+      "id": "audio-convert",
+      "label": "Convert audio",
+      "runLabel": "Convert",
+      "description": "Convert any audio (or the sound of a video) to MP3, M4A, WAV or FLAC — and optionally even out the volume so quiet recordings are easy to hear.",
+      "mcpDescription": "Convert an audio or video file's sound to mp3, m4a, wav or flac. normalize=true applies EBU R128 loudness normalization (loudnorm) — good for voice recordings and podcasts.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ],
+      "fields": [
+        {
+          "id": "input",
+          "label": "Audio or video file",
+          "type": "file",
+          "required": true
+        },
+        {
+          "id": "format",
+          "label": "Convert to",
+          "type": "select",
+          "default": "mp3",
+          "options": [
+            {
+              "value": "mp3",
+              "label": "MP3 (works everywhere)"
+            },
+            {
+              "value": "m4a",
+              "label": "M4A / AAC (Apple-friendly)"
+            },
+            {
+              "value": "wav",
+              "label": "WAV (uncompressed)"
+            },
+            {
+              "value": "flac",
+              "label": "FLAC (lossless, smaller than WAV)"
+            }
+          ]
+        },
+        {
+          "id": "normalize",
+          "label": "Even out the volume (loudness normalization)",
+          "type": "checkbox"
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "help": "Use the matching extension, e.g. talk.mp3"
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-vn",
+        {
+          "field": "normalize",
+          "flag": "-af"
+        },
+        {
+          "when": "normalize",
+          "argv": [
+            "loudnorm=I=-16:TP=-1.5:LRA=11"
+          ]
+        },
+        {
+          "when": "format",
+          "equals": "mp3",
+          "argv": [
+            "-acodec",
+            "libmp3lame",
+            "-ab",
+            "192k"
+          ]
+        },
+        {
+          "when": "format",
+          "equals": "m4a",
+          "argv": [
+            "-acodec",
+            "aac",
+            "-ab",
+            "192k"
+          ]
+        },
+        {
+          "when": "format",
+          "equals": "wav",
+          "argv": [
+            "-acodec",
+            "pcm_s16le"
+          ]
+        },
+        {
+          "when": "format",
+          "equals": "flac",
+          "argv": [
+            "-acodec",
+            "flac"
+          ]
+        },
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Converted."
     },
     {
       "id": "gif",

@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for croc, F2, FFmpeg, immich-go, pdfcpu
+# GUI Hub — desktop GUI + MCP server for croc, F2, FFmpeg, immich-go, Pandoc, pdfcpu
 
 **Website and downloads:** https://muttyrab.github.io
 
@@ -9,7 +9,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (17)
+## MCP tools (19)
 
 | Tool | What it does |
 |---|---|
@@ -18,10 +18,12 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `f2_undo` | Undo the most recent rename that was applied in this folder. |
 | `ffmpeg_compress` | Make a video much smaller (or turn any video into a widely playable MP4). Lower quality and smaller size = smaller file. |
 | `ffmpeg_audio` | Save just the sound of a video as an MP3 — for music, lectures or podcasts. |
+| `ffmpeg_audio_convert` | Convert an audio or video file's sound to mp3, m4a, wav or flac. normalize=true applies EBU R128 loudness normalization (loudnorm) — good for voice recordings and podcasts. |
 | `ffmpeg_gif` | Turn a short part of a video into a good-looking animated GIF. |
 | `ffmpeg_trim` | Cut out a part of a video instantly, without re-encoding (no quality loss). Cuts snap to the nearest keyframe. |
 | `immich_go_from_google_photos` | Import Google Photos Takeout .zip files into an Immich server (keeps albums, dates, GPS). dryRun defaults to true: run it first and report the summary before uploading for real. |
 | `immich_go_from_folder` | Upload every photo and video in a folder and its subfolders. |
+| `pandoc_convert` | Convert documents between formats with Pandoc (input format is detected from the file extension: .docx .md .html .epub .odt .rtf .txt .tex). Several inputs are concatenated in order. Use to='gfm' to turn Word/HTML into Markdown for reading or editing. |
 | `pdfcpu_merge` | Combine several PDFs into one, in the order listed. |
 | `pdfcpu_split` | Split a PDF into smaller files. |
 | `pdfcpu_optimize` | Shrink a PDF by removing duplicate and unused data. Text and images stay the same quality. |

@@ -1,0 +1,155 @@
+{
+  "id": "pandoc",
+  "name": "Document Converter",
+  "tagline": "Convert Word, Markdown, HTML, EPUB, ODT and RTF documents into each other — e.g. Word to Markdown for ChatGPT or Claude, or Markdown notes to a Word file.",
+  "keywords": [
+    "docx to markdown",
+    "markdown to word",
+    "convert word to markdown",
+    "html to docx",
+    "epub converter",
+    "pandoc gui",
+    "pandoc mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "jgm/pandoc",
+    "displayName": "Pandoc",
+    "license": "GPL-2.0",
+    "homepage": "https://pandoc.org"
+  },
+  "binary": {
+    "name": "pandoc",
+    "version": "3.14",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/jgm/pandoc/releases/download/3.14/pandoc-3.14-linux-amd64.tar.gz",
+        "path": "pandoc",
+        "sha256": "c5f4720cdefb3f7bdc5d07202ef579feef0d1370773c873804dd8fdaa8c4f1b8"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/jgm/pandoc/releases/download/3.14/pandoc-3.14-arm64-macOS.zip",
+        "path": "pandoc",
+        "sha256": "58d6593884fec9d4424b641b92503c316d9c36decb2891ff8d73ae74dd3b6304"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/jgm/pandoc/releases/download/3.14/pandoc-3.14-x86_64-macOS.zip",
+        "path": "pandoc",
+        "sha256": "891708579061e7b1c1a6ce0df30ebb3cb2b6d0ca045ed3c8554ab830c1e0c270"
+      },
+      "win32-x64": {
+        "url": "https://github.com/jgm/pandoc/releases/download/3.14/pandoc-3.14-windows-x86_64.zip",
+        "path": "pandoc.exe",
+        "sha256": "0144b96e8c7b023fd382ec5ef5bdc475e873f1019d6fa72502492df2c9a94a3b"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "convert",
+      "label": "Convert",
+      "runLabel": "Convert",
+      "description": "Choose one document (or several, which are joined in order) and the format you want.",
+      "mcpDescription": "Convert documents between formats with Pandoc (input format is detected from the file extension: .docx .md .html .epub .odt .rtf .txt .tex). Several inputs are concatenated in order. Use to='gfm' to turn Word/HTML into Markdown for reading or editing.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ],
+      "fields": [
+        {
+          "id": "inputs",
+          "label": "Document(s)",
+          "type": "files",
+          "required": true,
+          "filters": [
+            {
+              "name": "Documents",
+              "extensions": [
+                "docx",
+                "md",
+                "markdown",
+                "txt",
+                "html",
+                "htm",
+                "epub",
+                "odt",
+                "rtf",
+                "tex"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "to",
+          "label": "Convert to",
+          "type": "select",
+          "default": "docx",
+          "options": [
+            {
+              "value": "docx",
+              "label": "Word (.docx)"
+            },
+            {
+              "value": "gfm",
+              "label": "Markdown (.md)"
+            },
+            {
+              "value": "html",
+              "label": "Web page (.html)"
+            },
+            {
+              "value": "epub",
+              "label": "E-book (.epub)"
+            },
+            {
+              "value": "odt",
+              "label": "OpenDocument (.odt)"
+            },
+            {
+              "value": "rtf",
+              "label": "Rich Text (.rtf)"
+            },
+            {
+              "value": "plain",
+              "label": "Plain text (.txt)"
+            }
+          ]
+        },
+        {
+          "id": "toc",
+          "label": "Add a table of contents",
+          "type": "checkbox"
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "help": "Give the file the matching extension, e.g. report.docx or notes.md."
+        }
+      ],
+      "argv": [
+        "--standalone",
+        {
+          "field": "to",
+          "flag": "-t"
+        },
+        {
+          "field": "toc",
+          "flag": "--toc"
+        },
+        "-o",
+        {
+          "field": "out"
+        },
+        {
+          "field": "inputs"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Converted."
+    }
+  ]
+}

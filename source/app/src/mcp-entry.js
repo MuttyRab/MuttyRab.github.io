@@ -35,7 +35,7 @@ function userDataDir() {
 // Packaged: <resources>/app.asar.unpacked/src -> <resources>/catalog. Dev: app/src -> repo/catalog.
 function catalogDir() {
   if (process.env.GUIHUB_CATALOG) return process.env.GUIHUB_CATALOG;
-  const candidates = [path.join(appRoot, '..', 'catalog'), path.join(appRoot, '..', '..', 'catalog')];
+  const candidates = [path.join(appRoot, 'catalog'), path.join(appRoot, '..', 'catalog'), path.join(appRoot, '..', '..', 'catalog')];
   if (process.resourcesPath) candidates.unshift(path.join(process.resourcesPath, 'catalog'));
   return candidates.find((p) => fs.existsSync(p)) || candidates[0];
 }

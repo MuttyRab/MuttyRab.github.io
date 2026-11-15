@@ -70,3 +70,33 @@ jobs:
           else
             gh release create "$v" out/* --title "GUI Hub $v" --notes "Download for your computer at https://muttyrab.github.io" --latest
           fi
+
+  # One-file MCP bundle (Claude Desktop extension) + listing in the official MCP Registry.
+  mcp-registry:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      MCP_PUBLISHER_VERSION: v1.8.1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Build gui-hub.mcpb and server.json
+        run: |
+          v="v$(node -p "require('./source/app/package.json').version")"
+          echo "TAG=$v" >> "$GITHUB_ENV"
+          node source/scripts/build-mcpb.js source/app source/catalog out "https://github.com/${GITHUB_REPOSITORY}/releases/download/$v"
+      - name: Attach bundle to the release
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: gh release upload "$TAG" out/gui-hub.mcpb --clobber
+      - name: Publish to the MCP Registry
+        run: |
+          archive="mcp-publisher_linux_amd64.tar.gz"
+          curl --fail --location --silent --show-error --output "$archive" "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/$archive"
+          tar xzf "$archive" mcp-publisher
+          cp out/server.json server.json
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
