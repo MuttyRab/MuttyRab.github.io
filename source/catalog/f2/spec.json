@@ -1,7 +1,7 @@
 {
   "id": "f2",
-  "name": "Bulk Rename (F2)",
-  "tagline": "Rename hundreds of files at once with find-and-replace, numbering and photo dates. Preview every change first, undo any time.",
+  "name": "Rename Many Files",
+  "tagline": "Rename hundreds of files at once — numbering, find and replace, photo dates. Preview first, undo any time.",
   "keywords": [
     "bulk rename",
     "batch rename",

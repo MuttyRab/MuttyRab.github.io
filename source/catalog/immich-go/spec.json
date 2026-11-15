@@ -1,6 +1,6 @@
 {
   "id": "immich-go",
-  "name": "Google Photos → Immich (immich-go)",
+  "name": "Google Photos → Immich",
   "tagline": "Move your Google Photos Takeout or any photo folder into your Immich server, keeping albums, dates and locations.",
   "keywords": [
     "immich",

@@ -1,6 +1,6 @@
 {
   "id": "ffmpeg",
-  "name": "Video Toolkit (FFmpeg)",
+  "name": "Video Toolkit",
   "tagline": "Shrink videos for email or Discord, convert to MP4, pull out the audio as MP3, make GIFs and trim clips — on your own computer, no uploading.",
   "keywords": [
     "compress video",

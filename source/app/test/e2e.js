@@ -53,7 +53,7 @@ function seed(id) {
   await page.screenshot({ path: path.join(shots, '1-start.png') });
 
   // f2: pro tool on trial. Validation first.
-  await page.click('.tool-item:has-text("Bulk Rename")');
+  await page.click('.tool-item:has-text("Rename Many Files")');
   await page.click('#run-btn');
   assert.ok(await page.isVisible('.field.invalid'), 'required fields should be flagged');
   await page.click('.field[data-field="folder"] button:has-text("Choose")');
@@ -70,7 +70,7 @@ function seed(id) {
   await page.screenshot({ path: path.join(shots, '2-f2-preview.png') });
 
   // croc receive: secret goes through env, not argv.
-  await page.click('.tool-item:has-text("Send Files")');
+  await page.click('.tool-item:has-text("Send Big Files")');
   await page.click('.tab:has-text("Receive")');
   await page.fill('#f-code', '7777-alpha-bravo-charlie');
   await page.click('.field[data-field="dest"] button:has-text("Choose")');

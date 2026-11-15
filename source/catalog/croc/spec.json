@@ -1,7 +1,7 @@
 {
   "id": "croc",
-  "name": "Send Files (croc)",
-  "tagline": "Send files or folders to any computer with a short code phrase. End-to-end encrypted, no accounts.",
+  "name": "Send Big Files",
+  "tagline": "Send files or whole folders of any size to another computer with a short code. Encrypted, no account, no size limit.",
   "keywords": [
     "file transfer",
     "send files",
