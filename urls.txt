@@ -28,6 +28,7 @@ https://guihub.cc/ai/pdfcpu-form-fill.html
 https://guihub.cc/ai/speak-speak.html
 https://guihub.cc/ai/speakers-diarize.html
 https://guihub.cc/ai/transcribe-transcribe.html
+https://guihub.cc/ai/transcribe-meeting.html
 https://guihub.cc/ai/transcribe-subtitles.html
 https://guihub.cc/ai/typst-write.html
 https://guihub.cc/ai/upscale-upscale.html

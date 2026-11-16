@@ -354,3 +354,17 @@ test('agent command line: list, info, usage errors exit 2', () => {
   assert.strictEqual(cli('run', 'pdfcpu_form_fill', '--nope', 'x').status, 2);
   assert.strictEqual(cli('no_such_tool').status, 2);
 });
+
+test('per-product server: Audio-only tool list, but prepare helpers (FFmpeg) still found', async () => {
+  const path = require('path'); const os = require('os'); const fs = require('fs');
+  process.env.GUIHUB_CATALOG = path.join(__dirname, '..', '..', 'catalog');
+  process.env.GUIHUB_USER_DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-prod-'));
+  const { setup } = require('../src/server-setup');
+  const s = setup({ argv: ['node', 'x', '--product=audio'] });
+  const names = s.server.tools().map((t) => t.name);
+  assert.ok(names.includes('vocals_split') && !names.includes('ffmpeg_compress'));
+  assert.ok(s.getAllSpecs().some((x) => x.id === 'ffmpeg'), 'prepare helpers must come from the whole catalog');
+  assert.ok(/getAllSpecs \|\| getSpecs/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'core', 'mcp.js'), 'utf8')));
+  assert.ok(/specs: allSpecs/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'main.js'), 'utf8')));
+  delete process.env.GUIHUB_CATALOG; delete process.env.GUIHUB_USER_DATA;
+});

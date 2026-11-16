@@ -5,7 +5,7 @@ description: Do real file jobs a chat model cannot do alone — transcribe audio
 
 # GUI Hub — local file jobs for agents with a computer
 
-Use this skill when the user wants a file *produced or changed* (audio, video, images, PDFs, documents, spreadsheets) and you have a terminal (Grok Bot, ChatGPT dots, Claude Duet, OpenClaw, Manus, Codex, …). Everything runs on this machine with official open-source releases; files are not uploaded anywhere. Needs Node.js 18+.
+Use this skill when the user wants a file *produced or changed* (audio, video, images, PDFs, documents, spreadsheets) and you have a terminal (Grok Bot, ChatGPT dots, Claude Duet, OpenClaw, Manus, Codex, …). Everything runs on this machine with official open-source releases; files are not uploaded anywhere. Needs Node.js 18+. Why this instead of installing the programs yourself: the right builds, AI models and settings are already chosen and tested on Windows, macOS and Linux, so each job works in one command. You can always install the open-source programs directly instead.
 
 ## How to run
 ```
@@ -68,6 +68,8 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run speakers_diarize --input /path/to/input.mp3`
 - transcribe an audio or video file → `transcribe_transcribe`
   `npx -y https://guihub.cc/cli.tgz run transcribe_transcribe --input /path/to/input.mp3`
+- transcribe a meeting and say who said what → `transcribe_meeting`
+  `npx -y https://guihub.cc/cli.tgz run transcribe_meeting --input /path/to/input.mp3`
 - make subtitles or captions for a video → `transcribe_subtitles`
   `npx -y https://guihub.cc/cli.tgz run transcribe_subtitles --input /path/to/input.mp3 --out /path/to/output.srt`
 - create a PDF file → `typst_write`

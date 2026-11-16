@@ -257,6 +257,211 @@
       ]
     },
     {
+      "id": "meeting",
+      "label": "Meeting transcript (who said what)",
+      "runLabel": "Transcribe meeting",
+      "description": "For meetings, interviews and podcasts: a transcript where every line says who is speaking (Speaker 1, Speaker 2, …) with timestamps. Runs offline; the first run downloads the speech and speaker models once.",
+      "mcpDescription": "Transcribe a meeting, interview, call or podcast recording on the user's computer into a speaker-labelled transcript ('[00:01:05] Speaker 2: …'), offline: Whisper speech-to-text plus speaker diarization in one step. Use whenever the user wants meeting notes, minutes, action items per person, an interview transcript, or 'who said what'. Afterwards you can rename 'Speaker 1/2' to real names if the user tells you who is who, and summarize.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Recording or video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio & video",
+              "extensions": [
+                "mp3",
+                "m4a",
+                "wav",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "wma",
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "avi",
+                "m4v",
+                "3gp",
+                "amr"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "language",
+          "label": "Spoken language",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Detect automatically"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "he",
+              "label": "Hebrew"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            }
+          ]
+        },
+        {
+          "id": "translate",
+          "label": "Translate to English",
+          "type": "checkbox"
+        },
+        {
+          "id": "out",
+          "label": "Also save the transcript as (optional)",
+          "type": "savefile",
+          "filters": [
+            {
+              "name": "Text",
+              "extensions": [
+                "txt"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-y",
+            "-i",
+            "{input}",
+            "-vn",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "-af",
+            "apad=pad_dur=1",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp}"
+          ],
+          "replaces": "input",
+          "ext": ".wav"
+        },
+        {
+          "tool": "speakers",
+          "cwd": "tool",
+          "captureStdout": "_speakers",
+          "argv": [
+            "--segmentation.pyannote-model=extras/seg/sherpa-onnx-pyannote-segmentation-3-0/model.int8.onnx",
+            "--embedding.model=extras/emb/nemo_en_titanet_small.onnx",
+            "--segmentation.num-threads=4",
+            "--embedding.num-threads=4",
+            "{input}"
+          ]
+        }
+      ],
+      "cwd": "tool",
+      "saveStdout": {
+        "field": "out",
+        "transform": "speakerTranscript",
+        "speakersField": "_speakers"
+      },
+      "maxOutput": 80000,
+      "argv": [
+        "--silero-vad-model=extras/vad/silero_vad.onnx",
+        "--whisper-encoder=extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+        "--whisper-decoder=extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+        "--tokens=extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+        "--num-threads=4",
+        {
+          "field": "language",
+          "flag": "--whisper-language",
+          "join": "="
+        },
+        {
+          "when": "translate",
+          "argv": [
+            "--whisper-task=translate"
+          ]
+        },
+        {
+          "field": "input"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Meeting transcribed.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    },
+    {
       "id": "subtitles",
       "label": "Make subtitles (.srt)",
       "runLabel": "Make subtitles",

@@ -38,6 +38,7 @@ const bundledProducts = loadProducts(catalogDir);
 let products = bundledProducts;
 let remoteInfo = null;
 let license;
+let allSpecs = [];
 let win;
 const running = new Map();
 
@@ -46,6 +47,7 @@ function loadSpecs() {
   for (const e of errors) console.error('spec error', e.file, e.problems);
   bundledSpecs = forProduct(s);
   specs = s;
+  allSpecs = s; // helpers for prepare steps (e.g. FFmpeg for Audio tools) come from the whole catalog
 }
 
 // New and fixed tools arrive from the website's catalog.json without reinstalling the app.
@@ -55,6 +57,7 @@ async function refreshRemoteCatalog() {
   if (!remote) return;
   const { specs: mergedAll, rejected } = mergeCatalog(bundledSpecs, remote);
   const merged = forProduct(mergedAll);
+  allSpecs = mergeCatalog(allSpecs, remote).specs;
   for (const r of rejected) console.error('remote spec rejected', r.id, r.problems);
   specs = merged;
   products = mergeProducts(bundledProducts, remote);
@@ -121,7 +124,7 @@ ipcMain.handle('tool:run', async (e, { runId, toolId, actionId, values }) => {
     onProgress: (got, total) => send('run:status', { text: total ? `Downloading ${spec.name}… ${Math.round((got / total) * 100)}%` : `Downloading ${spec.name}… ${Math.round(got / 1e6)} MB` }),
   });
   let prep;
-  try { prep = await prepareRun({ spec, action, values, specs, binCache, onOutput: (o) => send('run:output', o) }); } catch (err) { send('run:output', { stream: 'stderr', text: `${err.message}\n` }); send('run:exit', { code: 1 }); return { started: true, trial: null }; }
+  try { prep = await prepareRun({ spec, action, values, specs: allSpecs, binCache, onOutput: (o) => send('run:output', o) }); } catch (err) { send('run:output', { stream: 'stderr', text: `${err.message}\n` }); send('run:exit', { code: 1 }); return { started: true, trial: null }; }
   const { argv, env, stdin } = buildCommand(action, prep.values);
   license.recordRun(spec);
   send('run:status', { text: 'Running…' });

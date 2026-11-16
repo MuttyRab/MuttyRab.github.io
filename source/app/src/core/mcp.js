@@ -75,7 +75,7 @@ const ACCOUNT_TOOLS = [
   },
 ];
 
-function createServer({ getSpecs, getProducts = () => null, license, binCache, info, log = (m) => process.stderr.write(`${m}\n`) }) {
+function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license, binCache, info, log = (m) => process.stderr.write(`${m}\n`) }) {
   const tools = () => toolsFromSpecs(getSpecs());
   const prod = (spec) => findProduct(getProducts(), productId(spec)) || { name: `${info.productName} Pro`, price: info.price, checkoutUrl: info.checkoutUrl };
   const buy = (spec) => (spec && prod(spec).checkoutUrl) || info.checkoutUrl || info.siteUrl;
@@ -133,7 +133,7 @@ function createServer({ getSpecs, getProducts = () => null, license, binCache, i
     let exe;
     try { exe = await ensureBinary(spec, binCache, { onProgress: () => {} }); } catch (e) { return { isError: true, content: [{ type: 'text', text: `Could not prepare ${spec.upstream.displayName}: ${e.message}` }] }; }
     let prep;
-    try { prep = await prepareRun({ spec, action, values: args || {}, specs: getSpecs(), binCache }); } catch (e) { return { isError: true, content: [{ type: 'text', text: `Could not prepare the input: ${e.message}` }] }; }
+    try { prep = await prepareRun({ spec, action, values: args || {}, specs: (getAllSpecs || getSpecs)(), binCache }); } catch (e) { return { isError: true, content: [{ type: 'text', text: `Could not prepare the input: ${e.message}` }] }; }
     cmd = buildCommand(action, prep.values);
     if (license) license.recordRun(spec);
     let out = ''; let stdoutText = '';

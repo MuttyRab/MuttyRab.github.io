@@ -44,11 +44,13 @@ function setup({ argv = process.argv, remoteTimeoutMs = 0 } = {}) {
   const onlyProduct = (argv.find((a) => a.startsWith('--product=')) || '').slice(10) || process.env.GUIHUB_PRODUCT || config.product || '';
   const forProduct = (list) => (onlyProduct ? list.filter((s) => (s.product || 'essentials') === onlyProduct) : list);
   let specs = forProduct(bundled);
+  let allSpecs = bundled; // prepare-step helpers (FFmpeg, speaker engine…) may belong to another product
   const bundledProducts = loadProducts(catalogDir());
   let products = bundledProducts;
   const license = new LicenseStore(path.join(userDir, 'license.json'), config, { products: () => products });
   const server = createServer({
     getSpecs: () => specs,
+    getAllSpecs: () => allSpecs,
     getProducts: () => products,
     license,
     binCache: path.join(userDir, 'tools'),
@@ -58,11 +60,11 @@ function setup({ argv = process.argv, remoteTimeoutMs = 0 } = {}) {
   let ready = Promise.resolve();
   if (config.catalogUrl && !process.env.GUIHUB_CATALOG) {
     ready = loadRemote(config.catalogUrl, path.join(userDir, 'catalog-cache.json'))
-      .then((remote) => { if (remote) { specs = forProduct(mergeCatalog(bundled, remote).specs); products = mergeProducts(bundledProducts, remote); } })
+      .then((remote) => { if (remote) { allSpecs = mergeCatalog(bundled, remote).specs; specs = forProduct(allSpecs); products = mergeProducts(bundledProducts, remote); } })
       .catch(() => {});
     if (remoteTimeoutMs) ready = Promise.race([ready, new Promise((r) => setTimeout(r, remoteTimeoutMs))]);
   }
-  return { server, ready, config, pkg, productName, userDir, getProducts: () => products };
+  return { server, ready, config, pkg, productName, userDir, getProducts: () => products, getAllSpecs: () => allSpecs };
 }
 
 module.exports = { setup };

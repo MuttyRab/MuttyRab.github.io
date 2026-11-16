@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (44)
+## MCP tools (45)
 
 | Tool | What it does |
 |---|---|
@@ -69,6 +69,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `speak_speak` | Turn text into natural-sounding English speech and save it as a .wav audio file on the user's computer, offline (Kokoro voices; no account, no cloud). Use this whenever the user wants a voiceover, narration, podcast intro, audiobook chapter, announcement, or wants a document/notes read aloud or 'saved as audio'. Write or clean up the script first, then pass it as `text` (up to ~20,000 characters per call; split longer documents into chapters and call once per chapter). Pick `voice` to match the request (US/UK, female/male). |
 | `speakers_diarize` | Detect who is speaking when in an audio or video recording on the user's computer (speaker diarization, offline): returns lines like '[00:01:05 → 00:01:20] Speaker 2'. Use for meetings, interviews, podcasts and calls when the user wants speaker labels or 'who said what' — run transcribe_transcribe with timestamps as well and match the times to label each line of the transcript with its speaker. Set `speakers` if the number of people is known. |
 | `transcribe_transcribe` | Transcribe an audio or video file on the user's computer (mp3, m4a, wav, mp4, mov, …) to text with Whisper, offline. Returns the full transcript (optionally with [hh:mm:ss] timestamps) and can also save it to a .txt file (`out`). Set `translate` to get an English translation instead. Use this whenever the user wants a recording, voice memo, meeting or video turned into text, notes or a summary. |
+| `transcribe_meeting` | Transcribe a meeting, interview, call or podcast recording on the user's computer into a speaker-labelled transcript ('[00:01:05] Speaker 2: …'), offline: Whisper speech-to-text plus speaker diarization in one step. Use whenever the user wants meeting notes, minutes, action items per person, an interview transcript, or 'who said what'. Afterwards you can rename 'Speaker 1/2' to real names if the user tells you who is who, and summarize. |
 | `transcribe_subtitles` | Create subtitles/captions (.srt) for a video or audio file on the user's computer with Whisper, offline: speech is transcribed and timed into readable captions, in the spoken language or translated to English (`translate`). Use whenever the user wants subtitles, captions or an .srt for a video (YouTube, TikTok, Reels, lectures, accessibility). To put them into the video afterwards, call ffmpeg_add_subtitles. |
 | `typst_write` | Create a typeset PDF file on the user's computer from Typst markup you write (pass the full document in `source`). Typst syntax: `= Heading`, `*bold*`, `_italic_`, `- item`, `#table(columns: 2, [a], [b])`, `#set page(paper: "a4")`, `#set text(font: "New Computer Modern")`. Built-in fonts work offline. Relative image paths resolve inside `assets`. |
 | `typst_compile` | Compile an existing .typ (Typst) file on the user's computer to PDF. |
