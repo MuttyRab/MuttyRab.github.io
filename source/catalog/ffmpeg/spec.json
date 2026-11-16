@@ -595,6 +595,222 @@
       ],
       "openAfter": "out",
       "successMessage": "Trimmed."
+    },
+    {
+      "id": "add-subtitles",
+      "label": "Add subtitles to a video",
+      "runLabel": "Add subtitles",
+      "description": "Puts an .srt subtitle file into a video as a subtitle track (viewers can switch it on/off). The video is not re-encoded, so it’s fast and keeps full quality.",
+      "mcpDescription": "Add an .srt subtitle file to a video on the user's computer as a selectable subtitle track in a new MP4 (no re-encoding, full quality, fast). Use after transcribe_subtitles when the user wants captions inside the video file.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "m4v"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "subs",
+          "label": "Subtitles (.srt)",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Subtitles",
+              "extensions": [
+                "srt"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-i",
+        {
+          "field": "subs"
+        },
+        "-map",
+        "0:v",
+        "-map",
+        "0:a?",
+        "-map",
+        "1:0",
+        "-vcodec",
+        "copy",
+        "-acodec",
+        "copy",
+        "-scodec",
+        "mov_text",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Subtitles added.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
+    },
+    {
+      "id": "loudness",
+      "label": "Fix volume (normalize loudness)",
+      "runLabel": "Fix volume",
+      "description": "Makes quiet or uneven recordings sound loud and even — like a podcast or YouTube video. Works on audio and video; the picture is not touched.",
+      "mcpDescription": "Normalize the loudness of an audio or video file on the user's computer (EBU R128 loudnorm): makes quiet or uneven recordings loud and consistent at a chosen target (podcast/YouTube −14/−16 LUFS, broadcast −23). Video is copied unchanged. Use whenever the user says audio is too quiet, too loud, uneven, or wants it 'normalized' or 'podcast-ready'.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Recording or video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio & video",
+              "extensions": [
+                "mp3",
+                "m4a",
+                "wav",
+                "aac",
+                "ogg",
+                "flac",
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "m4v"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "target",
+          "label": "Target loudness",
+          "type": "select",
+          "default": "loudnorm=I=-16:TP=-1.5:LRA=11",
+          "options": [
+            {
+              "value": "loudnorm=I=-14:TP=-1:LRA=11",
+              "label": "Loud — YouTube / Spotify (−14 LUFS)"
+            },
+            {
+              "value": "loudnorm=I=-16:TP=-1.5:LRA=11",
+              "label": "Podcast / voice (−16 LUFS)"
+            },
+            {
+              "value": "loudnorm=I=-23:TP=-2:LRA=15",
+              "label": "Broadcast (−23 LUFS)"
+            }
+          ]
+        },
+        {
+          "id": "kind",
+          "label": "Output is",
+          "type": "select",
+          "default": "audio",
+          "options": [
+            {
+              "value": "audio",
+              "label": "Audio file"
+            },
+            {
+              "value": "video",
+              "label": "Video (keep the picture)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio or video",
+              "extensions": [
+                "mp3",
+                "m4a",
+                "wav",
+                "mp4",
+                "mov",
+                "mkv"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        {
+          "field": "target",
+          "flag": "-af"
+        },
+        {
+          "when": "kind",
+          "equals": "video",
+          "argv": [
+            "-vcodec",
+            "copy"
+          ]
+        },
+        {
+          "when": "kind",
+          "equals": "audio",
+          "argv": [
+            "-vn"
+          ]
+        },
+        "-ar",
+        "48000",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Volume fixed.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
     }
   ]
 }

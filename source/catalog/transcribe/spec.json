@@ -211,6 +211,8 @@
           "1",
           "-ar",
           "16000",
+          "-af",
+          "apad=pad_dur=1",
           "-c:a",
           "pcm_s16le",
           "{tmp}"
@@ -248,6 +250,197 @@
       ],
       "openAfter": "out",
       "successMessage": "Transcribed.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "subtitles",
+      "label": "Make subtitles (.srt)",
+      "runLabel": "Make subtitles",
+      "description": "Creates a subtitle file (.srt) for a video or recording, timed to the speech. Open it with the video in any player, upload it to YouTube, or add it with Video Toolkit → “Add subtitles”.",
+      "mcpDescription": "Create subtitles/captions (.srt) for a video or audio file on the user's computer with Whisper, offline: speech is transcribed and timed into readable captions, in the spoken language or translated to English (`translate`). Use whenever the user wants subtitles, captions or an .srt for a video (YouTube, TikTok, Reels, lectures, accessibility). To put them into the video afterwards, call ffmpeg_add_subtitles.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Recording or video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio & video",
+              "extensions": [
+                "mp3",
+                "m4a",
+                "wav",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "wma",
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "avi",
+                "m4v",
+                "3gp",
+                "amr"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "language",
+          "label": "Spoken language",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Detect automatically"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "he",
+              "label": "Hebrew"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            }
+          ]
+        },
+        {
+          "id": "translate",
+          "label": "Translate to English",
+          "type": "checkbox"
+        },
+        {
+          "id": "out",
+          "label": "Save subtitles as",
+          "type": "savefile",
+          "filters": [
+            {
+              "name": "Subtitles",
+              "extensions": [
+                "srt"
+              ]
+            }
+          ],
+          "required": true
+        }
+      ],
+      "prepare": {
+        "tool": "ffmpeg",
+        "argv": [
+          "-y",
+          "-i",
+          "{input}",
+          "-vn",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-af",
+          "apad=pad_dur=1",
+          "-c:a",
+          "pcm_s16le",
+          "{tmp}"
+        ],
+        "replaces": "input",
+        "ext": ".wav"
+      },
+      "cwd": "tool",
+      "saveStdout": {
+        "field": "out",
+        "transform": "srt"
+      },
+      "maxOutput": 80000,
+      "argv": [
+        "--silero-vad-model=extras/vad/silero_vad.onnx",
+        "--whisper-encoder=extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+        "--whisper-decoder=extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+        "--tokens=extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+        "--num-threads=4",
+        {
+          "field": "language",
+          "flag": "--whisper-language",
+          "join": "="
+        },
+        {
+          "when": "translate",
+          "argv": [
+            "--whisper-task=translate"
+          ]
+        },
+        {
+          "field": "input"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Subtitles saved.",
       "helpArgs": [
         [
           "--help"

@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        product: [essentials, data]   # each GUI Hub product is its own app (catalog/products.json)
+        product: [essentials, data, audio]   # each GUI Hub product is its own app (catalog/products.json)
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
     steps:
@@ -47,7 +47,7 @@ jobs:
           exe="$PWD/dist/linux-unpacked/gui-hub-${{ matrix.product }}"
           printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' > req.txt
           (cat req.txt; sleep 8) | ELECTRON_RUN_AS_NODE=1 GUIHUB_USER_DATA="$RUNNER_TEMP/ud" "$exe" "$PWD/dist/linux-unpacked/resources/app.asar.unpacked/src/mcp-entry.js" > out.txt
-          node -e "const l=require('fs').readFileSync('out.txt','utf8').trim().split('\n').map(JSON.parse);const t=l.find(m=>m.id===2).result.tools.map(x=>x.name);console.log(t.join(' '));const want={essentials:'ffmpeg_compress',data:'duckdb_query'}['${{ matrix.product }}'];const other={essentials:'duckdb_query',data:'ffmpeg_compress'}['${{ matrix.product }}'];if(!t.includes(want)||t.includes(other))process.exit(1)"
+          node -e "const l=require('fs').readFileSync('out.txt','utf8').trim().split('\n').map(JSON.parse);const t=l.find(m=>m.id===2).result.tools.map(x=>x.name);console.log(t.join(' '));const want={essentials:'ffmpeg_compress',data:'duckdb_query',audio:'speak_speak'}['${{ matrix.product }}'];const other={essentials:'duckdb_query',data:'ffmpeg_compress',audio:'ffmpeg_compress'}['${{ matrix.product }}'];if(!t.includes(want)||t.includes(other))process.exit(1)"
       - name: Test the packaged app (macOS)
         if: matrix.os == 'macos-latest' && matrix.product == 'essentials'
         working-directory: source/app

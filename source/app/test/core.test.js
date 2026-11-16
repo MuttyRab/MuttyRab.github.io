@@ -162,6 +162,72 @@ test('transcription: segments become a clean transcript; argv points at the down
   assert.strictEqual(a.cwd, 'tool'); assert.strictEqual(a.prepare.tool, 'ffmpeg');
 });
 
+test('text to speech: voice, speed and output become flags; the text is the last argument', () => {
+  const a = action('speak', 'speak');
+  const argv = buildCommand(a, { text: 'Hello there.', voice: '26', speed: '1.2', out: '/o/hi.wav' }).argv;
+  assert.ok(argv.includes('--sid=26') && argv.includes('--kokoro-length-scale=1.2') && argv.includes('--output-filename=/o/hi.wav'));
+  assert.ok(argv.some((x) => x.startsWith('--kokoro-lexicon=extras/voice/')));
+  assert.strictEqual(argv[argv.length - 1], 'Hello there.');
+  assert.strictEqual(a.cwd, 'tool');
+});
+
+test('vocal remover and voice clean-up: ffmpeg prepares a wav, outputs map to the right flags', () => {
+  const v = action('vocals', 'split');
+  const va = buildCommand(v, { input: '/t/song.wav', instrumental: '/o/inst.wav', vocals: '/o/voc.wav' }).argv;
+  assert.ok(va.includes('--input-wav=/t/song.wav') && va.includes('--output-accompaniment-wav=/o/inst.wav') && va.includes('--output-vocals-wav=/o/voc.wav'));
+  assert.ok(v.prepare.argv.includes('44100'));
+  const c = action('cleanvoice', 'denoise');
+  const ca = buildCommand(c, { input: '/t/memo.wav', out: '/o/clean.wav' }).argv;
+  assert.deepStrictEqual(ca, ['--speech-denoiser-gtcrn-model=extras/model/gtcrn_simple.onnx', '--input-wav=/t/memo.wav', '--output-wav=/o/clean.wav']);
+  assert.ok(c.prepare.argv.includes('16000'));
+});
+
+test('PDF forms: field list prints JSON; fill writes the AI-written answers to a temp .json file', async () => {
+  const { prepareRun } = require('../src/core/execute');
+  const list = action('pdfcpu', 'form-fields');
+  assert.deepStrictEqual(buildCommand(list, { input: '/f.pdf' }).argv, ['form', 'list', '--json', '/f.pdf']);
+  const fill = action('pdfcpu', 'form-fill');
+  const prep = await prepareRun({ spec: { id: 'pdfcpu', name: 'x', binary: {} }, action: fill, values: { input: '/f.pdf', data: '{"forms":[]}', out: '/o.pdf' } });
+  assert.ok(prep.values.data.endsWith('data.json'));
+  assert.strictEqual(require('fs').readFileSync(prep.values.data, 'utf8'), '{"forms":[]}');
+  assert.deepStrictEqual(buildCommand(fill, prep.values).argv, ['form', 'fill', '/f.pdf', prep.values.data, '/o.pdf']);
+  prep.cleanup();
+  assert.ok(!require('fs').existsSync(prep.values.data));
+});
+
+test('subtitles: segments become numbered SRT cues; long ones are split; ffmpeg muxes as mov_text', () => {
+  const { segmentsToSrt } = require('../src/core/execute');
+  const srt = segmentsToSrt(`log\n0.1 -- 3.52: Please call Stella.\n4 -- 12: ${'word '.repeat(30)}end.\n`);
+  assert.ok(srt.startsWith('1\n00:00:00,100 --> 00:00:03,520\nPlease call Stella.\n'));
+  assert.ok(/\n2\n00:00:04,000 --> /.test(srt) && /\n3\n/.test(srt) && /--> 00:00:12,000\n/.test(srt));
+  const sub = action('transcribe', 'subtitles');
+  assert.strictEqual(sub.saveStdout.transform, 'srt');
+  const argv = buildCommand(action('ffmpeg', 'add-subtitles'), { input: '/v.mp4', subs: '/s.srt', out: '/o.mp4' }).argv;
+  assert.deepStrictEqual(argv.slice(0, 5), ['-y', '-i', '/v.mp4', '-i', '/s.srt']);
+  assert.ok(argv.includes('mov_text') && argv[argv.length - 1] === '/o.mp4');
+});
+
+test('fix volume: loudnorm target, video copied or dropped', () => {
+  const a = action('ffmpeg', 'loudness');
+  assert.deepStrictEqual(buildCommand(a, { input: '/i.mov', target: 'loudnorm=I=-14:TP=-1:LRA=11', kind: 'video', out: '/o.mp4' }).argv,
+    ['-y', '-i', '/i.mov', '-af', 'loudnorm=I=-14:TP=-1:LRA=11', '-vcodec', 'copy', '-ar', '48000', '/o.mp4']);
+  assert.ok(buildCommand(a, { input: '/i.wav', target: 'loudnorm=I=-16:TP=-1.5:LRA=11', kind: 'audio', out: '/o.mp3' }).argv.includes('-vn'));
+});
+
+test('who spoke when: speakers numbered by first appearance; auto mode passes no cluster count', () => {
+  const { speakersToText } = require('../src/core/execute');
+  assert.strictEqual(speakersToText('log\n0.031 -- 3.102 speaker_01\n3.8 -- 7.9 speaker_00\n8.6 -- 11.6 speaker_01\n'),
+    '[00:00:00 → 00:00:03] Speaker 1\n[00:00:03 → 00:00:07] Speaker 2\n[00:00:08 → 00:00:11] Speaker 1');
+  const a = action('speakers', 'diarize');
+  assert.ok(!buildCommand(a, { input: '/m.wav', speakers: '' }).argv.some((x) => x.startsWith('--clustering.num-clusters')));
+  assert.ok(buildCommand(a, { input: '/m.wav', speakers: '3' }).argv.includes('--clustering.num-clusters=3'));
+});
+
+test('upscaler: input/output/model flags, fixed 4x with the bundled models folder', () => {
+  const argv = buildCommand(action('upscale', 'upscale'), { input: '/i/a.jpg', model: 'realesrgan-x4plus-anime', out: '/o/a.png' }).argv;
+  assert.deepStrictEqual(argv, ['-i', '/i/a.jpg', '-o', '/o/a.png', '-n', 'realesrgan-x4plus-anime', '-s', '4', '-m', 'models']);
+});
+
 test('clean strips ANSI codes', () => {
   assert.strictEqual(clean('\x1b[32mok\x1b[0m done'), 'ok done');
 });
@@ -275,4 +341,16 @@ test('remote catalog accepts binaries from a declared sourceRepo only', () => {
   assert.deepStrictEqual(remoteProblems(s), []);
   delete s.binary.sourceRepo;
   assert.ok(remoteProblems(s).length > 0);
+});
+
+test('agent command line: list, info, usage errors exit 2', () => {
+  const { spawnSync } = require('child_process');
+  const path = require('path'); const os = require('os'); const fs = require('fs');
+  const env = { ...process.env, GUIHUB_CATALOG: path.join(__dirname, '..', '..', 'catalog'), GUIHUB_USER_DATA: fs.mkdtempSync(path.join(os.tmpdir(), 'gh-cli-')) };
+  const cli = (...a) => spawnSync(process.execPath, [path.join(__dirname, '..', 'src', 'cli.js'), ...a], { env, encoding: 'utf8' });
+  const l = cli('list'); assert.strictEqual(l.status, 0); assert.ok(/pdfcpu_form_fill/.test(l.stdout));
+  const i = cli('info', 'pdfcpu_form_fill'); assert.strictEqual(i.status, 0); assert.ok(/--data/.test(i.stdout));
+  assert.strictEqual(cli('run', 'pdfcpu_form_fill').status, 2);
+  assert.strictEqual(cli('run', 'pdfcpu_form_fill', '--nope', 'x').status, 2);
+  assert.strictEqual(cli('no_such_tool').status, 2);
 });

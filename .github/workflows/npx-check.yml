@@ -20,3 +20,11 @@ jobs:
           (cat req.txt; sleep 20) | npx -y "github:${GITHUB_REPOSITORY}" > out.txt 2> err.txt || true
           cat err.txt
           node -e "const l=require('fs').readFileSync('out.txt','utf8').trim().split('\n').map(JSON.parse);const t=l.find(m=>m.id===2).result.tools;console.log(t.length,'tools');if(t.length<20||!t.some(x=>x.name==='gui_hub_status'))process.exit(1)"
+      - name: Agent command line via npx (guihub list / info / bad usage exit code)
+        shell: bash
+        run: |
+          npx -y -p "github:${GITHUB_REPOSITORY}" guihub list > list.txt
+          grep -q speak_speak list.txt && grep -q pdfcpu_form_fill list.txt
+          npx -y -p "github:${GITHUB_REPOSITORY}" guihub info transcribe_subtitles | grep -q -- '--input'
+          set +e; npx -y -p "github:${GITHUB_REPOSITORY}" guihub run speak_speak > /dev/null; code=$?; set -e
+          test "$code" = 2

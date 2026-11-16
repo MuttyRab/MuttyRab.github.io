@@ -1,0 +1,135 @@
+{
+  "id": "upscale",
+  "name": "AI Image Upscaler",
+  "tagline": "Enlarge photos and pictures 4× with AI — sharper, clearer, ready to print — privately on your own computer.",
+  "keywords": [
+    "upscale image",
+    "ai image upscaler",
+    "enhance photo quality",
+    "increase image resolution",
+    "unblur image",
+    "real-esrgan",
+    "image upscaler mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "xinntao/Real-ESRGAN",
+    "stars": 33000,
+    "displayName": "Real-ESRGAN",
+    "license": "BSD-3-Clause",
+    "homepage": "https://github.com/xinntao/Real-ESRGAN"
+  },
+  "binary": {
+    "name": "realesrgan-ncnn-vulkan",
+    "version": "0.2.5.0",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-ubuntu.zip",
+        "path": "realesrgan-ncnn-vulkan",
+        "sha256": "e5aa6eb131234b87c0c51f82b89390f5e3e642b7b70f2b9bbe95b6a285a40c96"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-macos.zip",
+        "path": "realesrgan-ncnn-vulkan",
+        "sha256": "e0ad05580abfeb25f8d8fb55aaf7bedf552c375b5b4d9bd3c8d59764d2cc333a"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-macos.zip",
+        "path": "realesrgan-ncnn-vulkan",
+        "sha256": "e0ad05580abfeb25f8d8fb55aaf7bedf552c375b5b4d9bd3c8d59764d2cc333a"
+      },
+      "win32-x64": {
+        "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-windows.zip",
+        "path": "realesrgan-ncnn-vulkan.exe",
+        "sha256": "abc02804e17982a3be33675e4d471e91ea374e65b70167abc09e31acb412802d"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "upscale",
+      "label": "Upscale an image",
+      "runLabel": "Upscale",
+      "description": "Pick a JPG, PNG or WebP. The picture is enlarged 4× and AI fills in sharp detail. Uses your graphics card (most computers from the last ~8 years); large images can take a minute.",
+      "mcpDescription": "Upscale/enhance an image on the user's computer 4× with Real-ESRGAN AI (offline): makes small, blurry or low-resolution photos and pictures larger and sharper, e.g. for printing, wallpapers or old photos. Input JPG/PNG/WebP; saves a new image (format from the output file extension). Choose `model` 'anime' for drawings, cartoons and anime art, otherwise 'photo'. Needs a GPU with Vulkan support (most computers from the last ~8 years).",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Image",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Images",
+              "extensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "model",
+          "label": "Picture type",
+          "type": "select",
+          "default": "realesrgan-x4plus",
+          "options": [
+            {
+              "value": "realesrgan-x4plus",
+              "label": "Photo"
+            },
+            {
+              "value": "realesrgan-x4plus-anime",
+              "label": "Drawing / anime / cartoon"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save upscaled image as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Images",
+              "extensions": [
+                "png",
+                "jpg",
+                "webp"
+              ]
+            }
+          ]
+        }
+      ],
+      "cwd": "tool",
+      "argv": [
+        {
+          "field": "input",
+          "flag": "-i"
+        },
+        {
+          "field": "out",
+          "flag": "-o"
+        },
+        {
+          "field": "model",
+          "flag": "-n"
+        },
+        "-s",
+        "4",
+        "-m",
+        "models"
+      ],
+      "openAfter": "out",
+      "successMessage": "Upscaled 4×.",
+      "helpArgs": [
+        [
+          "-h"
+        ]
+      ]
+    }
+  ]
+}

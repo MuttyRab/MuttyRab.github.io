@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Whisper (sherpa-onnx), Typst
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, UVR MDX-Net (sherpa-onnx)
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (34)
+## MCP tools (44)
 
 | Tool | What it does |
 |---|---|
@@ -36,6 +36,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `7zip_test` | Test an archive's integrity (and password) on the user's computer without extracting. |
 | `caesium_compress` | Compress, resize and/or convert image files (JPG, PNG, WebP, GIF, TIFF) on the user's computer. Writes compressed copies (same file names) into outDir; never modifies originals or overwrites existing files. Use mode=size with maxSize (bytes) to fit upload limits. File dates are kept by default (keepDates). |
 | `caesium_folder` | Compress, resize and/or convert every image in a folder on the user's computer, optionally including subfolders (folder structure is kept). Copies go to outDir; originals are never modified. File dates are kept by default (keepDates). |
+| `cleanvoice_denoise` | Remove background noise (hiss, hum, fans, traffic, room noise) from a speech recording on the user's computer — any audio or video file — offline, and save a cleaned .wav copy (16 kHz mono, optimised for speech). Use whenever the user wants to clean up, denoise or improve the audio of a voice memo, interview, podcast, lecture, call or video narration. Combine with transcription for better transcripts of noisy audio. |
 | `croc_receive` | Receive files sent with croc: give the code phrase from the sender and a destination folder. Existing files are kept (renamed) unless existing="overwrite". |
 | `duckdb_summarize` | Inspect a local data file (CSV/TSV, Excel .xlsx, Parquet, JSON) without loading it into the chat: returns the first rows and per-column statistics (type, nulls, min, max, distinct count) as Markdown tables. Use this before writing a query. |
 | `duckdb_convert` | Convert a local data file between CSV, Excel (.xlsx), Parquet and JSON. Writes a new file; the original is not changed. |
@@ -49,6 +50,8 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `ffmpeg_audio_convert` | Convert an audio or video file's sound to mp3, m4a, wav or flac. normalize=true applies EBU R128 loudness normalization (loudnorm) — good for voice recordings and podcasts. |
 | `ffmpeg_gif` | Turn a short part of a video into a good-looking animated GIF. |
 | `ffmpeg_trim` | Cut out a part of a video instantly, without re-encoding (no quality loss). Cuts snap to the nearest keyframe. |
+| `ffmpeg_add_subtitles` | Add an .srt subtitle file to a video on the user's computer as a selectable subtitle track in a new MP4 (no re-encoding, full quality, fast). Use after transcribe_subtitles when the user wants captions inside the video file. |
+| `ffmpeg_loudness` | Normalize the loudness of an audio or video file on the user's computer (EBU R128 loudnorm): makes quiet or uneven recordings loud and consistent at a chosen target (podcast/YouTube −14/−16 LUFS, broadcast −23). Video is copied unchanged. Use whenever the user says audio is too quiet, too loud, uneven, or wants it 'normalized' or 'podcast-ready'. |
 | `immich_go_from_google_photos` | Import Google Photos Takeout .zip files into an Immich server (keeps albums, dates, GPS). dryRun defaults to true: run it first and report the summary before uploading for real. |
 | `immich_go_from_folder` | Upload every photo and video in a folder and its subfolders. |
 | `pandoc_convert` | Convert documents between formats with Pandoc (input format is detected from the file extension: .docx .md .html .epub .odt .rtf .txt .tex). Several inputs are concatenated in order. Use to='gfm' to turn Word/HTML into Markdown for reading or editing. |
@@ -61,9 +64,16 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `pdfcpu_encrypt` | Protect a PDF with AES-256 encryption. |
 | `pdfcpu_decrypt` | Remove the password from a PDF you have the password for. |
 | `pdfcpu_extract_pages` | Save selected pages as separate PDF files. |
+| `pdfcpu_form_fields` | List the fillable fields of a PDF form on the user's computer (text fields, checkboxes, radio buttons, dropdowns, dates) with their names, ids and current values, as fill-ready JSON. ALWAYS call this first when the user wants a PDF form filled in (applications, tax forms, contracts, registration or intake forms); then put the user's answers into the 'value' entries and pass that JSON to pdfcpu_form_fill. |
+| `pdfcpu_form_fill` | Fill in a PDF form on the user's computer and save a filled copy (the original is not changed). `data` is the JSON returned by pdfcpu_form_fields with each field's 'value' set (strings for text fields, true/false for checkboxes, the option text for dropdowns/radio buttons); fields you leave out keep their current value. Use for job/school/visa/tax applications, contracts, intake and registration forms. Ask the user for any answer you don't know instead of guessing. |
+| `speak_speak` | Turn text into natural-sounding English speech and save it as a .wav audio file on the user's computer, offline (Kokoro voices; no account, no cloud). Use this whenever the user wants a voiceover, narration, podcast intro, audiobook chapter, announcement, or wants a document/notes read aloud or 'saved as audio'. Write or clean up the script first, then pass it as `text` (up to ~20,000 characters per call; split longer documents into chapters and call once per chapter). Pick `voice` to match the request (US/UK, female/male). |
+| `speakers_diarize` | Detect who is speaking when in an audio or video recording on the user's computer (speaker diarization, offline): returns lines like '[00:01:05 → 00:01:20] Speaker 2'. Use for meetings, interviews, podcasts and calls when the user wants speaker labels or 'who said what' — run transcribe_transcribe with timestamps as well and match the times to label each line of the transcript with its speaker. Set `speakers` if the number of people is known. |
 | `transcribe_transcribe` | Transcribe an audio or video file on the user's computer (mp3, m4a, wav, mp4, mov, …) to text with Whisper, offline. Returns the full transcript (optionally with [hh:mm:ss] timestamps) and can also save it to a .txt file (`out`). Set `translate` to get an English translation instead. Use this whenever the user wants a recording, voice memo, meeting or video turned into text, notes or a summary. |
+| `transcribe_subtitles` | Create subtitles/captions (.srt) for a video or audio file on the user's computer with Whisper, offline: speech is transcribed and timed into readable captions, in the spoken language or translated to English (`translate`). Use whenever the user wants subtitles, captions or an .srt for a video (YouTube, TikTok, Reels, lectures, accessibility). To put them into the video afterwards, call ffmpeg_add_subtitles. |
 | `typst_write` | Create a typeset PDF file on the user's computer from Typst markup you write (pass the full document in `source`). Typst syntax: `= Heading`, `*bold*`, `_italic_`, `- item`, `#table(columns: 2, [a], [b])`, `#set page(paper: "a4")`, `#set text(font: "New Computer Modern")`. Built-in fonts work offline. Relative image paths resolve inside `assets`. |
 | `typst_compile` | Compile an existing .typ (Typst) file on the user's computer to PDF. |
+| `upscale_upscale` | Upscale/enhance an image on the user's computer 4× with Real-ESRGAN AI (offline): makes small, blurry or low-resolution photos and pictures larger and sharper, e.g. for printing, wallpapers or old photos. Input JPG/PNG/WebP; saves a new image (format from the output file extension). Choose `model` 'anime' for drawings, cartoons and anime art, otherwise 'photo'. Needs a GPU with Vulkan support (most computers from the last ~8 years). |
+| `vocals_split` | Separate a song (any audio or video file on the user's computer) into an instrumental/karaoke track with the vocals removed and a vocals-only (acapella) track, offline with the UVR MDX-Net model. Saves two .wav files. Use whenever the user wants to remove vocals, make karaoke or a backing track, get an instrumental, or isolate/extract vocals or an acapella from a song. Takes roughly the song's length to run. |
 
 ## Using the desktop app as the MCP server
 

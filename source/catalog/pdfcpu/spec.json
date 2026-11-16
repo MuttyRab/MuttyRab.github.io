@@ -593,6 +593,131 @@
           "extract"
         ]
       ]
+    },
+    {
+      "id": "form-fields",
+      "label": "List form fields",
+      "runLabel": "List fields",
+      "description": "Shows every fillable field in a PDF form (names, current values, checkboxes) as JSON — the starting point for filling the form.",
+      "mcpDescription": "List the fillable fields of a PDF form on the user's computer (text fields, checkboxes, radio buttons, dropdowns, dates) with their names, ids and current values, as fill-ready JSON. ALWAYS call this first when the user wants a PDF form filled in (applications, tax forms, contracts, registration or intake forms); then put the user's answers into the 'value' entries and pass that JSON to pdfcpu_form_fill.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "PDF form",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "jsonOut",
+          "label": "Also save the field list as (optional)",
+          "type": "savefile",
+          "filters": [
+            {
+              "name": "JSON",
+              "extensions": [
+                "json"
+              ]
+            }
+          ]
+        }
+      ],
+      "argv": [
+        "form",
+        "list",
+        "--json",
+        {
+          "field": "input"
+        }
+      ],
+      "maxOutput": 60000,
+      "successMessage": "Fields listed.",
+      "helpArgs": [
+        [
+          "form",
+          "--help"
+        ]
+      ],
+      "saveStdout": {
+        "field": "jsonOut"
+      }
+    },
+    {
+      "id": "form-fill",
+      "label": "Fill in a PDF form",
+      "runLabel": "Fill form",
+      "description": "Writes answers into a PDF form and saves a filled copy; the original stays untouched. Paste the JSON from “List form fields” with the values filled in (easiest: ask your AI to do it).",
+      "mcpDescription": "Fill in a PDF form on the user's computer and save a filled copy (the original is not changed). `data` is the JSON returned by pdfcpu_form_fields with each field's 'value' set (strings for text fields, true/false for checkboxes, the option text for dropdowns/radio buttons); fields you leave out keep their current value. Use for job/school/visa/tax applications, contracts, intake and registration forms. Ask the user for any answer you don't know instead of guessing.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "PDF form",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "data",
+          "label": "Answers (JSON from “List form fields”)",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "out",
+          "label": "Save filled form as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "PDF",
+              "extensions": [
+                "pdf"
+              ]
+            }
+          ]
+        }
+      ],
+      "textFiles": [
+        {
+          "field": "data",
+          "ext": ".json"
+        }
+      ],
+      "argv": [
+        "form",
+        "fill",
+        {
+          "field": "input"
+        },
+        {
+          "field": "data"
+        },
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Form filled.",
+      "helpArgs": [
+        [
+          "form",
+          "--help"
+        ]
+      ]
     }
   ]
 }

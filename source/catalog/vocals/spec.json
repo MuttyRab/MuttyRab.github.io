@@ -1,0 +1,168 @@
+{
+  "id": "vocals",
+  "product": "audio",
+  "name": "Vocal Remover",
+  "tagline": "Split any song into an instrumental (karaoke) track and a vocals-only (acapella) track — offline, on your own computer.",
+  "keywords": [
+    "vocal remover",
+    "remove vocals from song",
+    "karaoke maker",
+    "instrumental from song",
+    "acapella extractor",
+    "stem splitter",
+    "vocal remover mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "k2-fsa/sherpa-onnx",
+    "stars": 16000,
+    "license": "Apache-2.0 (UVR MDX-Net model: MIT)",
+    "homepage": "https://k2-fsa.github.io/sherpa/onnx/",
+    "displayName": "UVR MDX-Net (sherpa-onnx)"
+  },
+  "binary": {
+    "name": "sherpa-onnx-offline-source-separation",
+    "version": "2.0.1",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-linux-x64-static.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-source-separation",
+        "sha256": "8b34cf773b65e4be3e7ace12fb6a65fcd8f4e8fe06516ae9b7bcaf405dcb308c"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-osx-universal2-static.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-source-separation",
+        "sha256": "149d4dbb1bb450b88d65097ba2477564a0ddeb99dad91666a2411cd738ef831f"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-osx-universal2-static.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-source-separation",
+        "sha256": "149d4dbb1bb450b88d65097ba2477564a0ddeb99dad91666a2411cd738ef831f"
+      },
+      "win32-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-win-x64-static-MT-Release.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-source-separation.exe",
+        "sha256": "58c810ac46f20e3828968175606063a31df4cff21a1931fe5b69a03e70c5a5b7"
+      }
+    },
+    "extras": [
+      {
+        "name": "model",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/source-separation-models/UVR-MDX-NET-Inst_HQ_3.onnx",
+        "sha256": "c207b845d51dc1303c543503f6f5a8b596da5d7de97bead77b3e16ec38e8d5b3"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "split",
+      "label": "Remove vocals",
+      "runLabel": "Split the song",
+      "description": "Pick a song or video. You get two files: the music without vocals (instrumental / karaoke) and the vocals on their own. The first run downloads the model once (about 67 MB).",
+      "mcpDescription": "Separate a song (any audio or video file on the user's computer) into an instrumental/karaoke track with the vocals removed and a vocals-only (acapella) track, offline with the UVR MDX-Net model. Saves two .wav files. Use whenever the user wants to remove vocals, make karaoke or a backing track, get an instrumental, or isolate/extract vocals or an acapella from a song. Takes roughly the song's length to run.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Song or video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio & video",
+              "extensions": [
+                "mp3",
+                "m4a",
+                "wav",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "wma",
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "avi",
+                "m4v"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "instrumental",
+          "label": "Save instrumental (no vocals) as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "WAV audio",
+              "extensions": [
+                "wav"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vocals",
+          "label": "Save vocals only as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "WAV audio",
+              "extensions": [
+                "wav"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": {
+        "tool": "ffmpeg",
+        "argv": [
+          "-y",
+          "-i",
+          "{input}",
+          "-vn",
+          "-ac",
+          "2",
+          "-ar",
+          "44100",
+          "-c:a",
+          "pcm_s16le",
+          "{tmp}"
+        ],
+        "replaces": "input",
+        "ext": ".wav"
+      },
+      "cwd": "tool",
+      "argv": [
+        "--uvr-model=extras/model/UVR-MDX-NET-Inst_HQ_3.onnx",
+        "--num-threads=4",
+        {
+          "field": "input",
+          "flag": "--input-wav",
+          "join": "="
+        },
+        {
+          "field": "vocals",
+          "flag": "--output-vocals-wav",
+          "join": "="
+        },
+        {
+          "field": "instrumental",
+          "flag": "--output-accompaniment-wav",
+          "join": "="
+        }
+      ],
+      "openAfter": "instrumental",
+      "successMessage": "Done — instrumental and vocals saved.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    }
+  ]
+}

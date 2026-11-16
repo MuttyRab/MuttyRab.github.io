@@ -34,6 +34,24 @@
         "Combine many files, remove duplicates",
         "Ask questions about your data in plain words"
       ]
+    },
+    {
+      "id": "audio",
+      "name": "GUI Hub Audio",
+      "short": "Audio",
+      "tagline": "Text to speech, vocal remover and voice clean-up — offline, for you and your AI.",
+      "price": "$9",
+      "checkoutUrl": "https://buy.polar.sh/polar_cl_63248A3WY5Ikr5RkSq2aMtSZpIlHmFpH5ePCJ09KpjA",
+      "benefitIds": [
+        "0b4f9770-ce00-4948-b1ab-fb5f42f8aac9"
+      ],
+      "jobs": [
+        "Turn text into natural voiceovers & audiobooks",
+        "Remove vocals from songs (karaoke / instrumental)",
+        "Isolate vocals (acapella) from a song",
+        "Remove background noise from voice recordings",
+        "Find who spoke when in meetings"
+      ]
     }
   ],
   "allAccess": {

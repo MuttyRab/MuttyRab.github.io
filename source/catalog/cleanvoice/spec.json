@@ -1,0 +1,148 @@
+{
+  "id": "cleanvoice",
+  "product": "audio",
+  "name": "Clean Up Voice Recordings",
+  "tagline": "Remove hiss, hum and background noise from voice memos, interviews, lectures and calls — offline, on your own computer.",
+  "keywords": [
+    "remove background noise from audio",
+    "noise reduction",
+    "clean up audio",
+    "denoise voice recording",
+    "remove hiss",
+    "improve audio quality",
+    "noise removal mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "k2-fsa/sherpa-onnx",
+    "stars": 16000,
+    "license": "Apache-2.0 (GTCRN model: MIT)",
+    "homepage": "https://k2-fsa.github.io/sherpa/onnx/",
+    "displayName": "GTCRN denoiser (sherpa-onnx)"
+  },
+  "binary": {
+    "name": "sherpa-onnx-offline-denoiser",
+    "version": "2.0.1",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-linux-x64-static.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-denoiser",
+        "sha256": "8b34cf773b65e4be3e7ace12fb6a65fcd8f4e8fe06516ae9b7bcaf405dcb308c"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-osx-universal2-static.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-denoiser",
+        "sha256": "149d4dbb1bb450b88d65097ba2477564a0ddeb99dad91666a2411cd738ef831f"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-osx-universal2-static.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-denoiser",
+        "sha256": "149d4dbb1bb450b88d65097ba2477564a0ddeb99dad91666a2411cd738ef831f"
+      },
+      "win32-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-win-x64-static-MT-Release.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-denoiser.exe",
+        "sha256": "58c810ac46f20e3828968175606063a31df4cff21a1931fe5b69a03e70c5a5b7"
+      }
+    },
+    "extras": [
+      {
+        "name": "model",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/speech-enhancement-models/gtcrn_simple.onnx",
+        "sha256": "e77603ac0c23dac3227dd2d7135b3a585cbee2679048aecfa886657d3ae1b534"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "denoise",
+      "label": "Remove background noise",
+      "runLabel": "Clean up",
+      "description": "Pick a voice recording or video. Background noise is removed and a clean copy is saved; your original is not changed. Best for speech (memos, interviews, lectures, calls), not music.",
+      "mcpDescription": "Remove background noise (hiss, hum, fans, traffic, room noise) from a speech recording on the user's computer — any audio or video file — offline, and save a cleaned .wav copy (16 kHz mono, optimised for speech). Use whenever the user wants to clean up, denoise or improve the audio of a voice memo, interview, podcast, lecture, call or video narration. Combine with transcription for better transcripts of noisy audio.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Recording or video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio & video",
+              "extensions": [
+                "mp3",
+                "m4a",
+                "wav",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "wma",
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "avi",
+                "m4v"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save cleaned audio as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "WAV audio",
+              "extensions": [
+                "wav"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": {
+        "tool": "ffmpeg",
+        "argv": [
+          "-y",
+          "-i",
+          "{input}",
+          "-vn",
+          "-ac",
+          "1",
+          "-ar",
+          "16000",
+          "-c:a",
+          "pcm_s16le",
+          "{tmp}"
+        ],
+        "replaces": "input",
+        "ext": ".wav"
+      },
+      "cwd": "tool",
+      "argv": [
+        "--speech-denoiser-gtcrn-model=extras/model/gtcrn_simple.onnx",
+        {
+          "field": "input",
+          "flag": "--input-wav",
+          "join": "="
+        },
+        {
+          "field": "out",
+          "flag": "--output-wav",
+          "join": "="
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Cleaned copy saved.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    }
+  ]
+}

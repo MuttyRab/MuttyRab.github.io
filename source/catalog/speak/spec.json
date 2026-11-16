@@ -1,0 +1,191 @@
+{
+  "id": "speak",
+  "name": "Text to Speech",
+  "tagline": "Turn any text into a natural-sounding voice recording — voiceovers, narration, audiobooks — privately on your own computer, no subscription.",
+  "keywords": [
+    "text to speech",
+    "text to speech offline",
+    "ai voice generator",
+    "voiceover",
+    "read text aloud",
+    "text to audio file",
+    "audiobook from text",
+    "kokoro tts",
+    "text to speech mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "k2-fsa/sherpa-onnx",
+    "stars": 16000,
+    "displayName": "Kokoro voices (sherpa-onnx)",
+    "license": "Apache-2.0 (Kokoro model: Apache-2.0)",
+    "homepage": "https://k2-fsa.github.io/sherpa/onnx/"
+  },
+  "binary": {
+    "name": "sherpa-onnx-offline-tts",
+    "version": "2.0.1",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-linux-x64-static.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-tts",
+        "sha256": "8b34cf773b65e4be3e7ace12fb6a65fcd8f4e8fe06516ae9b7bcaf405dcb308c"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-osx-universal2-static.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-tts",
+        "sha256": "149d4dbb1bb450b88d65097ba2477564a0ddeb99dad91666a2411cd738ef831f"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-osx-universal2-static.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-tts",
+        "sha256": "149d4dbb1bb450b88d65097ba2477564a0ddeb99dad91666a2411cd738ef831f"
+      },
+      "win32-x64": {
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-v2.0.1-win-x64-static-MT-Release.tar.bz2",
+        "path": "bin/sherpa-onnx-offline-tts.exe",
+        "sha256": "58c810ac46f20e3828968175606063a31df4cff21a1931fe5b69a03e70c5a5b7"
+      }
+    },
+    "extras": [
+      {
+        "name": "voice",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-int8-multi-lang-v1_0.tar.bz2",
+        "sha256": "72c347230107ef8a31098ec4d468a605244beef5f1ed00db97efa13518800653"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "speak",
+      "label": "Text to speech",
+      "runLabel": "Make audio",
+      "description": "Type or paste text and pick a voice. The first run downloads the voices once (about 130 MB); after that everything works offline.",
+      "mcpDescription": "Turn text into natural-sounding English speech and save it as a .wav audio file on the user's computer, offline (Kokoro voices; no account, no cloud). Use this whenever the user wants a voiceover, narration, podcast intro, audiobook chapter, announcement, or wants a document/notes read aloud or 'saved as audio'. Write or clean up the script first, then pass it as `text` (up to ~20,000 characters per call; split longer documents into chapters and call once per chapter). Pick `voice` to match the request (US/UK, female/male).",
+      "fields": [
+        {
+          "id": "text",
+          "label": "Text to read aloud",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "voice",
+          "label": "Voice",
+          "type": "select",
+          "default": "3",
+          "options": [
+            {
+              "value": "3",
+              "label": "Heart — US English, female (warm)"
+            },
+            {
+              "value": "2",
+              "label": "Bella — US English, female"
+            },
+            {
+              "value": "9",
+              "label": "Sarah — US English, female"
+            },
+            {
+              "value": "6",
+              "label": "Nicole — US English, female (soft)"
+            },
+            {
+              "value": "16",
+              "label": "Michael — US English, male"
+            },
+            {
+              "value": "11",
+              "label": "Adam — US English, male"
+            },
+            {
+              "value": "15",
+              "label": "Liam — US English, male"
+            },
+            {
+              "value": "21",
+              "label": "Emma — British English, female"
+            },
+            {
+              "value": "26",
+              "label": "George — British English, male"
+            },
+            {
+              "value": "24",
+              "label": "Daniel — British English, male"
+            }
+          ]
+        },
+        {
+          "id": "speed",
+          "label": "Speed",
+          "type": "select",
+          "default": "1",
+          "options": [
+            {
+              "value": "1.2",
+              "label": "Slower"
+            },
+            {
+              "value": "1",
+              "label": "Normal"
+            },
+            {
+              "value": "0.85",
+              "label": "Faster"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save audio as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "WAV audio",
+              "extensions": [
+                "wav"
+              ]
+            }
+          ]
+        }
+      ],
+      "cwd": "tool",
+      "argv": [
+        "--kokoro-model=extras/voice/kokoro-int8-multi-lang-v1_0/model.int8.onnx",
+        "--kokoro-voices=extras/voice/kokoro-int8-multi-lang-v1_0/voices.bin",
+        "--kokoro-tokens=extras/voice/kokoro-int8-multi-lang-v1_0/tokens.txt",
+        "--kokoro-lexicon=extras/voice/kokoro-int8-multi-lang-v1_0/lexicon-us-en.txt",
+        "--num-threads=4",
+        {
+          "field": "voice",
+          "flag": "--sid",
+          "join": "="
+        },
+        {
+          "field": "speed",
+          "flag": "--kokoro-length-scale",
+          "join": "="
+        },
+        {
+          "field": "out",
+          "flag": "--output-filename",
+          "join": "="
+        },
+        {
+          "field": "text"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Audio saved.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    }
+  ],
+  "product": "audio"
+}
