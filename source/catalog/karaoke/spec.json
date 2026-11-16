@@ -1,0 +1,321 @@
+{
+  "id": "karaoke",
+  "product": "audio",
+  "name": "Karaoke Video Maker",
+  "tagline": "Turn any song into a karaoke video — vocals removed, lyrics on screen — on your own computer.",
+  "keywords": [
+    "karaoke maker",
+    "make karaoke video",
+    "karaoke from any song",
+    "remove vocals and add lyrics",
+    "lyrics video",
+    "karaoke mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "FFmpeg/FFmpeg",
+    "stars": 50000,
+    "displayName": "UVR + Whisper + FFmpeg",
+    "license": "GPL (FFmpeg static build), MIT/Apache (models), Inter font: OFL-1.1",
+    "homepage": "https://ffmpeg.org"
+  },
+  "binary": {
+    "name": "ffmpeg",
+    "version": "6.1.1",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64",
+        "path": "ffmpeg",
+        "sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64",
+        "path": "ffmpeg",
+        "sha256": "a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-x64",
+        "path": "ffmpeg",
+        "sha256": "ebdddc936f61e14049a2d4b549a412b8a40deeff6540e58a9f2a2da9e6b18894"
+      },
+      "win32-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64",
+        "path": "ffmpeg.exe",
+        "sha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00"
+      }
+    },
+    "extras": [
+      {
+        "name": "font",
+        "url": "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip",
+        "sha256": "9883fdd4a49d4fb66bd8177ba6625ef9a64aa45899767dde3d36aa425756b11e"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "make",
+      "label": "Make a karaoke video",
+      "runLabel": "Make karaoke video",
+      "description": "Pick a song (or a music video). The vocals are removed and the lyrics are recognised and shown on screen in time with the music. The first run downloads the AI models once (a few hundred MB); a 3-minute song takes a few minutes.",
+      "mcpDescription": "Make a karaoke video (MP4) from a song on the user's computer, offline: removes the vocals (UVR MDX-Net), recognises the sung lyrics with Whisper and burns them in as timed on-screen text over the instrumental. Use whenever the user wants a karaoke version, sing-along or lyrics video of a song. Set `language` to the song's language for better lyrics.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Song or music video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio & video",
+              "extensions": [
+                "mp3",
+                "m4a",
+                "wav",
+                "aac",
+                "ogg",
+                "flac",
+                "mp4",
+                "mov",
+                "webm",
+                "mkv",
+                "m4v"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "language",
+          "label": "Language of the song",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Detect automatically"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "he",
+              "label": "Hebrew"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            }
+          ]
+        },
+        {
+          "id": "style",
+          "label": "Background",
+          "type": "select",
+          "default": "0x101828",
+          "options": [
+            {
+              "value": "0x101828",
+              "label": "Dark blue"
+            },
+            {
+              "value": "black",
+              "label": "Black"
+            },
+            {
+              "value": "0x3b0764",
+              "label": "Purple"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save karaoke video as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-y",
+            "-i",
+            "{input}",
+            "-vn",
+            "-ac",
+            "2",
+            "-ar",
+            "44100",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp}"
+          ],
+          "replaces": "input",
+          "ext": ".wav"
+        },
+        {
+          "tool": "vocals",
+          "cwd": "tool",
+          "argv": [
+            "--uvr-model=extras/model/UVR-MDX-NET-Inst_HQ_3.onnx",
+            "--num-threads=4",
+            "--input-wav={input}",
+            "--output-vocals-wav={tmp:inst.wav}",
+            "--output-accompaniment-wav={tmp:voc.wav}"
+          ],
+          "sets": {
+            "_inst": "inst.wav",
+            "_voc": "voc.wav"
+          }
+        },
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-y",
+            "-i",
+            "{_voc}",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "-af",
+            "apad=pad_dur=1",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp:voc16.wav}"
+          ],
+          "sets": {
+            "_voc16": "voc16.wav"
+          }
+        },
+        {
+          "tool": "transcribe",
+          "cwd": "tool",
+          "argv": [
+            "--silero-vad-model=extras/vad/silero_vad.onnx",
+            "--whisper-encoder=extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+            "--whisper-decoder=extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+            "--tokens=extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+            "--num-threads=4",
+            "--whisper-language={language}",
+            "{_voc16}"
+          ],
+          "captureStdout": "_lyrics"
+        },
+        {
+          "write": "lyrics.srt",
+          "from": "_lyrics",
+          "transform": "srt",
+          "sets": "_srt",
+          "emptyMessage": "no singing was recognised in this song"
+        }
+      ],
+      "cwd": "tool",
+      "argv": [
+        "-y",
+        "-f",
+        "lavfi",
+        "-i",
+        {
+          "fmt": "color=c={style}:s=1280x720:r=25"
+        },
+        "-i",
+        {
+          "fmt": "{_inst}"
+        },
+        "-vf",
+        {
+          "fmt": "subtitles={_srt|filter}:fontsdir=extras/font/extras/ttf:force_style='FontName=Inter,Bold=1,FontSize=30,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=2,Alignment=2,MarginV=60'"
+        },
+        "-shortest",
+        "-vcodec",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        "-acodec",
+        "aac",
+        "-ab",
+        "192k",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Karaoke video ready.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
+    }
+  ]
+}

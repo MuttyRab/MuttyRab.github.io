@@ -10,8 +10,10 @@ const path = require('path');
 const { ensureBinary, binaryPaths } = require('./binaries');
 const { runTool } = require('./runner');
 
-function fill(token, values, tmp) {
-  return token.replace(/\{([A-Za-z0-9_]+)\}/g, (_, k) => (k === 'tmp' ? tmp : String(values[k] ?? '')));
+// {field} → its value; {tmp} → this step's temp file; {tmp:name.wav} → a named file in the run's
+// temp folder (so one step can write several files and later steps can use them).
+function fill(token, values, tmp, tmpDir) {
+  return token.replace(/\{([A-Za-z0-9_]+)(?::([A-Za-z0-9_.-]+))?\}/g, (_, k, name) => (k === 'tmp' ? (name ? path.join(tmpDir, name) : tmp) : String(values[k] ?? '')));
 }
 
 async function prepareRun({ spec, action, values, specs, binCache, onOutput = () => {} }) {
@@ -23,12 +25,24 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
   // speaker timeline, merged into the transcript afterwards). `cwd: "tool"` runs it in its folder.
   const steps = action.prepare ? (Array.isArray(action.prepare) ? action.prepare : [action.prepare]) : [];
   for (const p of steps) {
+    // { write: "lyrics.srt", from: "_lyrics", transform: "srt", sets: "_srt" }: save text from an
+    // earlier step as a file in the temp folder (no program runs).
+    if (p.write) {
+      if (!tmpDir) tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guihub-prep-'));
+      const f = path.join(tmpDir, p.write);
+      const raw = String(v[p.from] ?? '');
+      const text = p.transform === 'srt' ? segmentsToSrt(raw) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
+      if (p.transform === 'srt' && !text.trim()) throw new Error(p.emptyMessage || 'no speech was found');
+      fs.writeFileSync(f, `${text}\n`, 'utf8');
+      if (p.sets) v[p.sets] = f;
+      continue;
+    }
     const helper = (specs || []).find((s) => s.id === p.tool);
     if (!helper) throw new Error(`${spec.name} needs ${p.tool}, which is not available`);
     if (!tmpDir) tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guihub-prep-'));
     const tmp = path.join(tmpDir, `${p.replaces || p.captureStdout || 'step'}${p.ext || ''}`);
     const exe = await ensureBinary(helper, binCache);
-    const argv = p.argv.map((t) => fill(t, v, tmp));
+    const argv = p.argv.map((t) => fill(t, v, tmp, tmpDir));
     onOutput({ stream: 'meta', text: `Preparing with ${helper.upstream.displayName || helper.id}…\n` });
     let printed = '';
     const res = await new Promise((resolve) => runTool(exe, argv, { cwd: p.cwd === 'tool' ? binaryPaths(helper, binCache).dir : undefined, onOutput: (o) => { if (o.stream === 'stdout') printed += o.text; }, onExit: resolve }));
@@ -39,6 +53,12 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
     if (p.captureStdout) {
       if (res.code !== 0) throw new Error(`${helper.name} failed (exit ${res.code})`);
       v[p.captureStdout] = printed;
+    }
+    // sets: { _inst: "inst.wav" } → later steps and the main program get that temp file's path.
+    for (const [k, name] of Object.entries(p.sets || {})) {
+      const f = path.join(tmpDir, name);
+      if (res.code !== 0 || !fs.existsSync(f)) throw new Error(`${helper.name} failed (exit ${res.code})`);
+      v[k] = f;
     }
   }
   // textFiles: text the user or AI typed (e.g. form answers as JSON) is written to a temp file

@@ -174,7 +174,8 @@ test('text to speech: voice, speed and output become flags; the text is the last
 test('vocal remover and voice clean-up: ffmpeg prepares a wav, outputs map to the right flags', () => {
   const v = action('vocals', 'split');
   const va = buildCommand(v, { input: '/t/song.wav', instrumental: '/o/inst.wav', vocals: '/o/voc.wav' }).argv;
-  assert.ok(va.includes('--input-wav=/t/song.wav') && va.includes('--output-accompaniment-wav=/o/inst.wav') && va.includes('--output-vocals-wav=/o/voc.wav'));
+  // UVR Inst model: primary stem (instrumental) comes out of --output-vocals-wav (see catalog/vocals/notes.md).
+  assert.ok(va.includes('--input-wav=/t/song.wav') && va.includes('--output-vocals-wav=/o/inst.wav') && va.includes('--output-accompaniment-wav=/o/voc.wav'));
   assert.ok(v.prepare.argv.includes('44100'));
   const c = action('cleanvoice', 'denoise');
   const ca = buildCommand(c, { input: '/t/memo.wav', out: '/o/clean.wav' }).argv;

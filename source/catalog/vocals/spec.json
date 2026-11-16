@@ -146,12 +146,12 @@
           "join": "="
         },
         {
-          "field": "vocals",
+          "field": "instrumental",
           "flag": "--output-vocals-wav",
           "join": "="
         },
         {
-          "field": "instrumental",
+          "field": "vocals",
           "flag": "--output-accompaniment-wav",
           "join": "="
         }

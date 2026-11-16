@@ -27,6 +27,8 @@ function fieldMap(action) {
 
 function resolveValues(action, values) {
   const out = {};
+  // Internal values set by prepare steps (names starting with _) pass through untouched.
+  for (const [k, v] of Object.entries(values || {})) if (k.startsWith('_')) out[k] = v;
   for (const f of action.fields || []) {
     let v = values[f.id];
     if (v === undefined) v = f.default;
@@ -82,6 +84,16 @@ function expand(items, vals, fields, out) {
   for (const item of items) {
     if (typeof item === 'string') { out.push(item); continue; }
     if (item.sql) { out.push(sqlTemplate(item.sql, vals, fields)); continue; }
+    // {fmt:"subtitles={_srt|filter}:fontsdir=…"}: one argument built from values. "|filter" escapes a
+    // path for an FFmpeg filter option (Windows C:\x → C\:/x), so filters work on every OS.
+    if (item.fmt) {
+      out.push(item.fmt.replace(/\{([A-Za-z0-9_]+)(\|filter)?\}/g, (_, k, f) => {
+        const v = String(vals[k] ?? '');
+        // Quoted at graph level + "\:" at option level: the form FFmpeg documents for Windows paths.
+        return f ? `'${v.replace(/\\/g, '/').replace(/:/g, '\\:')}'` : v;
+      }));
+      continue;
+    }
     if (item.when) {
       const cur = vals[item.when];
       const hit = 'equals' in item ? cur === item.equals : !isEmpty(cur);

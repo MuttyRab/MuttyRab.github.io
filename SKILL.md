@@ -1,6 +1,6 @@
 ---
 name: gui-hub
-description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, UVR MDX-Net (sherpa-onnx)) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
+description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, UVR MDX-Net (sherpa-onnx)) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
 ---
 
 # GUI Hub — local file jobs for agents with a computer
@@ -48,6 +48,8 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run ffmpeg_add_subtitles --input /path/to/input.mp4 --subs /path/to/input.srt --out /path/to/output.mp4`
 - make a quiet recording louder or normalize audio → `ffmpeg_loudness`
   `npx -y https://guihub.cc/cli.tgz run ffmpeg_loudness --input /path/to/input.mp3 --out /path/to/output.mp3`
+- make a karaoke version of a song → `karaoke_make`
+  `npx -y https://guihub.cc/cli.tgz run karaoke_make --input /path/to/input.mp3 --out /path/to/output.mp4`
 - convert a Word document to Markdown → `pandoc_convert`
   `npx -y https://guihub.cc/cli.tgz run pandoc_convert --inputs /path/to/input.docx --out /path/to/output`
 - create a Word (.docx) or PowerPoint (.pptx) file → `pandoc_write`

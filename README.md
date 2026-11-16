@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, UVR MDX-Net (sherpa-onnx)
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, UVR MDX-Net (sherpa-onnx)
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (45)
+## MCP tools (46)
 
 | Tool | What it does |
 |---|---|
@@ -54,6 +54,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `ffmpeg_loudness` | Normalize the loudness of an audio or video file on the user's computer (EBU R128 loudnorm): makes quiet or uneven recordings loud and consistent at a chosen target (podcast/YouTube −14/−16 LUFS, broadcast −23). Video is copied unchanged. Use whenever the user says audio is too quiet, too loud, uneven, or wants it 'normalized' or 'podcast-ready'. |
 | `immich_go_from_google_photos` | Import Google Photos Takeout .zip files into an Immich server (keeps albums, dates, GPS). dryRun defaults to true: run it first and report the summary before uploading for real. |
 | `immich_go_from_folder` | Upload every photo and video in a folder and its subfolders. |
+| `karaoke_make` | Make a karaoke video (MP4) from a song on the user's computer, offline: removes the vocals (UVR MDX-Net), recognises the sung lyrics with Whisper and burns them in as timed on-screen text over the instrumental. Use whenever the user wants a karaoke version, sing-along or lyrics video of a song. Set `language` to the song's language for better lyrics. |
 | `pandoc_convert` | Convert documents between formats with Pandoc (input format is detected from the file extension: .docx .md .html .epub .odt .rtf .txt .tex). Several inputs are concatenated in order. Use to='gfm' to turn Word/HTML into Markdown for reading or editing. |
 | `pandoc_write` | Create a real document file on the user's computer from Markdown you write (pass the full text in `text`): Word (.docx), PowerPoint (.pptx — each `## heading` starts a new slide), OpenDocument (.odt), HTML, EPUB or RTF. The `out` file extension should match `to`. |
 | `pdfcpu_merge` | Combine several PDFs into one, in the order listed. |
