@@ -122,6 +122,7 @@ https://guihub.cc/free/excel-to-json.html
 https://guihub.cc/free/json-to-excel.html
 https://guihub.cc/free/split-pdf.html
 https://guihub.cc/free/rotate-pdf.html
+https://guihub.cc/es/quitar-fondo-de-imagen.html
 https://guihub.cc/es/firmar-pdf.html
 https://guihub.cc/es/hacer-collage-de-fotos.html
 https://guihub.cc/es/recortar-imagen.html
@@ -152,6 +153,7 @@ https://guihub.cc/es/mejorar-calidad-de-imagen.html
 https://guihub.cc/es/redimensionar-imagen.html
 https://guihub.cc/es/quitar-audio-a-un-video.html
 https://guihub.cc/es/girar-video.html
+https://guihub.cc/pt/remover-fundo-de-imagem.html
 https://guihub.cc/pt/assinar-pdf.html
 https://guihub.cc/pt/fazer-colagem-de-fotos.html
 https://guihub.cc/pt/recortar-imagem.html
@@ -182,6 +184,7 @@ https://guihub.cc/pt/melhorar-qualidade-de-imagem.html
 https://guihub.cc/pt/redimensionar-imagem.html
 https://guihub.cc/pt/tirar-audio-de-video.html
 https://guihub.cc/pt/girar-video.html
+https://guihub.cc/fr/supprimer-arriere-plan-photo.html
 https://guihub.cc/fr/signer-pdf.html
 https://guihub.cc/fr/faire-un-collage-photo.html
 https://guihub.cc/fr/recadrer-image.html
@@ -200,6 +203,7 @@ https://guihub.cc/fr/convertir-mp4-en-mp3.html
 https://guihub.cc/fr/compresser-video.html
 https://guihub.cc/fr/convertir-video-en-gif.html
 https://guihub.cc/fr/transcrire-audio-en-texte.html
+https://guihub.cc/de/hintergrund-entfernen.html
 https://guihub.cc/de/pdf-unterschreiben.html
 https://guihub.cc/de/fotocollage-erstellen.html
 https://guihub.cc/de/bild-zuschneiden.html
@@ -218,6 +222,7 @@ https://guihub.cc/de/mp4-in-mp3-umwandeln.html
 https://guihub.cc/de/video-komprimieren.html
 https://guihub.cc/de/video-in-gif-umwandeln.html
 https://guihub.cc/de/audio-in-text-umwandeln.html
+https://guihub.cc/it/rimuovere-sfondo-foto.html
 https://guihub.cc/it/firmare-pdf.html
 https://guihub.cc/it/creare-collage-foto.html
 https://guihub.cc/it/ritagliare-immagine.html
@@ -236,6 +241,7 @@ https://guihub.cc/it/convertire-mp4-in-mp3.html
 https://guihub.cc/it/comprimere-video.html
 https://guihub.cc/it/convertire-video-in-gif.html
 https://guihub.cc/it/trascrivere-audio-in-testo.html
+https://guihub.cc/id/hapus-background-foto.html
 https://guihub.cc/id/tanda-tangan-pdf.html
 https://guihub.cc/id/membuat-kolase-foto.html
 https://guihub.cc/id/crop-foto.html
@@ -254,6 +260,7 @@ https://guihub.cc/id/ubah-mp4-ke-mp3.html
 https://guihub.cc/id/kompres-video.html
 https://guihub.cc/id/ubah-video-ke-gif.html
 https://guihub.cc/id/transkripsi-audio-ke-teks.html
+https://guihub.cc/tr/fotograf-arka-plan-silme.html
 https://guihub.cc/tr/ses-yaziya-cevirme.html
 https://guihub.cc/tr/pdf-jpg-cevirme.html
 https://guihub.cc/tr/pdf-sayfa-silme.html
@@ -267,6 +274,7 @@ https://guihub.cc/tr/heic-jpg-cevirme.html
 https://guihub.cc/tr/mp4-mp3-cevirme.html
 https://guihub.cc/tr/video-sikistirma.html
 https://guihub.cc/tr/resim-boyutu-kucultme.html
+https://guihub.cc/nl/achtergrond-verwijderen.html
 https://guihub.cc/nl/audio-naar-tekst.html
 https://guihub.cc/nl/pdf-naar-jpg.html
 https://guihub.cc/nl/pagina-verwijderen-uit-pdf.html
@@ -280,6 +288,7 @@ https://guihub.cc/nl/heic-naar-jpg.html
 https://guihub.cc/nl/mp4-naar-mp3.html
 https://guihub.cc/nl/video-verkleinen.html
 https://guihub.cc/nl/foto-verkleinen.html
+https://guihub.cc/pl/usun-tlo-ze-zdjecia.html
 https://guihub.cc/pl/zamiana-mowy-na-tekst.html
 https://guihub.cc/pl/pdf-na-jpg.html
 https://guihub.cc/pl/usun-strony-z-pdf.html
@@ -293,6 +302,7 @@ https://guihub.cc/pl/heic-na-jpg.html
 https://guihub.cc/pl/mp4-na-mp3.html
 https://guihub.cc/pl/kompresja-wideo.html
 https://guihub.cc/pl/zmniejsz-zdjecie.html
+https://guihub.cc/ja/haikei-sakujo.html
 https://guihub.cc/ja/mojiokoshi-muryo.html
 https://guihub.cc/ja/pdf-jpg-henkan.html
 https://guihub.cc/ja/pdf-page-sakujo.html
@@ -306,6 +316,7 @@ https://guihub.cc/ja/heic-jpg-henkan.html
 https://guihub.cc/ja/mp4-mp3-henkan.html
 https://guihub.cc/ja/douga-asshuku.html
 https://guihub.cc/ja/gazou-asshuku.html
+https://guihub.cc/ko/sajin-baegyeong-jegeo.html
 https://guihub.cc/ko/eumseong-tekseuteu-byeonhwan.html
 https://guihub.cc/ko/pdf-jpg-byeonhwan.html
 https://guihub.cc/ko/pdf-peiji-sakje.html
@@ -319,6 +330,7 @@ https://guihub.cc/ko/heic-jpg-byeonhwan.html
 https://guihub.cc/ko/mp4-mp3-byeonhwan.html
 https://guihub.cc/ko/dongyeongsang-apchuk.html
 https://guihub.cc/ko/sajin-yongryang-jureugi.html
+https://guihub.cc/vi/xoa-phong-nen-anh.html
 https://guihub.cc/vi/chuyen-giong-noi-thanh-van-ban.html
 https://guihub.cc/vi/chuyen-pdf-sang-jpg.html
 https://guihub.cc/vi/xoa-trang-pdf.html
