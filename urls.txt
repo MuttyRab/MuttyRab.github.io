@@ -62,6 +62,10 @@ https://guihub.cc/free/mov-to-mp4.html
 https://guihub.cc/free/webm-to-mp4.html
 https://guihub.cc/free/mkv-to-mp4.html
 https://guihub.cc/free/trim-video.html
+https://guihub.cc/free/text-to-speech-free.html
+https://guihub.cc/free/jpg-to-pdf.html
+https://guihub.cc/free/pdf-to-jpg.html
+https://guihub.cc/free/video-to-gif.html
 https://guihub.cc/free/png-to-jpg.html
 https://guihub.cc/free/jpg-to-png.html
 https://guihub.cc/free/png-to-webp.html
@@ -120,4 +124,8 @@ https://guihub.cc/guides/otter-ai-alternative-offline-meeting-transcription.html
 https://guihub.cc/guides/elevenlabs-alternative-offline-text-to-speech.html
 https://guihub.cc/guides/topaz-gigapixel-alternative-free-ai-upscaler.html
 https://guihub.cc/guides/remove-background-noise-from-audio-offline.html
+https://guihub.cc/guides/auto-subtitles-for-video-offline.html
+https://guihub.cc/guides/fill-pdf-form-without-adobe-acrobat.html
+https://guihub.cc/guides/make-karaoke-video-from-any-song.html
+https://guihub.cc/guides/join-videos-into-one-without-watermark.html
 https://guihub.cc/legal.html
