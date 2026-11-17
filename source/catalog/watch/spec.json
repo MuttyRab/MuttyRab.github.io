@@ -1,0 +1,264 @@
+{
+  "id": "watch",
+  "product": "essentials",
+  "name": "Video to Screenshots & Transcript",
+  "tagline": "Turn a video into timed screenshots and a timestamped transcript — so you (or your AI) can see and read what happens in it.",
+  "keywords": [
+    "let ai watch a video",
+    "video to screenshots",
+    "video to text with screenshots",
+    "summarize a video with ai",
+    "screen recording to tutorial",
+    "extract frames from video",
+    "video transcript with screenshots",
+    "watch video mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "FFmpeg/FFmpeg",
+    "stars": 50000,
+    "displayName": "FFmpeg + Whisper",
+    "license": "GPL (FFmpeg static build), Apache-2.0/MIT (Whisper via sherpa-onnx)",
+    "homepage": "https://ffmpeg.org"
+  },
+  "binary": {
+    "name": "ffmpeg",
+    "version": "6.1.1",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64",
+        "path": "ffmpeg",
+        "sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64",
+        "path": "ffmpeg",
+        "sha256": "a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-x64",
+        "path": "ffmpeg",
+        "sha256": "ebdddc936f61e14049a2d4b549a412b8a40deeff6540e58a9f2a2da9e6b18894"
+      },
+      "win32-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64",
+        "path": "ffmpeg.exe",
+        "sha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "video",
+      "label": "Screenshots + transcript",
+      "runLabel": "Make screenshots & transcript",
+      "description": "Pick a video and a folder. You get a screenshot every few seconds (frame_0001.jpg is the start, then one every interval) and transcript.txt with what is said and when. Great for writing a how-to from a screen recording, notes from a lecture, or finding a moment in a long video. Silent videos work too (screenshots only).",
+      "mcpDescription": "Let the AI 'watch' a video on the user's computer, offline: saves a screenshot every `every` seconds into `outDir` (frame_0001.jpg = 0:00, frame_0002.jpg = `every` seconds later, and so on; at most 300) plus transcript.txt with timestamped speech ([hh:mm:ss] lines, Whisper). Then open the screenshots and the transcript yourself to answer questions about the video, summarise it, write step-by-step docs or a tutorial from a screen recording, find when something is shown or said, or pick timestamps for clips. Use `every` 2 for fast screen recordings, 5 for normal videos, 15-30 for long lectures or meetings. Silent videos are fine (the transcript then says no speech was found).",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "webm",
+                "mkv",
+                "m4v",
+                "avi"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "every",
+          "label": "A screenshot every",
+          "type": "select",
+          "default": "5",
+          "options": [
+            {
+              "value": "2",
+              "label": "2 seconds (screen recordings)"
+            },
+            {
+              "value": "5",
+              "label": "5 seconds"
+            },
+            {
+              "value": "15",
+              "label": "15 seconds"
+            },
+            {
+              "value": "30",
+              "label": "30 seconds (long talks)"
+            }
+          ]
+        },
+        {
+          "id": "language",
+          "label": "Spoken language",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Detect automatically"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "he",
+              "label": "Hebrew"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            }
+          ]
+        },
+        {
+          "id": "outDir",
+          "label": "Save into folder",
+          "type": "folder",
+          "required": true
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "optional": true,
+          "argv": [
+            "-y",
+            "-i",
+            "{input}",
+            "-vn",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "-af",
+            "apad=pad_dur=1",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp:audio.wav}"
+          ],
+          "sets": {
+            "_audio": "audio.wav"
+          }
+        },
+        {
+          "tool": "transcribe",
+          "cwd": "tool",
+          "optional": true,
+          "requires": "_audio",
+          "argv": [
+            "--silero-vad-model=extras/vad/silero_vad.onnx",
+            "--whisper-encoder=extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+            "--whisper-decoder=extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+            "--tokens=extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+            "--num-threads=4",
+            "--whisper-language={language}",
+            "{_audio}"
+          ],
+          "captureStdout": "_speech"
+        },
+        {
+          "write": "transcript.txt",
+          "to": "{outDir}/transcript.txt",
+          "from": "_speech",
+          "transform": "segments",
+          "emptyText": "(No speech was found in this video.)"
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-vf",
+        {
+          "fmt": "fps=1/{every},scale='min(1280,iw)':-2"
+        },
+        "-qscale",
+        "3",
+        "-vframes",
+        "300",
+        {
+          "fmt": "{outDir}/frame_%04d.jpg"
+        }
+      ],
+      "openAfter": "outDir",
+      "successMessage": "Screenshots and transcript.txt saved in the folder.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
+    }
+  ]
+}

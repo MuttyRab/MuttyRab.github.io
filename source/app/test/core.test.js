@@ -375,3 +375,12 @@ test('join videos: one normalise step per clip, then a concat list, then a strea
   assert.strictEqual(a.prepare[0].forEach, 'inputs');
   assert.deepStrictEqual(buildCommand(a, { inputs: ['/a.mp4', '/b.mov'], out: '/o.mp4', _list: '/t/list.txt' }).argv.slice(0, 7), ['-y', '-f', 'concat', '-safe', '0', '-i', '/t/list.txt']);
 });
+
+test('scriptToSrt: Whisper timing, script words', () => {
+  const { scriptToSrt } = require('../src/core/execute');
+  const srt = scriptToSrt('0.10 -- 3.00: Welcome to 12 Maple Street a bright home\n3.50 -- 6.00: close to schools in the park.', 'Welcome to twelve Maple Street. A bright home close to schools and the park.');
+  assert.match(srt, /00:00:00,100 --> 00:00:03,000/);
+  assert.match(srt, /twelve Maple\s+Street/);
+  assert.match(srt, /and the park/);
+  assert.strictEqual(scriptToSrt('', 'words'), '');
+});

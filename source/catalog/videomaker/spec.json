@@ -1,0 +1,349 @@
+{
+  "id": "videomaker",
+  "product": "audio",
+  "name": "Photo Video Maker",
+  "tagline": "Turn photos and a script into a narrated video with captions — AI voice, on your own computer.",
+  "keywords": [
+    "make a video from photos with voiceover",
+    "slideshow with voiceover",
+    "narrated video maker",
+    "photo video with captions",
+    "ai voiceover video",
+    "text to video offline",
+    "video maker mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "FFmpeg/FFmpeg",
+    "stars": 50000,
+    "displayName": "Kokoro + Whisper + FFmpeg",
+    "license": "GPL (FFmpeg static build), Apache-2.0/MIT (models), Inter font: OFL-1.1",
+    "homepage": "https://ffmpeg.org"
+  },
+  "binary": {
+    "name": "ffmpeg",
+    "version": "6.1.1",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64",
+        "path": "ffmpeg",
+        "sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64",
+        "path": "ffmpeg",
+        "sha256": "a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-x64",
+        "path": "ffmpeg",
+        "sha256": "ebdddc936f61e14049a2d4b549a412b8a40deeff6540e58a9f2a2da9e6b18894"
+      },
+      "win32-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64",
+        "path": "ffmpeg.exe",
+        "sha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00"
+      }
+    },
+    "extras": [
+      {
+        "name": "font",
+        "url": "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip",
+        "sha256": "9883fdd4a49d4fb66bd8177ba6625ef9a64aa45899767dde3d36aa425756b11e"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "make",
+      "label": "Make a narrated video",
+      "runLabel": "Make video",
+      "description": "Pick your photos (in order), type or paste the script, choose a voice. You get an MP4: your photos in turn, the script read aloud by a natural AI voice, and captions timed to the speech. The photos loop until the narration ends. The first run downloads the voice and caption models once.",
+      "mcpDescription": "Make a narrated video (MP4) on the user's computer, offline: the given photos/images are shown in order (each for `seconds`, looping until the narration ends), the `script` is read aloud by a natural AI voice (Kokoro, US/UK English) and captions timed to the speech are burned in (Whisper). Use whenever the user wants a video from photos with a voiceover — product promos, real-estate tours, recaps, explainers, social posts, slideshows with narration. Write the script yourself if the user only describes what they want (about 150 words per minute of video). Pick `size` for where it will be posted (landscape for YouTube, portrait for Reels/TikTok/Shorts, square for feeds).",
+      "fields": [
+        {
+          "id": "photos",
+          "label": "Photos (in order)",
+          "type": "files",
+          "required": true,
+          "filters": [
+            {
+              "name": "Images",
+              "extensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp",
+                "bmp"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "script",
+          "label": "Script to read aloud",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "voice",
+          "label": "Voice",
+          "type": "select",
+          "default": "3",
+          "options": [
+            {
+              "value": "3",
+              "label": "Heart — US English, female (warm)"
+            },
+            {
+              "value": "2",
+              "label": "Bella — US English, female"
+            },
+            {
+              "value": "9",
+              "label": "Sarah — US English, female"
+            },
+            {
+              "value": "6",
+              "label": "Nicole — US English, female (soft)"
+            },
+            {
+              "value": "16",
+              "label": "Michael — US English, male"
+            },
+            {
+              "value": "11",
+              "label": "Adam — US English, male"
+            },
+            {
+              "value": "15",
+              "label": "Liam — US English, male"
+            },
+            {
+              "value": "21",
+              "label": "Emma — British English, female"
+            },
+            {
+              "value": "26",
+              "label": "George — British English, male"
+            },
+            {
+              "value": "24",
+              "label": "Daniel — British English, male"
+            }
+          ]
+        },
+        {
+          "id": "seconds",
+          "label": "Seconds per photo",
+          "type": "select",
+          "default": "4",
+          "options": [
+            {
+              "value": "3",
+              "label": "3 seconds"
+            },
+            {
+              "value": "4",
+              "label": "4 seconds"
+            },
+            {
+              "value": "5",
+              "label": "5 seconds"
+            },
+            {
+              "value": "7",
+              "label": "7 seconds"
+            },
+            {
+              "value": "10",
+              "label": "10 seconds"
+            }
+          ]
+        },
+        {
+          "id": "size",
+          "label": "Shape",
+          "type": "select",
+          "default": "1920:1080",
+          "options": [
+            {
+              "value": "1920:1080",
+              "label": "Landscape 16:9 (YouTube, websites)"
+            },
+            {
+              "value": "1080:1920",
+              "label": "Portrait 9:16 (Reels, TikTok, Shorts)"
+            },
+            {
+              "value": "1080:1080",
+              "label": "Square 1:1 (feeds)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save video as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "speak",
+          "cwd": "tool",
+          "argv": [
+            "--kokoro-model=extras/voice/kokoro-int8-multi-lang-v1_0/model.int8.onnx",
+            "--kokoro-voices=extras/voice/kokoro-int8-multi-lang-v1_0/voices.bin",
+            "--kokoro-tokens=extras/voice/kokoro-int8-multi-lang-v1_0/tokens.txt",
+            "--kokoro-lexicon=extras/voice/kokoro-int8-multi-lang-v1_0/lexicon-us-en.txt",
+            "--num-threads=4",
+            "--sid={voice}",
+            "--kokoro-length-scale=1",
+            "--output-filename={tmp:voice.wav}",
+            "{script}"
+          ],
+          "sets": {
+            "_voice": "voice.wav"
+          }
+        },
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-y",
+            "-i",
+            "{_voice}",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "-af",
+            "apad=pad_dur=1",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp:voice16.wav}"
+          ],
+          "sets": {
+            "_voice16": "voice16.wav"
+          }
+        },
+        {
+          "tool": "transcribe",
+          "cwd": "tool",
+          "argv": [
+            "--silero-vad-model=extras/vad/silero_vad.onnx",
+            "--whisper-encoder=extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+            "--whisper-decoder=extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+            "--tokens=extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+            "--num-threads=4",
+            "--whisper-language=en",
+            "{_voice16}"
+          ],
+          "captureStdout": "_cap"
+        },
+        {
+          "write": "captions.srt",
+          "from": "_cap",
+          "transform": "srtScript",
+          "sets": "_srt",
+          "emptyMessage": "the narration could not be timed — check the script has words in it",
+          "script": "script"
+        },
+        {
+          "tool": "ffmpeg",
+          "forEach": "photos",
+          "ext": ".mkv",
+          "collect": "_parts",
+          "argv": [
+            "-y",
+            "-loop",
+            "1",
+            "-t",
+            "{seconds}",
+            "-i",
+            "{item}",
+            "-vf",
+            "scale={size}:force_original_aspect_ratio=decrease,pad={size}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,fps=30,format=yuv420p",
+            "-an",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "20",
+            "-f",
+            "matroska",
+            "{tmp}"
+          ]
+        },
+        {
+          "write": "list.txt",
+          "from": "_parts",
+          "transform": "concatList",
+          "sets": "_list"
+        }
+      ],
+      "cwd": "tool",
+      "argv": [
+        "-y",
+        "-stream_loop",
+        "-1",
+        "-f",
+        "concat",
+        "-safe",
+        "0",
+        "-i",
+        {
+          "fmt": "{_list}"
+        },
+        "-i",
+        {
+          "fmt": "{_voice}"
+        },
+        "-map",
+        "0:v:0",
+        "-map",
+        "1:a:0",
+        "-vf",
+        {
+          "fmt": "subtitles={_srt|filter}:fontsdir=extras/font/extras/ttf:force_style='FontName=Inter,Bold=1,FontSize=11,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=1.5,Alignment=2,MarginV=24'"
+        },
+        "-shortest",
+        "-vcodec",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "20",
+        "-pix_fmt",
+        "yuv420p",
+        "-acodec",
+        "aac",
+        "-ab",
+        "192k",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Video ready.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
+    }
+  ]
+}

@@ -34,7 +34,9 @@ https://guihub.cc/ai/transcribe-meeting.html
 https://guihub.cc/ai/transcribe-subtitles.html
 https://guihub.cc/ai/typst-write.html
 https://guihub.cc/ai/upscale-upscale.html
+https://guihub.cc/ai/videomaker-make.html
 https://guihub.cc/ai/vocals-split.html
+https://guihub.cc/ai/watch-video.html
 https://guihub.cc/free/
 https://guihub.cc/free/compress-image-to-20kb.html
 https://guihub.cc/free/compress-image-to-30kb.html
@@ -118,7 +120,9 @@ https://guihub.cc/tools/speakers.html
 https://guihub.cc/tools/transcribe.html
 https://guihub.cc/tools/typst.html
 https://guihub.cc/tools/upscale.html
+https://guihub.cc/tools/videomaker.html
 https://guihub.cc/tools/vocals.html
+https://guihub.cc/tools/watch.html
 https://guihub.cc/guides/
 https://guihub.cc/guides/merge-compress-protect-pdf-offline.html
 https://guihub.cc/guides/bulk-rename-files-with-preview.html
@@ -156,4 +160,6 @@ https://guihub.cc/guides/best-free-ai-image-upscaler.html
 https://guihub.cc/guides/best-free-pdf-compressor.html
 https://guihub.cc/guides/best-free-video-compressor.html
 https://guihub.cc/guides/how-to-open-heic-files-on-windows.html
+https://guihub.cc/guides/make-video-from-photos-with-voiceover.html
+https://guihub.cc/guides/let-ai-watch-a-video.html
 https://guihub.cc/legal.html

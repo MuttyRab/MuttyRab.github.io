@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, UVR MDX-Net (sherpa-onnx)
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (47)
+## MCP tools (49)
 
 | Tool | What it does |
 |---|---|
@@ -76,7 +76,9 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `typst_write` | Create a typeset PDF file on the user's computer from Typst markup you write (pass the full document in `source`). Typst syntax: `= Heading`, `*bold*`, `_italic_`, `- item`, `#table(columns: 2, [a], [b])`, `#set page(paper: "a4")`, `#set text(font: "New Computer Modern")`. Built-in fonts work offline. Relative image paths resolve inside `assets`. |
 | `typst_compile` | Compile an existing .typ (Typst) file on the user's computer to PDF. |
 | `upscale_upscale` | Upscale/enhance an image on the user's computer 4× with Real-ESRGAN AI (offline): makes small, blurry or low-resolution photos and pictures larger and sharper, e.g. for printing, wallpapers or old photos. Input JPG/PNG/WebP; saves a new image (format from the output file extension). Choose `model` 'anime' for drawings, cartoons and anime art, otherwise 'photo'. Needs a GPU with Vulkan support (most computers from the last ~8 years). |
+| `videomaker_make` | Make a narrated video (MP4) on the user's computer, offline: the given photos/images are shown in order (each for `seconds`, looping until the narration ends), the `script` is read aloud by a natural AI voice (Kokoro, US/UK English) and captions timed to the speech are burned in (Whisper). Use whenever the user wants a video from photos with a voiceover — product promos, real-estate tours, recaps, explainers, social posts, slideshows with narration. Write the script yourself if the user only describes what they want (about 150 words per minute of video). Pick `size` for where it will be posted (landscape for YouTube, portrait for Reels/TikTok/Shorts, square for feeds). |
 | `vocals_split` | Separate a song (any audio or video file on the user's computer) into an instrumental/karaoke track with the vocals removed and a vocals-only (acapella) track, offline with the UVR MDX-Net model. Saves two .wav files. Use whenever the user wants to remove vocals, make karaoke or a backing track, get an instrumental, or isolate/extract vocals or an acapella from a song. Takes roughly the song's length to run. |
+| `watch_video` | Let the AI 'watch' a video on the user's computer, offline: saves a screenshot every `every` seconds into `outDir` (frame_0001.jpg = 0:00, frame_0002.jpg = `every` seconds later, and so on; at most 300) plus transcript.txt with timestamped speech ([hh:mm:ss] lines, Whisper). Then open the screenshots and the transcript yourself to answer questions about the video, summarise it, write step-by-step docs or a tutorial from a screen recording, find when something is shown or said, or pick timestamps for clips. Use `every` 2 for fast screen recordings, 5 for normal videos, 15-30 for long lectures or meetings. Silent videos are fine (the transcript then says no speech was found). |
 
 ## Using the desktop app as the MCP server
 
@@ -157,6 +159,8 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [The best free ways to compress a PDF (online and offline), honestly compared](https://guihub.cc/guides/best-free-pdf-compressor.html)
 - [The best free video compressors (for Discord, email and WhatsApp), honestly compared](https://guihub.cc/guides/best-free-video-compressor.html)
 - [How to open and convert HEIC photos on Windows (free)](https://guihub.cc/guides/how-to-open-heic-files-on-windows.html)
+- [Make a video from photos with a voiceover and captions — on your computer](https://guihub.cc/guides/make-video-from-photos-with-voiceover.html)
+- [How to let Claude or Codex “watch” a video or screen recording](https://guihub.cc/guides/let-ai-watch-a-video.html)
 
 ## About this repository
 

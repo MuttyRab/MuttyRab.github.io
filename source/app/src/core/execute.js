@@ -27,17 +27,22 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
   // speaker timeline, merged into the transcript afterwards). `cwd: "tool"` runs it in its folder.
   const steps = action.prepare ? (Array.isArray(action.prepare) ? action.prepare : [action.prepare]) : [];
   for (const p of steps) {
+    // requires: skip a step whose input an earlier optional step could not make (e.g. no sound).
+    if (p.requires && !v[p.requires]) continue;
     // { write: "lyrics.srt", from: "_lyrics", transform: "srt", sets: "_srt" }: save text from an
     // earlier step as a file in the temp folder (no program runs).
     if (p.write) {
       if (!tmpDir) tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guihub-prep-'));
-      const f = path.join(tmpDir, p.write);
+      // to: "{outDir}/transcript.txt" writes into a folder the user chose instead of the temp folder.
+      const f = p.to ? fill(p.to, v, '', tmpDir) : path.join(tmpDir, p.write);
+      if (p.to) fs.mkdirSync(path.dirname(f), { recursive: true });
       const raw = String(v[p.from] ?? '');
       const list = Array.isArray(v[p.from]) ? v[p.from] : [];
       // concatList: FFmpeg concat-demuxer list ("file '/path'"), quotes escaped the FFmpeg way.
       const text = p.transform === 'concatList' ? list.map((f) => `file '${String(f).replace(/\\/g, '/').replace(/'/g, "'\\''")}'`).join('\n')
-        : p.transform === 'srt' ? segmentsToSrt(raw) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
-      if (p.transform === 'srt' && !text.trim()) throw new Error(p.emptyMessage || 'no speech was found');
+        : p.transform === 'srt' ? segmentsToSrt(raw) : p.transform === 'srtScript' ? scriptToSrt(raw, String(v[p.script] ?? '')) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
+      if (!text.trim() && p.emptyText) { fs.writeFileSync(f, `${p.emptyText}\n`, 'utf8'); if (p.sets) v[p.sets] = f; continue; }
+      if ((p.transform === 'srt' || p.transform === 'srtScript') && !text.trim()) throw new Error(p.emptyMessage || 'no speech was found');
       fs.writeFileSync(f, `${text}\n`, 'utf8');
       if (p.sets) v[p.sets] = f;
       continue;
@@ -68,6 +73,9 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
     onOutput({ stream: 'meta', text: `Preparing with ${helper.upstream.displayName || helper.id}…\n` });
     let printed = '';
     const res = await new Promise((resolve) => runTool(exe, argv, { cwd: p.cwd === 'tool' ? binaryPaths(helper, binCache).dir : undefined, onOutput: (o) => { if (o.stream === 'stdout') printed += o.text; }, onExit: resolve }));
+    // optional: a step that may fail without stopping the job (its values stay unset).
+    const ok = res.code === 0 && (!p.replaces || fs.existsSync(tmp)) && Object.values(p.sets || {}).every((name) => fs.existsSync(path.join(tmpDir, name)));
+    if (p.optional && !ok) continue;
     if (p.replaces) {
       if (res.code !== 0 || !fs.existsSync(tmp)) throw new Error(`could not read ${path.basename(String(values[p.replaces] || 'the input'))} (is it an audio or video file?)`);
       v[p.replaces] = tmp;
@@ -94,6 +102,26 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
   }
   const cwd = action.cwd === 'tool' ? binaryPaths(spec, binCache).dir : (values[action.cwdField] || undefined);
   return { values: v, cwd, cleanup: () => { if (tmpDir) fs.rmSync(tmpDir, { recursive: true, force: true }); } };
+}
+
+// Captions for a known script read by a synthetic voice: Whisper gives the timing, the script gives
+// the words. Each Whisper segment gets the same share of the script's words as of the heard words.
+function scriptToSrt(stdout, script) {
+  const segs = [];
+  for (const l of String(stdout).split(/\r?\n/)) {
+    const m = l.match(/^\s*(\d+(?:\.\d+)?)\s*--\s*(\d+(?:\.\d+)?)\s*:\s*(.*\S)\s*$/);
+    if (m) segs.push({ a: Number(m[1]), b: Number(m[2]), n: m[3].split(/\s+/).length });
+  }
+  const words = String(script).trim().split(/\s+/).filter(Boolean);
+  if (!segs.length || !words.length) return '';
+  const heard = segs.reduce((x, s) => x + s.n, 0);
+  let i = 0;
+  const lines = segs.map((s, k) => {
+    const take = k === segs.length - 1 ? words.length - i : Math.max(1, Math.round((s.n / heard) * words.length));
+    const text = words.slice(i, i + take).join(' '); i += take;
+    return `${s.a.toFixed(3)} -- ${s.b.toFixed(3)}: ${text}`;
+  }).filter((l) => !/:\s*$/.test(l));
+  return segmentsToSrt(lines.join('\n'));
 }
 
 // Turns "12.340 -- 15.002: text" lines into a transcript (with [mm:ss] stamps or plain).
@@ -180,4 +208,4 @@ function finishRun({ action, values, stdout }) {
   return text;
 }
 
-module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, speakersToText, speakerTranscript };
+module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript };

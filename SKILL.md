@@ -1,6 +1,6 @@
 ---
 name: gui-hub
-description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, UVR MDX-Net (sherpa-onnx)) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
+description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
 ---
 
 # GUI Hub — local file jobs for agents with a computer
@@ -80,8 +80,12 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run typst_write --source "…" --out /path/to/output.pdf`
 - upscale an image or make a blurry photo sharper → `upscale_upscale`
   `npx -y https://guihub.cc/cli.tgz run upscale_upscale --input /path/to/input.jpg --out /path/to/output.png`
+- make a video with a voiceover from my photos → `videomaker_make`
+  `npx -y https://guihub.cc/cli.tgz run videomaker_make --photos /path/to/input.jpg --script "…" --out /path/to/output.mp4`
 - remove vocals from a song or make a karaoke track → `vocals_split`
   `npx -y https://guihub.cc/cli.tgz run vocals_split --input /path/to/input.mp3 --instrumental /path/to/output.wav --vocals /path/to/output.wav`
+- watch a video or screen recording → `watch_video`
+  `npx -y https://guihub.cc/cli.tgz run watch_video --input /path/to/input.mp4 --outDir /path/to/folder`
 
 Full list with descriptions: `npx -y https://guihub.cc/cli.tgz list` or https://guihub.cc/llms.txt
 
