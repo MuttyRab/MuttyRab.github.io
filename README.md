@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (49)
+## MCP tools (50)
 
 | Tool | What it does |
 |---|---|
@@ -37,6 +37,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `caesium_compress` | Compress, resize and/or convert image files (JPG, PNG, WebP, GIF, TIFF) on the user's computer. Writes compressed copies (same file names) into outDir; never modifies originals or overwrites existing files. Use mode=size with maxSize (bytes) to fit upload limits. File dates are kept by default (keepDates). |
 | `caesium_folder` | Compress, resize and/or convert every image in a folder on the user's computer, optionally including subfolders (folder structure is kept). Copies go to outDir; originals are never modified. File dates are kept by default (keepDates). |
 | `cleanvoice_denoise` | Remove background noise (hiss, hum, fans, traffic, room noise) from a speech recording on the user's computer — any audio or video file — offline, and save a cleaned .wav copy (16 kHz mono, optimised for speech). Use whenever the user wants to clean up, denoise or improve the audio of a voice memo, interview, podcast, lecture, call or video narration. Combine with transcription for better transcripts of noisy audio. |
+| `clips_make` | Make a short social-media clip (MP4) from a longer video on the user's computer, offline: the part from `start` to `end` is cut out, cropped to vertical 9:16 for TikTok/Reels/Shorts (or square / original shape) and captions timed to the speech (Whisper) are burned in. Use when the user wants shorts, reels, TikToks, highlights or clips from a podcast, interview, stream, lecture or webinar. To find good moments first, get the timestamped transcript (watch_video or transcribe_transcribe), pick self-contained 20–60 s passages with a strong opening line, then call this once per clip with a clear file name for each. |
 | `croc_receive` | Receive files sent with croc: give the code phrase from the sender and a destination folder. Existing files are kept (renamed) unless existing="overwrite". |
 | `duckdb_summarize` | Inspect a local data file (CSV/TSV, Excel .xlsx, Parquet, JSON) without loading it into the chat: returns the first rows and per-column statistics (type, nulls, min, max, distinct count) as Markdown tables. Use this before writing a query. |
 | `duckdb_convert` | Convert a local data file between CSV, Excel (.xlsx), Parquet and JSON. Writes a new file; the original is not changed. |
@@ -169,6 +170,10 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [How to make a voiceover for a YouTube video for free (no mic)](https://guihub.cc/guides/youtube-voiceover-free.html)
 - [PDF too large to upload? How to make it smaller (100 KB, 200 KB, 1 MB…)](https://guihub.cc/guides/pdf-too-large-to-upload.html)
 - [How to make a ringtone from a song (Android and iPhone)](https://guihub.cc/guides/make-ringtone-from-song.html)
+- [How to take a passport photo at home (and print it for cents)](https://guihub.cc/guides/how-to-make-passport-photo-at-home.html)
+- [How to remove the background from a photo for free (no upload, no watermark)](https://guihub.cc/guides/remove-background-from-photo-free.html)
+- [How to sign a PDF without printing it (free, on any computer or phone)](https://guihub.cc/guides/how-to-sign-a-pdf-without-printing.html)
+- [How to remove your location from photos before you post or send them](https://guihub.cc/guides/remove-location-from-photos.html)
 
 ## About this repository
 

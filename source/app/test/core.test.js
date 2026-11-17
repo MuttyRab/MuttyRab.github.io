@@ -201,6 +201,11 @@ test('subtitles: segments become numbered SRT cues; long ones are split; ffmpeg 
   const srt = segmentsToSrt(`log\n0.1 -- 3.52: Please call Stella.\n4 -- 12: ${'word '.repeat(30)}end.\n`);
   assert.ok(srt.startsWith('1\n00:00:00,100 --> 00:00:03,520\nPlease call Stella.\n'));
   assert.ok(/\n2\n00:00:04,000 --> /.test(srt) && /\n3\n/.test(srt) && /--> 00:00:12,000\n/.test(srt));
+  // maxChars: short cues for vertical clips (each cue ≤ 32 characters, timing still ends at 12 s).
+  const short = segmentsToSrt('0 -- 12: This is the part everyone talks about. We tripled our sales in one month by doing one simple thing.', 32);
+  const cues = short.trim().split(/\n\n/).map((c) => c.split('\n').slice(2).join(' '));
+  assert.ok(cues.length >= 4 && cues.every((c) => c.length <= 32), cues.join(' | '));
+  assert.ok(/--> 00:00:12,000\n/.test(short));
   const sub = action('transcribe', 'subtitles');
   assert.strictEqual(sub.saveStdout.transform, 'srt');
   const argv = buildCommand(action('ffmpeg', 'add-subtitles'), { input: '/v.mp4', subs: '/s.srt', out: '/o.mp4' }).argv;

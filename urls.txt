@@ -111,6 +111,8 @@ https://guihub.cc/free/image-to-text.html
 https://guihub.cc/free/pdf-to-text.html
 https://guihub.cc/free/qr-code-generator.html
 https://guihub.cc/free/qr-code-reader.html
+https://guihub.cc/free/online-voice-recorder.html
+https://guihub.cc/free/screen-recorder.html
 https://guihub.cc/free/slideshow-maker.html
 https://guihub.cc/free/mp3-to-mp4.html
 https://guihub.cc/free/text-to-speech-free.html
@@ -129,6 +131,8 @@ https://guihub.cc/free/excel-to-json.html
 https://guihub.cc/free/json-to-excel.html
 https://guihub.cc/free/split-pdf.html
 https://guihub.cc/free/rotate-pdf.html
+https://guihub.cc/es/grabadora-de-voz-online.html
+https://guihub.cc/es/grabar-pantalla-online.html
 https://guihub.cc/es/foto-carnet-online.html
 https://guihub.cc/es/quitar-fondo-de-imagen.html
 https://guihub.cc/es/firmar-pdf.html
@@ -161,6 +165,8 @@ https://guihub.cc/es/mejorar-calidad-de-imagen.html
 https://guihub.cc/es/redimensionar-imagen.html
 https://guihub.cc/es/quitar-audio-a-un-video.html
 https://guihub.cc/es/girar-video.html
+https://guihub.cc/pt/gravador-de-voz-online.html
+https://guihub.cc/pt/gravar-tela-online.html
 https://guihub.cc/pt/foto-3x4-online.html
 https://guihub.cc/pt/remover-fundo-de-imagem.html
 https://guihub.cc/pt/assinar-pdf.html
@@ -193,6 +199,8 @@ https://guihub.cc/pt/melhorar-qualidade-de-imagem.html
 https://guihub.cc/pt/redimensionar-imagem.html
 https://guihub.cc/pt/tirar-audio-de-video.html
 https://guihub.cc/pt/girar-video.html
+https://guihub.cc/fr/enregistreur-vocal-en-ligne.html
+https://guihub.cc/fr/enregistrer-ecran-en-ligne.html
 https://guihub.cc/fr/photo-identite-en-ligne.html
 https://guihub.cc/fr/supprimer-arriere-plan-photo.html
 https://guihub.cc/fr/signer-pdf.html
@@ -213,6 +221,8 @@ https://guihub.cc/fr/convertir-mp4-en-mp3.html
 https://guihub.cc/fr/compresser-video.html
 https://guihub.cc/fr/convertir-video-en-gif.html
 https://guihub.cc/fr/transcrire-audio-en-texte.html
+https://guihub.cc/de/sprachaufnahme-online.html
+https://guihub.cc/de/bildschirm-aufnehmen-online.html
 https://guihub.cc/de/passfoto-selber-machen.html
 https://guihub.cc/de/hintergrund-entfernen.html
 https://guihub.cc/de/pdf-unterschreiben.html
@@ -233,6 +243,8 @@ https://guihub.cc/de/mp4-in-mp3-umwandeln.html
 https://guihub.cc/de/video-komprimieren.html
 https://guihub.cc/de/video-in-gif-umwandeln.html
 https://guihub.cc/de/audio-in-text-umwandeln.html
+https://guihub.cc/it/registratore-vocale-online.html
+https://guihub.cc/it/registrare-schermo-online.html
 https://guihub.cc/it/fototessera-online.html
 https://guihub.cc/it/rimuovere-sfondo-foto.html
 https://guihub.cc/it/firmare-pdf.html
@@ -253,6 +265,8 @@ https://guihub.cc/it/convertire-mp4-in-mp3.html
 https://guihub.cc/it/comprimere-video.html
 https://guihub.cc/it/convertire-video-in-gif.html
 https://guihub.cc/it/trascrivere-audio-in-testo.html
+https://guihub.cc/id/perekam-suara-online.html
+https://guihub.cc/id/rekam-layar-online.html
 https://guihub.cc/id/pas-foto-online.html
 https://guihub.cc/id/hapus-background-foto.html
 https://guihub.cc/id/tanda-tangan-pdf.html
@@ -273,6 +287,8 @@ https://guihub.cc/id/ubah-mp4-ke-mp3.html
 https://guihub.cc/id/kompres-video.html
 https://guihub.cc/id/ubah-video-ke-gif.html
 https://guihub.cc/id/transkripsi-audio-ke-teks.html
+https://guihub.cc/tr/online-ses-kaydedici.html
+https://guihub.cc/tr/ekran-kaydedici-online.html
 https://guihub.cc/tr/pdf-imzalama.html
 https://guihub.cc/tr/fotograf-kolaj-yapma.html
 https://guihub.cc/tr/fotograflardan-muzikli-video-yapma.html
@@ -291,6 +307,8 @@ https://guihub.cc/tr/heic-jpg-cevirme.html
 https://guihub.cc/tr/mp4-mp3-cevirme.html
 https://guihub.cc/tr/video-sikistirma.html
 https://guihub.cc/tr/resim-boyutu-kucultme.html
+https://guihub.cc/nl/voicerecorder-online.html
+https://guihub.cc/nl/scherm-opnemen-online.html
 https://guihub.cc/nl/pdf-ondertekenen.html
 https://guihub.cc/nl/fotocollage-maken.html
 https://guihub.cc/nl/video-maken-van-fotos-met-muziek.html
@@ -309,6 +327,8 @@ https://guihub.cc/nl/heic-naar-jpg.html
 https://guihub.cc/nl/mp4-naar-mp3.html
 https://guihub.cc/nl/video-verkleinen.html
 https://guihub.cc/nl/foto-verkleinen.html
+https://guihub.cc/pl/dyktafon-online.html
+https://guihub.cc/pl/nagrywanie-ekranu-online.html
 https://guihub.cc/pl/podpisz-pdf-online.html
 https://guihub.cc/pl/kolaz-ze-zdjec.html
 https://guihub.cc/pl/film-ze-zdjec-z-muzyka.html
@@ -327,6 +347,8 @@ https://guihub.cc/pl/heic-na-jpg.html
 https://guihub.cc/pl/mp4-na-mp3.html
 https://guihub.cc/pl/kompresja-wideo.html
 https://guihub.cc/pl/zmniejsz-zdjecie.html
+https://guihub.cc/ja/rokuon-online.html
+https://guihub.cc/ja/gamen-rokuga-online.html
 https://guihub.cc/ja/pdf-shomei.html
 https://guihub.cc/ja/shashin-collage-sakusei.html
 https://guihub.cc/ja/shashin-ongaku-douga-sakusei.html
@@ -345,6 +367,8 @@ https://guihub.cc/ja/heic-jpg-henkan.html
 https://guihub.cc/ja/mp4-mp3-henkan.html
 https://guihub.cc/ja/douga-asshuku.html
 https://guihub.cc/ja/gazou-asshuku.html
+https://guihub.cc/ko/eumseong-nogeum-online.html
+https://guihub.cc/ko/hwamyeon-nokhwa-online.html
 https://guihub.cc/ko/pdf-seomyeong.html
 https://guihub.cc/ko/sajin-kollaju-mandeulgi.html
 https://guihub.cc/ko/sajin-eumak-dongyeongsang-mandeulgi.html
@@ -363,6 +387,8 @@ https://guihub.cc/ko/heic-jpg-byeonhwan.html
 https://guihub.cc/ko/mp4-mp3-byeonhwan.html
 https://guihub.cc/ko/dongyeongsang-apchuk.html
 https://guihub.cc/ko/sajin-yongryang-jureugi.html
+https://guihub.cc/vi/ghi-am-online.html
+https://guihub.cc/vi/quay-man-hinh-online.html
 https://guihub.cc/vi/ky-ten-vao-pdf.html
 https://guihub.cc/vi/ghep-anh-online.html
 https://guihub.cc/vi/lam-video-tu-anh-va-nhac.html
@@ -388,6 +414,7 @@ https://guihub.cc/audio/
 https://guihub.cc/tools/7zip.html
 https://guihub.cc/tools/caesium.html
 https://guihub.cc/tools/cleanvoice.html
+https://guihub.cc/tools/clips.html
 https://guihub.cc/tools/croc.html
 https://guihub.cc/tools/duckdb.html
 https://guihub.cc/tools/f2.html
@@ -450,4 +477,8 @@ https://guihub.cc/guides/play-mov-files-on-windows.html
 https://guihub.cc/guides/youtube-voiceover-free.html
 https://guihub.cc/guides/pdf-too-large-to-upload.html
 https://guihub.cc/guides/make-ringtone-from-song.html
+https://guihub.cc/guides/how-to-make-passport-photo-at-home.html
+https://guihub.cc/guides/remove-background-from-photo-free.html
+https://guihub.cc/guides/how-to-sign-a-pdf-without-printing.html
+https://guihub.cc/guides/remove-location-from-photos.html
 https://guihub.cc/legal.html

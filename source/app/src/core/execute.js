@@ -40,7 +40,7 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
       const list = Array.isArray(v[p.from]) ? v[p.from] : [];
       // concatList: FFmpeg concat-demuxer list ("file '/path'"), quotes escaped the FFmpeg way.
       const text = p.transform === 'concatList' ? list.map((f) => `file '${String(f).replace(/\\/g, '/').replace(/'/g, "'\\''")}'`).join('\n')
-        : p.transform === 'srt' ? segmentsToSrt(raw) : p.transform === 'srtScript' ? scriptToSrt(raw, String(v[p.script] ?? '')) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
+        : p.transform === 'srt' ? segmentsToSrt(raw, p.maxChars || 80) : p.transform === 'srtScript' ? scriptToSrt(raw, String(v[p.script] ?? '')) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
       if (!text.trim() && p.emptyText) { fs.writeFileSync(f, `${p.emptyText}\n`, 'utf8'); if (p.sets) v[p.sets] = f; continue; }
       if ((p.transform === 'srt' || p.transform === 'srtScript') && !text.trim()) throw new Error(p.emptyMessage || 'no speech was found');
       fs.writeFileSync(f, `${text}\n`, 'utf8');
@@ -149,14 +149,14 @@ function wrap2(t) {
   const mid = t.lastIndexOf(' ', Math.ceil(t.length / 2) + 6);
   return mid > 0 ? `${t.slice(0, mid)}\n${t.slice(mid + 1)}` : t;
 }
-function segmentsToSrt(stdout) {
+function segmentsToSrt(stdout, maxChars = 80) {
   const cues = [];
   for (const l of String(stdout).split(/\r?\n/)) {
     const m = l.match(/^\s*(\d+(?:\.\d+)?)\s*--\s*(\d+(?:\.\d+)?)\s*:\s*(.*\S)\s*$/);
     if (!m) continue;
     const a = Number(m[1]); const b = Math.max(Number(m[2]), a + 0.5);
     const words = m[3].split(/\s+/); const chunks = []; let cur = '';
-    for (const w of words) { if (cur && (cur + ' ' + w).length > 80) { chunks.push(cur); cur = w; } else cur = cur ? `${cur} ${w}` : w; }
+    for (const w of words) { if (cur && (cur + ' ' + w).length > maxChars) { chunks.push(cur); cur = w; } else cur = cur ? `${cur} ${w}` : w; }
     if (cur) chunks.push(cur);
     const total = chunks.reduce((n, c) => n + c.length, 0); let t = a;
     for (const c of chunks) { const d = (b - a) * (c.length / total); cues.push([t, t + d, wrap2(c)]); t += d; }

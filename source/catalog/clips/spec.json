@@ -1,0 +1,333 @@
+{
+  "id": "clips",
+  "product": "audio",
+  "name": "Short Clips Maker",
+  "tagline": "Turn the best moments of a long video into vertical clips with captions for TikTok, Reels and Shorts — on your own computer.",
+  "keywords": [
+    "long video to short clips",
+    "make shorts from youtube video",
+    "podcast to tiktok clips",
+    "vertical video with captions",
+    "add captions to clip automatically",
+    "opus clip alternative",
+    "video clips mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "FFmpeg/FFmpeg",
+    "stars": 50000,
+    "displayName": "FFmpeg + Whisper",
+    "license": "GPL (FFmpeg static build), MIT (Whisper model), Inter font: OFL-1.1",
+    "homepage": "https://ffmpeg.org"
+  },
+  "binary": {
+    "name": "ffmpeg",
+    "version": "6.1.1",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64",
+        "path": "ffmpeg",
+        "sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64",
+        "path": "ffmpeg",
+        "sha256": "a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-x64",
+        "path": "ffmpeg",
+        "sha256": "ebdddc936f61e14049a2d4b549a412b8a40deeff6540e58a9f2a2da9e6b18894"
+      },
+      "win32-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64",
+        "path": "ffmpeg.exe",
+        "sha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00"
+      }
+    },
+    "extras": [
+      {
+        "name": "font",
+        "url": "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip",
+        "sha256": "9883fdd4a49d4fb66bd8177ba6625ef9a64aa45899767dde3d36aa425756b11e"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "make",
+      "label": "Make a short clip",
+      "runLabel": "Make clip",
+      "description": "Pick a video and the part you want (from – to). You get an MP4 cut to that part, cropped to vertical 9:16 (or square), with captions timed to the speech burned in. Ask your AI to find the best moments for you: it can read the transcript and make one clip per moment. The first run downloads the caption model once.",
+      "mcpDescription": "Make a short social-media clip (MP4) from a longer video on the user's computer, offline: the part from `start` to `end` is cut out, cropped to vertical 9:16 for TikTok/Reels/Shorts (or square / original shape) and captions timed to the speech (Whisper) are burned in. Use when the user wants shorts, reels, TikToks, highlights or clips from a podcast, interview, stream, lecture or webinar. To find good moments first, get the timestamped transcript (watch_video or transcribe_transcribe), pick self-contained 20–60 s passages with a strong opening line, then call this once per clip with a clear file name for each.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Long video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "avi",
+                "m4v",
+                "3gp"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "start",
+          "label": "From",
+          "type": "text",
+          "required": true,
+          "default": "0:00",
+          "placeholder": "12:30 or 750"
+        },
+        {
+          "id": "end",
+          "label": "To",
+          "type": "text",
+          "required": true,
+          "placeholder": "13:15 or 795"
+        },
+        {
+          "id": "shape",
+          "label": "Shape",
+          "type": "select",
+          "default": "crop='min(iw,ih*9/16)':'min(ih,iw*16/9)',scale=1080:1920",
+          "options": [
+            {
+              "value": "crop='min(iw,ih*9/16)':'min(ih,iw*16/9)',scale=1080:1920",
+              "label": "Vertical 9:16 (TikTok, Reels, Shorts) — middle of the picture"
+            },
+            {
+              "value": "crop='min(iw,ih)':'min(iw,ih)',scale=1080:1080",
+              "label": "Square 1:1 (feeds)"
+            },
+            {
+              "value": "scale=-2:'min(1080,ih)'",
+              "label": "Keep the original shape"
+            }
+          ]
+        },
+        {
+          "id": "language",
+          "label": "Spoken language",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Detect automatically"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "he",
+              "label": "Hebrew"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save clip as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-y",
+            "-ss",
+            "{start}",
+            "-to",
+            "{end}",
+            "-i",
+            "{input}",
+            "-map",
+            "0:v:0",
+            "-map",
+            "0:a:0?",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "18",
+            "-pix_fmt",
+            "yuv420p",
+            "-acodec",
+            "aac",
+            "-ab",
+            "192k",
+            "-f",
+            "matroska",
+            "{tmp:clip.mkv}"
+          ],
+          "sets": {
+            "_clip": "clip.mkv"
+          }
+        },
+        {
+          "tool": "ffmpeg",
+          "optional": true,
+          "argv": [
+            "-y",
+            "-i",
+            "{_clip}",
+            "-vn",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "-af",
+            "apad=pad_dur=1",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp:a16.wav}"
+          ],
+          "sets": {
+            "_a16": "a16.wav"
+          }
+        },
+        {
+          "tool": "transcribe",
+          "cwd": "tool",
+          "requires": "_a16",
+          "argv": [
+            "--silero-vad-model=extras/vad/silero_vad.onnx",
+            "--whisper-encoder=extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+            "--whisper-decoder=extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+            "--tokens=extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+            "--num-threads=4",
+            "--whisper-language={language}",
+            "{_a16}"
+          ],
+          "captureStdout": "_cap"
+        },
+        {
+          "write": "captions.srt",
+          "from": "_cap",
+          "transform": "srt",
+          "sets": "_srt",
+          "emptyText": "1\n00:00:00,000 --> 00:00:00,040\n ",
+          "maxChars": 22
+        }
+      ],
+      "cwd": "tool",
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "fmt": "{_clip}"
+        },
+        "-vf",
+        {
+          "fmt": "{shape},subtitles={_srt|filter}:fontsdir=extras/font/extras/ttf:force_style='FontName=Inter,Bold=1,FontSize=15,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=2,Shadow=0,Alignment=2,MarginV=80'"
+        },
+        "-vcodec",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "20",
+        "-pix_fmt",
+        "yuv420p",
+        "-acodec",
+        "copy",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Clip ready.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
+    }
+  ]
+}
