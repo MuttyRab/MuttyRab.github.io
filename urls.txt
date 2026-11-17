@@ -122,6 +122,11 @@ https://guihub.cc/es/cortar-mp3.html
 https://guihub.cc/es/recortar-video.html
 https://guihub.cc/es/transcribir-audio-a-texto.html
 https://guihub.cc/es/transcribir-audio-de-whatsapp.html
+https://guihub.cc/es/eliminar-paginas-de-un-pdf.html
+https://guihub.cc/es/extraer-paginas-de-un-pdf.html
+https://guihub.cc/es/numerar-paginas-pdf.html
+https://guihub.cc/es/unir-mp3.html
+https://guihub.cc/es/marca-de-agua-en-fotos.html
 https://guihub.cc/es/mejorar-calidad-de-imagen.html
 https://guihub.cc/es/redimensionar-imagen.html
 https://guihub.cc/es/quitar-audio-a-un-video.html
@@ -139,6 +144,11 @@ https://guihub.cc/pt/cortar-mp3.html
 https://guihub.cc/pt/cortar-video.html
 https://guihub.cc/pt/transcrever-audio-para-texto.html
 https://guihub.cc/pt/transcrever-audio-do-whatsapp.html
+https://guihub.cc/pt/excluir-paginas-do-pdf.html
+https://guihub.cc/pt/extrair-paginas-do-pdf.html
+https://guihub.cc/pt/numerar-paginas-do-pdf.html
+https://guihub.cc/pt/juntar-mp3.html
+https://guihub.cc/pt/marca-d-agua-em-fotos.html
 https://guihub.cc/pt/melhorar-qualidade-de-imagem.html
 https://guihub.cc/pt/redimensionar-imagem.html
 https://guihub.cc/pt/tirar-audio-de-video.html
