@@ -7,6 +7,8 @@ https://guihub.cc/ai/7zip-create.html
 https://guihub.cc/ai/caesium-compress.html
 https://guihub.cc/ai/caesium-folder.html
 https://guihub.cc/ai/cleanvoice-denoise.html
+https://guihub.cc/ai/clips-make.html
+https://guihub.cc/ai/clips-burn.html
 https://guihub.cc/ai/duckdb-convert.html
 https://guihub.cc/ai/duckdb-combine.html
 https://guihub.cc/ai/duckdb-dedupe.html
@@ -481,4 +483,6 @@ https://guihub.cc/guides/how-to-make-passport-photo-at-home.html
 https://guihub.cc/guides/remove-background-from-photo-free.html
 https://guihub.cc/guides/how-to-sign-a-pdf-without-printing.html
 https://guihub.cc/guides/remove-location-from-photos.html
+https://guihub.cc/guides/turn-long-video-into-shorts-with-ai.html
+https://guihub.cc/guides/add-translated-subtitles-to-video-with-ai.html
 https://guihub.cc/legal.html

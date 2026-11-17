@@ -389,3 +389,9 @@ test('scriptToSrt: Whisper timing, script words', () => {
   assert.match(srt, /and the park/);
   assert.strictEqual(scriptToSrt('', 'words'), '');
 });
+
+test('fmt |filter: FFmpeg filter paths survive colons (Windows) and apostrophes', () => {
+  const argv = buildCommand(action('clips', 'burn'), { input: '/v.mp4', subs: '/s.srt', _subs: "C:\\Users\\Pat O'Neil\\talk.srt", out: '/o.mp4' }).argv;
+  const vf = argv[argv.indexOf('-vf') + 1];
+  assert.ok(vf.startsWith("subtitles='C\\:/Users/Pat O'\\\\\\''Neil/talk.srt':charenc=UTF-8:"), vf);
+});

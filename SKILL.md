@@ -26,6 +26,10 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run caesium_folder --folder /path/to/folder --outDir /path/to/folder`
 - remove background noise from an audio recording → `cleanvoice_denoise`
   `npx -y https://guihub.cc/cli.tgz run cleanvoice_denoise --input /path/to/input.mp3 --out /path/to/output.wav`
+- turn a long video into Shorts, Reels or TikToks → `clips_make`
+  `npx -y https://guihub.cc/cli.tgz run clips_make --input /path/to/input.mp4 --start "…" --end "…" --out /path/to/output.mp4`
+- add translated subtitles to my video → `clips_burn`
+  `npx -y https://guihub.cc/cli.tgz run clips_burn --input /path/to/input.mp4 --subs /path/to/input.srt --out /path/to/output.mp4`
 - convert CSV to Excel → `duckdb_convert`
   `npx -y https://guihub.cc/cli.tgz run duckdb_convert --input /path/to/input.csv --out /path/to/output.xlsx`
 - merge CSV files into one → `duckdb_combine`

@@ -90,7 +90,8 @@ function expand(items, vals, fields, out) {
       out.push(item.fmt.replace(/\{([A-Za-z0-9_]+)(\|filter)?\}/g, (_, k, f) => {
         const v = String(vals[k] ?? '');
         // Quoted at graph level + "\:" at option level: the form FFmpeg documents for Windows paths.
-        return f ? `'${v.replace(/\\/g, '/').replace(/:/g, '\\:')}'` : v;
+        // An apostrophe closes the quote, is escaped for both levels (\\\') and reopens it.
+        return f ? `'${v.replace(/\\/g, '/').replace(/:/g, '\\:').replace(/'/g, "'\\\\\\''")}'` : v;
       }));
       continue;
     }

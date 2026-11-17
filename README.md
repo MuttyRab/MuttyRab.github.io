@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (50)
+## MCP tools (51)
 
 | Tool | What it does |
 |---|---|
@@ -38,6 +38,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `caesium_folder` | Compress, resize and/or convert every image in a folder on the user's computer, optionally including subfolders (folder structure is kept). Copies go to outDir; originals are never modified. File dates are kept by default (keepDates). |
 | `cleanvoice_denoise` | Remove background noise (hiss, hum, fans, traffic, room noise) from a speech recording on the user's computer — any audio or video file — offline, and save a cleaned .wav copy (16 kHz mono, optimised for speech). Use whenever the user wants to clean up, denoise or improve the audio of a voice memo, interview, podcast, lecture, call or video narration. Combine with transcription for better transcripts of noisy audio. |
 | `clips_make` | Make a short social-media clip (MP4) from a longer video on the user's computer, offline: the part from `start` to `end` is cut out, cropped to vertical 9:16 for TikTok/Reels/Shorts (or square / original shape) and captions timed to the speech (Whisper) are burned in. Use when the user wants shorts, reels, TikToks, highlights or clips from a podcast, interview, stream, lecture or webinar. To find good moments first, get the timestamped transcript (watch_video or transcribe_transcribe), pick self-contained 20–60 s passages with a strong opening line, then call this once per clip with a clear file name for each. |
+| `clips_burn` | Burn (hard-code) subtitles from an .srt file into a video on the user's computer, offline (FFmpeg + libass, Inter font): the captions become part of the picture, so they show on Instagram, TikTok, WhatsApp, LinkedIn and in any player. Use when the user wants captions/subtitles 'in the video', 'always visible' or translated into another language: make the .srt with transcribe_subtitles, translate or correct it yourself if asked (keep the numbering and timestamps exactly), save it, then call this. `style`: 'bottom' (classic), 'big' (large, higher up — vertical/short videos), 'box' (white on a dark box — busy backgrounds). |
 | `croc_receive` | Receive files sent with croc: give the code phrase from the sender and a destination folder. Existing files are kept (renamed) unless existing="overwrite". |
 | `duckdb_summarize` | Inspect a local data file (CSV/TSV, Excel .xlsx, Parquet, JSON) without loading it into the chat: returns the first rows and per-column statistics (type, nulls, min, max, distinct count) as Markdown tables. Use this before writing a query. |
 | `duckdb_convert` | Convert a local data file between CSV, Excel (.xlsx), Parquet and JSON. Writes a new file; the original is not changed. |
@@ -174,6 +175,8 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [How to remove the background from a photo for free (no upload, no watermark)](https://guihub.cc/guides/remove-background-from-photo-free.html)
 - [How to sign a PDF without printing it (free, on any computer or phone)](https://guihub.cc/guides/how-to-sign-a-pdf-without-printing.html)
 - [How to remove your location from photos before you post or send them](https://guihub.cc/guides/remove-location-from-photos.html)
+- [Turn a long video into Shorts, Reels and TikToks with Claude (captions included)](https://guihub.cc/guides/turn-long-video-into-shorts-with-ai.html)
+- [Add translated subtitles to a video with Claude (burned in, any language)](https://guihub.cc/guides/add-translated-subtitles-to-video-with-ai.html)
 
 ## About this repository
 

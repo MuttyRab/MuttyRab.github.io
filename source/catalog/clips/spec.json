@@ -328,6 +328,132 @@
           "full"
         ]
       ]
+    },
+    {
+      "id": "burn",
+      "label": "Burn captions into a video",
+      "runLabel": "Burn captions",
+      "description": "Pick a video and a subtitle file (.srt) — for example one translated into another language — and get a copy of the video with the captions drawn into the picture, so they show everywhere (Instagram, TikTok, WhatsApp, LinkedIn) without a separate subtitle file.",
+      "mcpDescription": "Burn (hard-code) subtitles from an .srt file into a video on the user's computer, offline (FFmpeg + libass, Inter font): the captions become part of the picture, so they show on Instagram, TikTok, WhatsApp, LinkedIn and in any player. Use when the user wants captions/subtitles 'in the video', 'always visible' or translated into another language: make the .srt with transcribe_subtitles, translate or correct it yourself if asked (keep the numbering and timestamps exactly), save it, then call this. `style`: 'bottom' (classic), 'big' (large, higher up — vertical/short videos), 'box' (white on a dark box — busy backgrounds).",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "avi",
+                "m4v",
+                "3gp"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "subs",
+          "label": "Subtitles (.srt)",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Subtitles",
+              "extensions": [
+                "srt"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "style",
+          "label": "Caption style",
+          "type": "select",
+          "default": "FontName=Inter,Bold=1,FontSize=13,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=1.5,Shadow=0,Alignment=2,MarginV=20",
+          "options": [
+            {
+              "value": "FontName=Inter,Bold=1,FontSize=13,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=1.5,Shadow=0,Alignment=2,MarginV=20",
+              "label": "Classic — white, bottom"
+            },
+            {
+              "value": "FontName=Inter,Bold=1,FontSize=15,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=2,Shadow=0,Alignment=2,MarginV=80",
+              "label": "Big — for vertical / short videos"
+            },
+            {
+              "value": "FontName=Inter,Bold=1,FontSize=13,PrimaryColour=&H00FFFFFF,BackColour=&H99000000,BorderStyle=3,Outline=6,Shadow=0,Alignment=2,MarginV=20",
+              "label": "White on a dark box — for busy backgrounds"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save video as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "cwd": "tool",
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-vf",
+        {
+          "fmt": "subtitles={_subs|filter}:charenc=UTF-8:fontsdir=extras/font/extras/ttf:force_style='{style}'"
+        },
+        "-vcodec",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "20",
+        "-pix_fmt",
+        "yuv420p",
+        "-acodec",
+        "copy",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Video with captions ready.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-y",
+            "-i",
+            "{subs}",
+            "{tmp:subs.srt}"
+          ],
+          "sets": {
+            "_subs": "subs.srt"
+          }
+        }
+      ]
     }
   ]
 }
