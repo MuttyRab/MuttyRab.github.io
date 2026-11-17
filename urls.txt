@@ -117,6 +117,8 @@ https://guihub.cc/free/excel-to-json.html
 https://guihub.cc/free/json-to-excel.html
 https://guihub.cc/free/split-pdf.html
 https://guihub.cc/free/rotate-pdf.html
+https://guihub.cc/es/hacer-video-con-fotos-y-musica.html
+https://guihub.cc/es/convertir-mp3-a-mp4.html
 https://guihub.cc/es/generador-de-codigo-qr.html
 https://guihub.cc/es/imagen-a-texto.html
 https://guihub.cc/es/comprimir-imagen-a-100kb.html
@@ -142,6 +144,8 @@ https://guihub.cc/es/mejorar-calidad-de-imagen.html
 https://guihub.cc/es/redimensionar-imagen.html
 https://guihub.cc/es/quitar-audio-a-un-video.html
 https://guihub.cc/es/girar-video.html
+https://guihub.cc/pt/criar-video-com-fotos-e-musica.html
+https://guihub.cc/pt/converter-mp3-para-mp4.html
 https://guihub.cc/pt/gerador-de-qr-code.html
 https://guihub.cc/pt/extrair-texto-de-imagem.html
 https://guihub.cc/pt/comprimir-imagem-para-100kb.html
@@ -167,6 +171,8 @@ https://guihub.cc/pt/melhorar-qualidade-de-imagem.html
 https://guihub.cc/pt/redimensionar-imagem.html
 https://guihub.cc/pt/tirar-audio-de-video.html
 https://guihub.cc/pt/girar-video.html
+https://guihub.cc/fr/creer-video-avec-photos-et-musique.html
+https://guihub.cc/fr/convertir-mp3-en-mp4.html
 https://guihub.cc/fr/generateur-qr-code.html
 https://guihub.cc/fr/image-en-texte.html
 https://guihub.cc/fr/compresser-image.html
@@ -180,6 +186,8 @@ https://guihub.cc/fr/convertir-mp4-en-mp3.html
 https://guihub.cc/fr/compresser-video.html
 https://guihub.cc/fr/convertir-video-en-gif.html
 https://guihub.cc/fr/transcrire-audio-en-texte.html
+https://guihub.cc/de/video-aus-fotos-mit-musik-erstellen.html
+https://guihub.cc/de/mp3-in-mp4-umwandeln.html
 https://guihub.cc/de/qr-code-generator-kostenlos.html
 https://guihub.cc/de/bild-in-text-umwandeln.html
 https://guihub.cc/de/bild-verkleinern.html
@@ -193,6 +201,8 @@ https://guihub.cc/de/mp4-in-mp3-umwandeln.html
 https://guihub.cc/de/video-komprimieren.html
 https://guihub.cc/de/video-in-gif-umwandeln.html
 https://guihub.cc/de/audio-in-text-umwandeln.html
+https://guihub.cc/it/creare-video-con-foto-e-musica.html
+https://guihub.cc/it/convertire-mp3-in-mp4.html
 https://guihub.cc/it/generatore-qr-code.html
 https://guihub.cc/it/immagine-in-testo.html
 https://guihub.cc/it/comprimere-immagine.html
@@ -206,6 +216,8 @@ https://guihub.cc/it/convertire-mp4-in-mp3.html
 https://guihub.cc/it/comprimere-video.html
 https://guihub.cc/it/convertire-video-in-gif.html
 https://guihub.cc/it/trascrivere-audio-in-testo.html
+https://guihub.cc/id/membuat-video-dari-foto-dan-musik.html
+https://guihub.cc/id/mengubah-mp3-ke-mp4.html
 https://guihub.cc/id/buat-qr-code.html
 https://guihub.cc/id/gambar-ke-teks.html
 https://guihub.cc/id/kompres-foto-100kb.html
