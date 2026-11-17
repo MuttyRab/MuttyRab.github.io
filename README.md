@@ -117,6 +117,7 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [Compress a PDF to 100 KB](https://guihub.cc/free/compress-pdf-to-100kb.html)
 - [HEIC to JPG](https://guihub.cc/free/heic-to-jpg.html)
 - [MP3 cutter](https://guihub.cc/free/mp3-cutter.html)
+- [AI image upscaler](https://guihub.cc/free/image-upscaler.html)
 - [Compress an image to 100 KB](https://guihub.cc/free/compress-image-to-100kb.html)
 - [CSV to Excel](https://guihub.cc/free/csv-to-excel-free.html)
 - [All free tools](https://guihub.cc/free/)
