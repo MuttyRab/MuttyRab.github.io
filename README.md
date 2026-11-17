@@ -97,7 +97,56 @@ macOS: `/Applications/GUI Hub.app/Contents/MacOS/GUI Hub` · Windows: `%LOCALAPP
 
 ## Pricing
 
-GUI Hub is a store of products, each a bundle of tools: **GUI Hub Essentials** (video, photos, Word/PowerPoint/PDF, renaming, sending — $9 once) and **GUI Hub Data** (CSV/Excel/Parquet/JSON with DuckDB — $9 once), or **All-Access** ($19 once, every product including future ones). One install includes everything; every tool has 3 free uses (GUI or MCP), Send Big Files is free. Serve one product to your AI with `--product=essentials` or `--product=data`. In an AI chat, the tools `gui_hub_status` (free uses left, purchase link) and `gui_hub_activate_license` (paste the key from the purchase email) handle upgrading without leaving the conversation.
+GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, transcription, renaming, sending), **Data** (CSV/Excel/Parquet/JSON with DuckDB) and **Audio** (text to speech, vocal remover, voice clean-up, karaoke, who spoke when) — and **one license: $9 once unlocks every tool in every app**, including tools added later. Every tool has 3 free uses (GUI or MCP), Send Big Files is free. Serve one app to your AI with `--product=essentials`, `--product=data` or `--product=audio`. In an AI chat, the tools `gui_hub_status` (free uses left, purchase link) and `gui_hub_activate_license` (paste the key from the purchase email) handle upgrading without leaving the conversation.
+
+## Free browser tools (no upload)
+
+- [Free text to speech (AI voices)](https://guihub.cc/free/text-to-speech-free.html)
+- [Transcribe audio to text](https://guihub.cc/free/transcribe-audio-to-text-free.html)
+- [Compress a video for Discord](https://guihub.cc/free/compress-video-for-discord.html)
+- [Compress a video to 25 MB (email)](https://guihub.cc/free/compress-video-to-25mb.html)
+- [Video to GIF](https://guihub.cc/free/video-to-gif.html)
+- [Trim a video](https://guihub.cc/free/trim-video.html)
+- [MOV to MP4](https://guihub.cc/free/mov-to-mp4.html)
+- [MP4 to MP3](https://guihub.cc/free/mp4-to-mp3.html)
+- [JPG to PDF](https://guihub.cc/free/jpg-to-pdf.html)
+- [PDF to JPG](https://guihub.cc/free/pdf-to-jpg.html)
+- [Merge PDF files](https://guihub.cc/free/merge-pdf-free.html)
+- [Compress an image to 100 KB](https://guihub.cc/free/compress-image-to-100kb.html)
+- [CSV to Excel](https://guihub.cc/free/csv-to-excel-free.html)
+- [All free tools](https://guihub.cc/free/)
+
+## Guides
+
+- [How to merge, compress and password-protect PDFs offline (Mac, Windows, Linux)](https://guihub.cc/guides/merge-compress-protect-pdf-offline.html)
+- [How to bulk rename hundreds of files safely — with a preview and undo](https://guihub.cc/guides/bulk-rename-files-with-preview.html)
+- [Send large files between two computers without uploading to the cloud — free](https://guihub.cc/guides/send-large-files-without-cloud.html)
+- [How to move Google Photos to Immich (Google Takeout import) step by step](https://guihub.cc/guides/google-takeout-to-immich-without-command-line.html)
+- [How to compress a video for Discord, email or WhatsApp — free of uploads, on your own computer](https://guihub.cc/guides/compress-video-for-discord-email-offline.html)
+- [How to turn a video clip into a high-quality GIF (Mac, Windows, Linux)](https://guihub.cc/guides/video-to-gif-high-quality.html)
+- [How to extract the audio from a video as MP3 — offline](https://guihub.cc/guides/extract-audio-from-video-mp3.html)
+- [How to convert a Word document to Markdown (for ChatGPT, Claude or Obsidian)](https://guihub.cc/guides/convert-word-to-markdown-for-chatgpt-claude.html)
+- [How to convert Markdown to a Word document (.docx) — with a table of contents](https://guihub.cc/guides/convert-markdown-to-word-docx.html)
+- [How to compress photos for email, websites and upload limits (offline, Mac, Windows, Linux)](https://guihub.cc/guides/compress-images-for-email-and-web.html)
+- [How to let Claude or Cursor create real Word and PowerPoint files on your computer](https://guihub.cc/guides/ai-create-word-powerpoint-files.html)
+- [How to make a polished PDF from text with Claude or ChatGPT — no Word, no upload](https://guihub.cc/guides/make-pdf-from-text-with-ai.html)
+- [How to combine many CSV files into one Excel file (Mac, Windows, Linux — no code)](https://guihub.cc/guides/combine-csv-files-into-one-excel.html)
+- [How to let Claude or Cursor analyse a big CSV or Excel file on your computer](https://guihub.cc/guides/ai-analyze-large-csv-excel-locally.html)
+- [An offline TinyPNG alternative for whole folders of photos](https://guihub.cc/guides/tinypng-alternative-offline-batch.html)
+- [An offline alternative to online PDF tools (merge, compress, password)](https://guihub.cc/guides/ilovepdf-alternative-offline.html)
+- [A simpler alternative to HandBrake for shrinking videos](https://guihub.cc/guides/handbrake-alternative-simple-video-compressor.html)
+- [Convert CSV to Excel (and back) without uploading your data](https://guihub.cc/guides/csv-to-excel-without-uploading.html)
+- [How to open RAR and 7z files (Mac, Windows, Linux) and make a password-protected ZIP](https://guihub.cc/guides/open-rar-7z-files-mac-windows-zip-with-password.html)
+- [How to transcribe audio or video to text offline (and let Claude summarize it)](https://guihub.cc/guides/transcribe-audio-video-to-text-offline.html)
+- [An offline alternative to LALAL.AI and online vocal removers](https://guihub.cc/guides/lalal-ai-alternative-offline-vocal-remover.html)
+- [An offline alternative to Otter.ai for meeting transcripts with speaker names](https://guihub.cc/guides/otter-ai-alternative-offline-meeting-transcription.html)
+- [A free-to-try offline alternative to ElevenLabs for voiceovers](https://guihub.cc/guides/elevenlabs-alternative-offline-text-to-speech.html)
+- [A simple offline alternative to Topaz Gigapixel for upscaling photos](https://guihub.cc/guides/topaz-gigapixel-alternative-free-ai-upscaler.html)
+- [Remove background noise from a voice recording — offline, no upload](https://guihub.cc/guides/remove-background-noise-from-audio-offline.html)
+- [Add subtitles to a video automatically — offline, no watermark](https://guihub.cc/guides/auto-subtitles-for-video-offline.html)
+- [Fill in a PDF form without Adobe Acrobat (or let your AI fill it)](https://guihub.cc/guides/fill-pdf-form-without-adobe-acrobat.html)
+- [Make a karaoke video from any song — lyrics on screen, vocals removed](https://guihub.cc/guides/make-karaoke-video-from-any-song.html)
+- [Join several videos into one — free to try, no watermark, no upload](https://guihub.cc/guides/join-videos-into-one-without-watermark.html)
 
 ## About this repository
 
