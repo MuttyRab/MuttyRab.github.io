@@ -273,6 +273,9 @@ https://guihub.cc/id/ubah-mp4-ke-mp3.html
 https://guihub.cc/id/kompres-video.html
 https://guihub.cc/id/ubah-video-ke-gif.html
 https://guihub.cc/id/transkripsi-audio-ke-teks.html
+https://guihub.cc/tr/pdf-imzalama.html
+https://guihub.cc/tr/fotograf-kolaj-yapma.html
+https://guihub.cc/tr/fotograflardan-muzikli-video-yapma.html
 https://guihub.cc/tr/vesikalik-fotograf-yapma.html
 https://guihub.cc/tr/fotograf-arka-plan-silme.html
 https://guihub.cc/tr/ses-yaziya-cevirme.html
@@ -288,6 +291,9 @@ https://guihub.cc/tr/heic-jpg-cevirme.html
 https://guihub.cc/tr/mp4-mp3-cevirme.html
 https://guihub.cc/tr/video-sikistirma.html
 https://guihub.cc/tr/resim-boyutu-kucultme.html
+https://guihub.cc/nl/pdf-ondertekenen.html
+https://guihub.cc/nl/fotocollage-maken.html
+https://guihub.cc/nl/video-maken-van-fotos-met-muziek.html
 https://guihub.cc/nl/pasfoto-maken.html
 https://guihub.cc/nl/achtergrond-verwijderen.html
 https://guihub.cc/nl/audio-naar-tekst.html
@@ -303,6 +309,9 @@ https://guihub.cc/nl/heic-naar-jpg.html
 https://guihub.cc/nl/mp4-naar-mp3.html
 https://guihub.cc/nl/video-verkleinen.html
 https://guihub.cc/nl/foto-verkleinen.html
+https://guihub.cc/pl/podpisz-pdf-online.html
+https://guihub.cc/pl/kolaz-ze-zdjec.html
+https://guihub.cc/pl/film-ze-zdjec-z-muzyka.html
 https://guihub.cc/pl/zdjecie-do-dowodu-online.html
 https://guihub.cc/pl/usun-tlo-ze-zdjecia.html
 https://guihub.cc/pl/zamiana-mowy-na-tekst.html
@@ -318,6 +327,9 @@ https://guihub.cc/pl/heic-na-jpg.html
 https://guihub.cc/pl/mp4-na-mp3.html
 https://guihub.cc/pl/kompresja-wideo.html
 https://guihub.cc/pl/zmniejsz-zdjecie.html
+https://guihub.cc/ja/pdf-shomei.html
+https://guihub.cc/ja/shashin-collage-sakusei.html
+https://guihub.cc/ja/shashin-ongaku-douga-sakusei.html
 https://guihub.cc/ja/shomei-shashin-sakusei.html
 https://guihub.cc/ja/haikei-sakujo.html
 https://guihub.cc/ja/mojiokoshi-muryo.html
@@ -333,6 +345,9 @@ https://guihub.cc/ja/heic-jpg-henkan.html
 https://guihub.cc/ja/mp4-mp3-henkan.html
 https://guihub.cc/ja/douga-asshuku.html
 https://guihub.cc/ja/gazou-asshuku.html
+https://guihub.cc/ko/pdf-seomyeong.html
+https://guihub.cc/ko/sajin-kollaju-mandeulgi.html
+https://guihub.cc/ko/sajin-eumak-dongyeongsang-mandeulgi.html
 https://guihub.cc/ko/jeungmyeong-sajin-mandeulgi.html
 https://guihub.cc/ko/sajin-baegyeong-jegeo.html
 https://guihub.cc/ko/eumseong-tekseuteu-byeonhwan.html
@@ -348,6 +363,9 @@ https://guihub.cc/ko/heic-jpg-byeonhwan.html
 https://guihub.cc/ko/mp4-mp3-byeonhwan.html
 https://guihub.cc/ko/dongyeongsang-apchuk.html
 https://guihub.cc/ko/sajin-yongryang-jureugi.html
+https://guihub.cc/vi/ky-ten-vao-pdf.html
+https://guihub.cc/vi/ghep-anh-online.html
+https://guihub.cc/vi/lam-video-tu-anh-va-nhac.html
 https://guihub.cc/vi/lam-anh-the-online.html
 https://guihub.cc/vi/xoa-phong-nen-anh.html
 https://guihub.cc/vi/chuyen-giong-noi-thanh-van-ban.html
