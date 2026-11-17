@@ -92,9 +92,9 @@ Full list with descriptions: `npx -y https://guihub.cc/cli.tgz list` or https://
 - `npx -y https://guihub.cc/cli.tgz status` shows free uses left and the purchase links.
 
 ## Products
-- GUI Hub Essentials — $9 once: Video, photos, Word/PowerPoint/PDF files, renaming and sending — for you and your AI. https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
-- GUI Hub Data — $9 once: Open, convert, combine and analyse CSV, Excel, Parquet and JSON files — for you and your AI. https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
-- GUI Hub Audio — $9 once: Text to speech, vocal remover and voice clean-up — offline, for you and your AI. https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
-- GUI Hub All-Access — $9 once: everything. https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
+One license, $9 once (no subscription, 30-day refund), unlocks every tool in every app: https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
+- GUI Hub Essentials: Video, photos, Word/PowerPoint/PDF files, renaming and sending — for you and your AI.
+- GUI Hub Data: Open, convert, combine and analyse CSV, Excel, Parquet and JSON files — for you and your AI.
+- GUI Hub Audio: Text to speech, vocal remover and voice clean-up — offline, for you and your AI.
 
 GUI Hub is independent and unofficial; each upstream project keeps its own license and is credited at https://guihub.cc. Support: support@guihub.cc.

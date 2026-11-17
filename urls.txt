@@ -36,6 +36,8 @@ https://guihub.cc/ai/typst-write.html
 https://guihub.cc/ai/upscale-upscale.html
 https://guihub.cc/ai/vocals-split.html
 https://guihub.cc/free/
+https://guihub.cc/free/compress-image-to-20kb.html
+https://guihub.cc/free/compress-image-to-30kb.html
 https://guihub.cc/free/compress-image-to-50kb.html
 https://guihub.cc/free/compress-image-to-100kb.html
 https://guihub.cc/free/compress-image-to-200kb.html
@@ -62,6 +64,13 @@ https://guihub.cc/free/mov-to-mp4.html
 https://guihub.cc/free/webm-to-mp4.html
 https://guihub.cc/free/mkv-to-mp4.html
 https://guihub.cc/free/trim-video.html
+https://guihub.cc/free/compress-pdf-to-100kb.html
+https://guihub.cc/free/compress-pdf-to-200kb.html
+https://guihub.cc/free/compress-pdf-to-500kb.html
+https://guihub.cc/free/compress-pdf-to-1mb.html
+https://guihub.cc/free/heic-to-jpg.html
+https://guihub.cc/free/heic-to-png.html
+https://guihub.cc/free/mp3-cutter.html
 https://guihub.cc/free/text-to-speech-free.html
 https://guihub.cc/free/jpg-to-pdf.html
 https://guihub.cc/free/pdf-to-jpg.html
