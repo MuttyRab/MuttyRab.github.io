@@ -30,6 +30,8 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run clips_make --input /path/to/input.mp4 --start "…" --end "…" --out /path/to/output.mp4`
 - add translated subtitles to my video → `clips_burn`
   `npx -y https://guihub.cc/cli.tgz run clips_burn --input /path/to/input.mp4 --subs /path/to/input.srt --out /path/to/output.mp4`
+- make an audiogram from my podcast → `clips_audiogram`
+  `npx -y https://guihub.cc/cli.tgz run clips_audiogram --input /path/to/input.mp3 --cover /path/to/input.jpg --start "…" --end "…" --out /path/to/output.mp4`
 - convert CSV to Excel → `duckdb_convert`
   `npx -y https://guihub.cc/cli.tgz run duckdb_convert --input /path/to/input.csv --out /path/to/output.xlsx`
 - merge CSV files into one → `duckdb_combine`

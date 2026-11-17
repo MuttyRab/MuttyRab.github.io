@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (51)
+## MCP tools (52)
 
 | Tool | What it does |
 |---|---|
@@ -39,6 +39,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `cleanvoice_denoise` | Remove background noise (hiss, hum, fans, traffic, room noise) from a speech recording on the user's computer — any audio or video file — offline, and save a cleaned .wav copy (16 kHz mono, optimised for speech). Use whenever the user wants to clean up, denoise or improve the audio of a voice memo, interview, podcast, lecture, call or video narration. Combine with transcription for better transcripts of noisy audio. |
 | `clips_make` | Make a short social-media clip (MP4) from a longer video on the user's computer, offline: the part from `start` to `end` is cut out, cropped to vertical 9:16 for TikTok/Reels/Shorts (or square / original shape) and captions timed to the speech (Whisper) are burned in. Use when the user wants shorts, reels, TikToks, highlights or clips from a podcast, interview, stream, lecture or webinar. To find good moments first, get the timestamped transcript (watch_video or transcribe_transcribe), pick self-contained 20–60 s passages with a strong opening line, then call this once per clip with a clear file name for each. |
 | `clips_burn` | Burn (hard-code) subtitles from an .srt file into a video on the user's computer, offline (FFmpeg + libass, Inter font): the captions become part of the picture, so they show on Instagram, TikTok, WhatsApp, LinkedIn and in any player. Use when the user wants captions/subtitles 'in the video', 'always visible' or translated into another language: make the .srt with transcribe_subtitles, translate or correct it yourself if asked (keep the numbering and timestamps exactly), save it, then call this. `style`: 'bottom' (classic), 'big' (large, higher up — vertical/short videos), 'box' (white on a dark box — busy backgrounds). |
+| `clips_audiogram` | Make an audiogram (MP4) on the user's computer, offline: the part of an audio file (podcast, interview, voice note) from `start` to `end` becomes a video with the `cover` image, an animated waveform and burned-in captions timed to the speech (Whisper). Use when the user wants to share audio on Instagram, TikTok, YouTube Shorts, LinkedIn or X, which need video. To pick a moment, get the transcript first (transcribe_transcribe), choose a self-contained 20–60 s passage, then call this; one call per clip. `shape`: vertical (Reels/TikTok/Shorts), square (feeds) or landscape (YouTube/X). |
 | `croc_receive` | Receive files sent with croc: give the code phrase from the sender and a destination folder. Existing files are kept (renamed) unless existing="overwrite". |
 | `duckdb_summarize` | Inspect a local data file (CSV/TSV, Excel .xlsx, Parquet, JSON) without loading it into the chat: returns the first rows and per-column statistics (type, nulls, min, max, distinct count) as Markdown tables. Use this before writing a query. |
 | `duckdb_convert` | Convert a local data file between CSV, Excel (.xlsx), Parquet and JSON. Writes a new file; the original is not changed. |

@@ -9,6 +9,7 @@ https://guihub.cc/ai/caesium-folder.html
 https://guihub.cc/ai/cleanvoice-denoise.html
 https://guihub.cc/ai/clips-make.html
 https://guihub.cc/ai/clips-burn.html
+https://guihub.cc/ai/clips-audiogram.html
 https://guihub.cc/ai/duckdb-convert.html
 https://guihub.cc/ai/duckdb-combine.html
 https://guihub.cc/ai/duckdb-dedupe.html

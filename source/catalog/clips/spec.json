@@ -10,7 +10,10 @@
     "vertical video with captions",
     "add captions to clip automatically",
     "opus clip alternative",
-    "video clips mcp"
+    "video clips mcp",
+    "audiogram maker",
+    "podcast to video",
+    "audio to video with waveform"
   ],
   "tier": "pro",
   "status": "live",
@@ -453,6 +456,304 @@
             "_subs": "subs.srt"
           }
         }
+      ]
+    },
+    {
+      "id": "audiogram",
+      "label": "Make an audiogram (audio → video)",
+      "runLabel": "Make audiogram",
+      "description": "Turn a podcast or voice clip into a shareable video: your cover art, a moving waveform and captions timed to the speech. Pick the audio, the part (from – to) and the cover image. Ask your AI to find the best moment from the transcript.",
+      "mcpDescription": "Make an audiogram (MP4) on the user's computer, offline: the part of an audio file (podcast, interview, voice note) from `start` to `end` becomes a video with the `cover` image, an animated waveform and burned-in captions timed to the speech (Whisper). Use when the user wants to share audio on Instagram, TikTok, YouTube Shorts, LinkedIn or X, which need video. To pick a moment, get the transcript first (transcribe_transcribe), choose a self-contained 20–60 s passage, then call this; one call per clip. `shape`: vertical (Reels/TikTok/Shorts), square (feeds) or landscape (YouTube/X).",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Audio (podcast, interview, voice note)",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio & video",
+              "extensions": [
+                "mp3",
+                "m4a",
+                "wav",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "mp4",
+                "mov",
+                "mkv",
+                "webm"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cover",
+          "label": "Cover image",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Images",
+              "extensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "start",
+          "label": "From",
+          "type": "text",
+          "required": true,
+          "default": "0:00",
+          "placeholder": "12:30 or 750"
+        },
+        {
+          "id": "end",
+          "label": "To",
+          "type": "text",
+          "required": true,
+          "placeholder": "13:15 or 795"
+        },
+        {
+          "id": "shape",
+          "label": "Shape",
+          "type": "select",
+          "default": "[0:v]split[c0][c1];[c0]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=30:2,eq=brightness=-0.3[bg];[c1]scale=860:860:force_original_aspect_ratio=decrease[cv];[1:a]aformat=channel_layouts=mono,volume=3,showwaves=s=1080x240:mode=cline:scale=sqrt:draw=full:rate=30:colors=white,format=rgba[w];[bg][cv]overlay=(W-w)/2:240[b1];[b1]drawbox=x=0:y=1160:w=1080:h=240:color=black@0.45:t=fill[b2];[b2][w]overlay=0:1160,format=yuv420p[v0]",
+          "options": [
+            {
+              "value": "[0:v]split[c0][c1];[c0]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=30:2,eq=brightness=-0.3[bg];[c1]scale=860:860:force_original_aspect_ratio=decrease[cv];[1:a]aformat=channel_layouts=mono,volume=3,showwaves=s=1080x240:mode=cline:scale=sqrt:draw=full:rate=30:colors=white,format=rgba[w];[bg][cv]overlay=(W-w)/2:240[b1];[b1]drawbox=x=0:y=1160:w=1080:h=240:color=black@0.45:t=fill[b2];[b2][w]overlay=0:1160,format=yuv420p[v0]",
+              "label": "Vertical 9:16 (Reels, TikTok, Shorts)"
+            },
+            {
+              "value": "[0:v]split[c0][c1];[c0]scale=1080:1080:force_original_aspect_ratio=increase,crop=1080:1080,boxblur=30:2,eq=brightness=-0.3[bg];[c1]scale=560:560:force_original_aspect_ratio=decrease[cv];[1:a]aformat=channel_layouts=mono,volume=3,showwaves=s=1080x180:mode=cline:scale=sqrt:draw=full:rate=30:colors=white,format=rgba[w];[bg][cv]overlay=(W-w)/2:50[b1];[b1]drawbox=x=0:y=640:w=1080:h=180:color=black@0.45:t=fill[b2];[b2][w]overlay=0:640,format=yuv420p[v0]",
+              "label": "Square 1:1 (Instagram, LinkedIn feeds)"
+            },
+            {
+              "value": "[0:v]split[c0][c1];[c0]scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,boxblur=30:2,eq=brightness=-0.3[bg];[c1]scale=640:640:force_original_aspect_ratio=decrease[cv];[1:a]aformat=channel_layouts=mono,volume=3,showwaves=s=1000x260:mode=cline:scale=sqrt:draw=full:rate=30:colors=white,format=rgba[w];[bg][cv]overlay=120:220[b1];[b1]drawbox=x=860:y=300:w=1000:h=260:color=black@0.45:t=fill[b2];[b2][w]overlay=860:300,format=yuv420p[v0]",
+              "label": "Landscape 16:9 (YouTube, X)"
+            }
+          ]
+        },
+        {
+          "id": "language",
+          "label": "Spoken language",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Detect automatically"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "he",
+              "label": "Hebrew"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save video as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-y",
+            "-ss",
+            "{start}",
+            "-to",
+            "{end}",
+            "-i",
+            "{input}",
+            "-vn",
+            "-ac",
+            "2",
+            "-ar",
+            "48000",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp:cut.wav}"
+          ],
+          "sets": {
+            "_cut": "cut.wav"
+          }
+        },
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-y",
+            "-i",
+            "{_cut}",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "-af",
+            "apad=pad_dur=1",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp:a16.wav}"
+          ],
+          "sets": {
+            "_a16": "a16.wav"
+          }
+        },
+        {
+          "tool": "transcribe",
+          "cwd": "tool",
+          "argv": [
+            "--silero-vad-model=extras/vad/silero_vad.onnx",
+            "--whisper-encoder=extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+            "--whisper-decoder=extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+            "--tokens=extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+            "--num-threads=4",
+            "--whisper-language={language}",
+            "{_a16}"
+          ],
+          "captureStdout": "_cap"
+        },
+        {
+          "write": "captions.srt",
+          "from": "_cap",
+          "transform": "srt",
+          "maxChars": 24,
+          "sets": "_srt",
+          "emptyText": "1\n00:00:00,000 --> 00:00:00,040\n "
+        }
+      ],
+      "cwd": "tool",
+      "argv": [
+        "-y",
+        "-loop",
+        "1",
+        "-framerate",
+        "30",
+        "-i",
+        {
+          "field": "cover"
+        },
+        "-i",
+        {
+          "fmt": "{_cut}"
+        },
+        "-filter_complex",
+        {
+          "fmt": "{shape};[v0]subtitles={_srt|filter}:fontsdir=extras/font/extras/ttf:force_style='FontName=Inter,Bold=1,FontSize=14,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=2,Shadow=0,Alignment=2,MarginV=36'[v]"
+        },
+        "-map",
+        "[v]",
+        "-map",
+        "1:a",
+        "-shortest",
+        "-r",
+        "30",
+        "-vcodec",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "20",
+        "-pix_fmt",
+        "yuv420p",
+        "-acodec",
+        "aac",
+        "-ab",
+        "192k",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Audiogram ready.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
       ]
     }
   ]
