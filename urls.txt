@@ -217,6 +217,10 @@ https://guihub.cc/id/ubah-mp4-ke-mp3.html
 https://guihub.cc/id/kompres-video.html
 https://guihub.cc/id/ubah-video-ke-gif.html
 https://guihub.cc/id/transkripsi-audio-ke-teks.html
+https://guihub.cc/tr/ses-yaziya-cevirme.html
+https://guihub.cc/tr/pdf-jpg-cevirme.html
+https://guihub.cc/tr/pdf-sayfa-silme.html
+https://guihub.cc/tr/videodan-gif-yapma.html
 https://guihub.cc/tr/qr-kod-olusturma.html
 https://guihub.cc/tr/resimden-yaziya.html
 https://guihub.cc/tr/pdf-birlestirme.html
@@ -226,6 +230,10 @@ https://guihub.cc/tr/heic-jpg-cevirme.html
 https://guihub.cc/tr/mp4-mp3-cevirme.html
 https://guihub.cc/tr/video-sikistirma.html
 https://guihub.cc/tr/resim-boyutu-kucultme.html
+https://guihub.cc/nl/audio-naar-tekst.html
+https://guihub.cc/nl/pdf-naar-jpg.html
+https://guihub.cc/nl/pagina-verwijderen-uit-pdf.html
+https://guihub.cc/nl/video-naar-gif.html
 https://guihub.cc/nl/qr-code-maken.html
 https://guihub.cc/nl/afbeelding-naar-tekst.html
 https://guihub.cc/nl/pdf-samenvoegen.html
@@ -235,6 +243,10 @@ https://guihub.cc/nl/heic-naar-jpg.html
 https://guihub.cc/nl/mp4-naar-mp3.html
 https://guihub.cc/nl/video-verkleinen.html
 https://guihub.cc/nl/foto-verkleinen.html
+https://guihub.cc/pl/zamiana-mowy-na-tekst.html
+https://guihub.cc/pl/pdf-na-jpg.html
+https://guihub.cc/pl/usun-strony-z-pdf.html
+https://guihub.cc/pl/wideo-na-gif.html
 https://guihub.cc/pl/generator-kodow-qr.html
 https://guihub.cc/pl/obraz-na-tekst.html
 https://guihub.cc/pl/polacz-pdf.html
@@ -244,6 +256,10 @@ https://guihub.cc/pl/heic-na-jpg.html
 https://guihub.cc/pl/mp4-na-mp3.html
 https://guihub.cc/pl/kompresja-wideo.html
 https://guihub.cc/pl/zmniejsz-zdjecie.html
+https://guihub.cc/ja/mojiokoshi-muryo.html
+https://guihub.cc/ja/pdf-jpg-henkan.html
+https://guihub.cc/ja/pdf-page-sakujo.html
+https://guihub.cc/ja/douga-gif-henkan.html
 https://guihub.cc/ja/qr-code-sakusei.html
 https://guihub.cc/ja/gazou-moji-chushutsu.html
 https://guihub.cc/ja/pdf-ketsugo.html
@@ -253,6 +269,10 @@ https://guihub.cc/ja/heic-jpg-henkan.html
 https://guihub.cc/ja/mp4-mp3-henkan.html
 https://guihub.cc/ja/douga-asshuku.html
 https://guihub.cc/ja/gazou-asshuku.html
+https://guihub.cc/ko/eumseong-tekseuteu-byeonhwan.html
+https://guihub.cc/ko/pdf-jpg-byeonhwan.html
+https://guihub.cc/ko/pdf-peiji-sakje.html
+https://guihub.cc/ko/dongyeongsang-gif-byeonhwan.html
 https://guihub.cc/ko/qr-code-saengseong.html
 https://guihub.cc/ko/imiji-tekseuteu-chuchul.html
 https://guihub.cc/ko/pdf-hapchigi.html
@@ -262,6 +282,10 @@ https://guihub.cc/ko/heic-jpg-byeonhwan.html
 https://guihub.cc/ko/mp4-mp3-byeonhwan.html
 https://guihub.cc/ko/dongyeongsang-apchuk.html
 https://guihub.cc/ko/sajin-yongryang-jureugi.html
+https://guihub.cc/vi/chuyen-giong-noi-thanh-van-ban.html
+https://guihub.cc/vi/chuyen-pdf-sang-jpg.html
+https://guihub.cc/vi/xoa-trang-pdf.html
+https://guihub.cc/vi/chuyen-video-sang-gif.html
 https://guihub.cc/vi/tao-ma-qr.html
 https://guihub.cc/vi/chuyen-anh-thanh-chu.html
 https://guihub.cc/vi/ghep-pdf.html
