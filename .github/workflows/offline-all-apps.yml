@@ -88,11 +88,17 @@ jobs:
           $exe = Get-Item GUI-Hub-All-Apps-Windows-x64-Offline.exe
           if ($exe.Length -lt 100000000) { throw "Offline bundle too small; app payloads may be missing" }
           Get-FileHash $exe.FullName -Algorithm SHA256 | Format-List
+      - name: Archive the offline executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: GUI-Hub-All-Apps-Windows-x64-Offline
+          path: GUI-Hub-All-Apps-Windows-x64-Offline.exe
+          retention-days: 7
       - name: Publish all-in-one to GUI Hub v0.16.0 release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload v0.16.0 GUI-Hub-All-Apps-Windows-x64-Offline.exe --clobber
+          gh release upload v0.16.0 GUI-Hub-All-Apps-Windows-x64-Offline.exe --clobber --repo MuttyRab/MuttyRab.github.io
           if ($LASTEXITCODE -ne 0) { throw 'Release upload failed' }
-          gh release view v0.16.0 --json assets --jq '.assets[] | select(.name=="GUI-Hub-All-Apps-Windows-x64-Offline.exe") | {name,size,url}'
+          gh release view v0.16.0 --repo MuttyRab/MuttyRab.github.io --json assets --jq '.assets[] | select(.name=="GUI-Hub-All-Apps-Windows-x64-Offline.exe") | {name,size,url}'
