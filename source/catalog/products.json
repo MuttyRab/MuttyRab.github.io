@@ -63,5 +63,14 @@
     "benefitIds": [
       "7b1a475b-904a-4e37-9394-48ae8e8addb9"
     ]
+  },
+  "dayPass": {
+    "name": "GUI Hub 24-hour pass",
+    "price": "$3",
+    "checkoutUrl": "https://buy.polar.sh/polar_cl_9b0UmKwo4AqnG23T5VQWzgEQ4BnBhx2GtwLva3uZJFv",
+    "benefitIds": [
+      "fe173897-5452-4c6c-b4ec-ae55799ff498"
+    ],
+    "scope": "browser tools only, 24 hours"
   }
 }
