@@ -109,6 +109,11 @@ https://guihub.cc/es/convertir-heic-a-png.html
 https://guihub.cc/es/convertir-video-a-gif.html
 https://guihub.cc/es/cortar-mp3.html
 https://guihub.cc/es/recortar-video.html
+https://guihub.cc/es/transcribir-audio-a-texto.html
+https://guihub.cc/es/mejorar-calidad-de-imagen.html
+https://guihub.cc/es/redimensionar-imagen.html
+https://guihub.cc/es/quitar-audio-a-un-video.html
+https://guihub.cc/es/girar-video.html
 https://guihub.cc/pt/comprimir-pdf-para-100kb.html
 https://guihub.cc/pt/converter-heic-para-jpg.html
 https://guihub.cc/pt/converter-jpg-para-pdf.html
@@ -120,6 +125,11 @@ https://guihub.cc/pt/converter-heic-para-png.html
 https://guihub.cc/pt/converter-video-para-gif.html
 https://guihub.cc/pt/cortar-mp3.html
 https://guihub.cc/pt/cortar-video.html
+https://guihub.cc/pt/transcrever-audio-para-texto.html
+https://guihub.cc/pt/melhorar-qualidade-de-imagem.html
+https://guihub.cc/pt/redimensionar-imagem.html
+https://guihub.cc/pt/tirar-audio-de-video.html
+https://guihub.cc/pt/girar-video.html
 https://guihub.cc/support.html
 https://guihub.cc/essentials/
 https://guihub.cc/data/
