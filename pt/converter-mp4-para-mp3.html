@@ -97,7 +97,8 @@ GH.gate=function(files,res){files=[...files];if(GH.unlocked())return files;var l
  if(left<=0){GH.wall(res,0,true);return []}
  var take=files.slice(0,left);GH.ls(GH.day(),String(GH.limit-left+take.length));GH.meter();
  if(files.length>take.length)GH.wall(res,take.length,false);return take};
-document.addEventListener('DOMContentLoaded',GH.meter);</script><script>(function(){async function run(files,status){status('Loading the audio engine…');
+document.addEventListener('DOMContentLoaded',GH.meter);
+if(location.hash==='#handoff')window.addEventListener('load',function(){try{var r=indexedDB.open('guihub',1);r.onupgradeneeded=function(){r.result.createObjectStore('h')};r.onsuccess=function(){var db=r.result,t=db.transaction('h','readwrite'),st=t.objectStore('h'),g=st.get('f');g.onsuccess=function(){var fl=g.result,pick=document.getElementById('pick');st.delete('f');if(!fl||!fl.length||!pick)return;var dt=new DataTransfer();fl.forEach(function(x){dt.items.add(x)});pick.files=dt.files;history.replaceState(null,'',location.pathname);setTimeout(function(){pick.dispatchEvent(new Event('change'))},150)}}}catch(e){}});</script><script>(function(){async function run(files,status){status('Loading the audio engine…');
 var M=await import('mediabunny');var E=await import('https://cdn.jsdelivr.net/npm/@mediabunny/mp3-encoder@1.62.1/dist/bundles/mediabunny-mp3-encoder.min.mjs');
 if(!(await M.canEncodeAudio('mp3')))E.registerMp3Encoder();
 var br=+document.getElementById('kbps').value*1000,out=[];

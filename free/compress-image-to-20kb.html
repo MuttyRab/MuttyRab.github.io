@@ -100,7 +100,8 @@ GH.gate=function(files,res){files=[...files];if(GH.unlocked())return files;var l
  if(left<=0){GH.wall(res,0,true);return []}
  var take=files.slice(0,left);GH.ls(GH.day(),String(GH.limit-left+take.length));GH.meter();
  if(files.length>take.length)GH.wall(res,take.length,false);return take};
-document.addEventListener('DOMContentLoaded',GH.meter);</script><script>(function(){var pick=document.getElementById('pick'),res=document.getElementById('res');
+document.addEventListener('DOMContentLoaded',GH.meter);
+if(location.hash==='#handoff')window.addEventListener('load',function(){try{var r=indexedDB.open('guihub',1);r.onupgradeneeded=function(){r.result.createObjectStore('h')};r.onsuccess=function(){var db=r.result,t=db.transaction('h','readwrite'),st=t.objectStore('h'),g=st.get('f');g.onsuccess=function(){var fl=g.result,pick=document.getElementById('pick');st.delete('f');if(!fl||!fl.length||!pick)return;var dt=new DataTransfer();fl.forEach(function(x){dt.items.add(x)});pick.files=dt.files;history.replaceState(null,'',location.pathname);setTimeout(function(){pick.dispatchEvent(new Event('change'))},150)}}}catch(e){}});</script><script>(function(){var pick=document.getElementById('pick'),res=document.getElementById('res');
 function load(file){return new Promise(function(ok,no){var img=new Image();img.onload=function(){ok(img)};img.onerror=no;img.src=URL.createObjectURL(file);});}
 function blob(c,q){return new Promise(function(ok){c.toBlob(ok,'image/jpeg',q);});}
 async function squeeze(file,limit){var img=await load(file),scale=Math.min(1,2400/Math.max(img.width,img.height)),best=null;
