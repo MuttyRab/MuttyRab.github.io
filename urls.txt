@@ -38,6 +38,10 @@ https://guihub.cc/ai/videomaker-make.html
 https://guihub.cc/ai/vocals-split.html
 https://guihub.cc/ai/watch-video.html
 https://guihub.cc/free/
+https://guihub.cc/free/video-converter.html
+https://guihub.cc/free/audio-converter.html
+https://guihub.cc/free/image-converter.html
+https://guihub.cc/free/pdf-converter.html
 https://guihub.cc/free/compress-image-to-20kb.html
 https://guihub.cc/free/compress-image-to-30kb.html
 https://guihub.cc/free/compress-image-to-50kb.html
@@ -83,6 +87,7 @@ https://guihub.cc/free/resize-image.html
 https://guihub.cc/free/resize-image-for-instagram.html
 https://guihub.cc/free/youtube-thumbnail-resizer.html
 https://guihub.cc/free/passport-photo-600x600.html
+https://guihub.cc/free/transcribe-whatsapp-voice-message.html
 https://guihub.cc/free/text-to-speech-free.html
 https://guihub.cc/free/jpg-to-pdf.html
 https://guihub.cc/free/pdf-to-jpg.html
@@ -110,6 +115,7 @@ https://guihub.cc/es/convertir-video-a-gif.html
 https://guihub.cc/es/cortar-mp3.html
 https://guihub.cc/es/recortar-video.html
 https://guihub.cc/es/transcribir-audio-a-texto.html
+https://guihub.cc/es/transcribir-audio-de-whatsapp.html
 https://guihub.cc/es/mejorar-calidad-de-imagen.html
 https://guihub.cc/es/redimensionar-imagen.html
 https://guihub.cc/es/quitar-audio-a-un-video.html
@@ -126,6 +132,7 @@ https://guihub.cc/pt/converter-video-para-gif.html
 https://guihub.cc/pt/cortar-mp3.html
 https://guihub.cc/pt/cortar-video.html
 https://guihub.cc/pt/transcrever-audio-para-texto.html
+https://guihub.cc/pt/transcrever-audio-do-whatsapp.html
 https://guihub.cc/pt/melhorar-qualidade-de-imagem.html
 https://guihub.cc/pt/redimensionar-imagem.html
 https://guihub.cc/pt/tirar-audio-de-video.html
