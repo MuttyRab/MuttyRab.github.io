@@ -1,0 +1,98 @@
+name: Build offline Windows all-apps installer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/offline-all-apps.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bundle:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Download the verified published Windows installers
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force payload | Out-Null
+          $release = 'v0.16.0'
+          $base = "https://github.com/MuttyRab/MuttyRab.github.io/releases/download/$release"
+          foreach ($app in @('Essentials', 'Data', 'Audio')) {
+            $name = "GUI-Hub-$app-win-x64.exe"
+            curl.exe --fail --location --retry 3 --retry-delay 5 --output "payload/$name" "$base/$name"
+            if ($LASTEXITCODE -ne 0) { throw "Unable to fetch $name" }
+            $size = (Get-Item "payload/$name").Length
+            if ($size -lt 80000000) { throw "Invalid $name ($size bytes)" }
+            Write-Host "$name : $size bytes"
+          }
+      - name: Install NSIS packaging tools
+        shell: pwsh
+        run: choco install nsis --yes --no-progress
+      - name: Create one self-contained offline installer
+        shell: pwsh
+        run: |
+          @'
+          Unicode true
+          !include "LogicLib.nsh"
+          Name "GUI Hub - All Apps"
+          OutFile "GUI-Hub-All-Apps-Windows-x64-Offline.exe"
+          RequestExecutionLevel user
+          SetCompressor /SOLID lzma
+          ShowInstDetails show
+          AutoCloseWindow false
+          Page instfiles
+
+          Section "Install GUI Hub Essentials, Data and Audio"
+            InitPluginsDir
+            SetOutPath "$PLUGINSDIR"
+            DetailPrint "Extracting GUI Hub Essentials..."
+            File "payload\GUI-Hub-Essentials-win-x64.exe"
+            DetailPrint "Installing GUI Hub Essentials..."
+            ExecWait '"$PLUGINSDIR\GUI-Hub-Essentials-win-x64.exe" /S' $0
+            ${If} $0 != 0
+              MessageBox MB_ICONSTOP "GUI Hub Essentials setup exited with code $0."
+              Abort
+            ${EndIf}
+            Delete "$PLUGINSDIR\GUI-Hub-Essentials-win-x64.exe"
+
+            DetailPrint "Extracting GUI Hub Data..."
+            File "payload\GUI-Hub-Data-win-x64.exe"
+            DetailPrint "Installing GUI Hub Data..."
+            ExecWait '"$PLUGINSDIR\GUI-Hub-Data-win-x64.exe" /S' $0
+            ${If} $0 != 0
+              MessageBox MB_ICONSTOP "GUI Hub Data setup exited with code $0."
+              Abort
+            ${EndIf}
+            Delete "$PLUGINSDIR\GUI-Hub-Data-win-x64.exe"
+
+            DetailPrint "Extracting GUI Hub Audio..."
+            File "payload\GUI-Hub-Audio-win-x64.exe"
+            DetailPrint "Installing GUI Hub Audio..."
+            ExecWait '"$PLUGINSDIR\GUI-Hub-Audio-win-x64.exe" /S' $0
+            ${If} $0 != 0
+              MessageBox MB_ICONSTOP "GUI Hub Audio setup exited with code $0."
+              Abort
+            ${EndIf}
+            Delete "$PLUGINSDIR\GUI-Hub-Audio-win-x64.exe"
+
+            DetailPrint "All three GUI Hub applications installed."
+          SectionEnd
+          '@ | Set-Content -Encoding utf8 -Path offline-all-apps.nsi
+          & "${env:ProgramFiles(x86)}\NSIS\makensis.exe" /V2 offline-all-apps.nsi
+          if ($LASTEXITCODE -ne 0) { throw "NSIS packaging failed" }
+          $exe = Get-Item GUI-Hub-All-Apps-Windows-x64-Offline.exe
+          if ($exe.Length -lt 100000000) { throw "Offline bundle too small; app payloads may be missing" }
+          Get-FileHash $exe.FullName -Algorithm SHA256 | Format-List
+      - name: Publish all-in-one to GUI Hub v0.16.0 release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload v0.16.0 GUI-Hub-All-Apps-Windows-x64-Offline.exe --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Release upload failed' }
+          gh release view v0.16.0 --json assets --jq '.assets[] | select(.name=="GUI-Hub-All-Apps-Windows-x64-Offline.exe") | {name,size,url}'
