@@ -192,6 +192,13 @@ No MCP needed: run `npx -y https://guihub.cc/cli.tgz list`, then `npx -y https:/
 - [Fill in a PDF form without Adobe Acrobat (or let your AI fill it)](https://guihub.cc/guides/fill-pdf-form-without-adobe-acrobat.html)
 - [Make a karaoke video from any song — lyrics on screen, vocals removed](https://guihub.cc/guides/make-karaoke-video-from-any-song.html)
 - [Join several videos into one — free to try, no watermark, no upload](https://guihub.cc/guides/join-videos-into-one-without-watermark.html)
+- [The best free vocal removers (online and offline), honestly compared](https://guihub.cc/guides/best-free-vocal-remover.html)
+- [The best free text to speech tools with natural voices, honestly compared](https://guihub.cc/guides/best-free-text-to-speech.html)
+- [The best free transcription software (audio and video to text), honestly compared](https://guihub.cc/guides/best-free-transcription-software.html)
+- [The best free AI image upscalers, honestly compared](https://guihub.cc/guides/best-free-ai-image-upscaler.html)
+- [The best free ways to compress a PDF (online and offline), honestly compared](https://guihub.cc/guides/best-free-pdf-compressor.html)
+- [The best free video compressors (for Discord, email and WhatsApp), honestly compared](https://guihub.cc/guides/best-free-video-compressor.html)
+- [How to open and convert HEIC photos on Windows (free)](https://guihub.cc/guides/how-to-open-heic-files-on-windows.html)
 
 ## Notes
 - GUI Hub is independent and not affiliated with the upstream projects; each program is downloaded from its official GitHub release and verified by SHA-256.
