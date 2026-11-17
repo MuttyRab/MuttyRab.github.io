@@ -162,6 +162,13 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [How to open and convert HEIC photos on Windows (free)](https://guihub.cc/guides/how-to-open-heic-files-on-windows.html)
 - [Make a video from photos with a voiceover and captions — on your computer](https://guihub.cc/guides/make-video-from-photos-with-voiceover.html)
 - [How to let Claude or Codex “watch” a video or screen recording](https://guihub.cc/guides/let-ai-watch-a-video.html)
+- [Discord file size limit — and how to get your video under it](https://guihub.cc/guides/discord-file-size-limit.html)
+- [Gmail attachment too large? The 25 MB limit and how to get under it](https://guihub.cc/guides/gmail-attachment-size-limit.html)
+- [How to transcribe a Zoom recording (with who said what) — offline](https://guihub.cc/guides/transcribe-zoom-recording.html)
+- [MOV file won’t play on Windows? Why, and how to convert it to MP4](https://guihub.cc/guides/play-mov-files-on-windows.html)
+- [How to make a voiceover for a YouTube video for free (no mic)](https://guihub.cc/guides/youtube-voiceover-free.html)
+- [PDF too large to upload? How to make it smaller (100 KB, 200 KB, 1 MB…)](https://guihub.cc/guides/pdf-too-large-to-upload.html)
+- [How to make a ringtone from a song (Android and iPhone)](https://guihub.cc/guides/make-ringtone-from-song.html)
 
 ## About this repository
 
