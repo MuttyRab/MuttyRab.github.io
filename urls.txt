@@ -115,4 +115,9 @@ https://guihub.cc/guides/handbrake-alternative-simple-video-compressor.html
 https://guihub.cc/guides/csv-to-excel-without-uploading.html
 https://guihub.cc/guides/open-rar-7z-files-mac-windows-zip-with-password.html
 https://guihub.cc/guides/transcribe-audio-video-to-text-offline.html
+https://guihub.cc/guides/lalal-ai-alternative-offline-vocal-remover.html
+https://guihub.cc/guides/otter-ai-alternative-offline-meeting-transcription.html
+https://guihub.cc/guides/elevenlabs-alternative-offline-text-to-speech.html
+https://guihub.cc/guides/topaz-gigapixel-alternative-free-ai-upscaler.html
+https://guihub.cc/guides/remove-background-noise-from-audio-offline.html
 https://guihub.cc/legal.html

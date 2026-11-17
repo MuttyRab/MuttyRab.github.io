@@ -183,6 +183,11 @@ No MCP needed: run `npx -y https://guihub.cc/cli.tgz list`, then `npx -y https:/
 - [Convert CSV to Excel (and back) without uploading your data](https://guihub.cc/guides/csv-to-excel-without-uploading.html)
 - [How to open RAR and 7z files (Mac, Windows, Linux) and make a password-protected ZIP](https://guihub.cc/guides/open-rar-7z-files-mac-windows-zip-with-password.html)
 - [How to transcribe audio or video to text offline (and let Claude summarize it)](https://guihub.cc/guides/transcribe-audio-video-to-text-offline.html)
+- [An offline alternative to LALAL.AI and online vocal removers](https://guihub.cc/guides/lalal-ai-alternative-offline-vocal-remover.html)
+- [An offline alternative to Otter.ai for meeting transcripts with speaker names](https://guihub.cc/guides/otter-ai-alternative-offline-meeting-transcription.html)
+- [A free-to-try offline alternative to ElevenLabs for voiceovers](https://guihub.cc/guides/elevenlabs-alternative-offline-text-to-speech.html)
+- [A simple offline alternative to Topaz Gigapixel for upscaling photos](https://guihub.cc/guides/topaz-gigapixel-alternative-free-ai-upscaler.html)
+- [Remove background noise from a voice recording — offline, no upload](https://guihub.cc/guides/remove-background-noise-from-audio-offline.html)
 
 ## Notes
 - GUI Hub is independent and not affiliated with the upstream projects; each program is downloaded from its official GitHub release and verified by SHA-256.
