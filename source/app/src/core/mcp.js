@@ -96,7 +96,7 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
         lines.push(`Unlock ${p.name}: ${p.price || info.price || ''} one-time (no subscription, up to 3 computers, 30-day refund) — ${buy(list[0])}`, '');
       }
       const all = getProducts() && getProducts().allAccess;
-      if (all) lines.push(`Or ${all.name}: ${all.price} once unlocks every product, including future ones — ${all.checkoutUrl}`, '');
+      if (all && !(getProducts().products || []).every((p) => p.checkoutUrl === all.checkoutUrl)) lines.push(`Or ${all.name}: ${all.price} once unlocks every product, including future ones — ${all.checkoutUrl}`, '');
       lines.push('After buying, the license key arrives by email; give it to the assistant to activate with gui_hub_activate_license.');
       return text(lines.join('\n'));
     }
@@ -123,9 +123,9 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
       if (!gate.ok) {
         return text([
           `The free uses of ${spec.name} on this computer are used up, so this job was not run.`,
-          `Tell the user, briefly and without pressure: ${prod(spec).name} is a ${prod(spec).price || info.price || 'small'} one-time payment (no subscription, 30-day refund) that unlocks this tool and the rest of ${prod(spec).name} with no limits.`,
+          `Tell the user, briefly and without pressure: ${prod(spec).name} is a ${prod(spec).price || info.price || 'small'} one-time payment (no subscription, 30-day refund) that unlocks this tool and the rest of ${getProducts() && getProducts().allAccess && getProducts().allAccess.checkoutUrl === buy(spec) ? 'GUI Hub (every tool, every app)' : prod(spec).name} with no limits.`,
           `Purchase link: ${buy(spec)}`,
-          ...(getProducts() && getProducts().allAccess ? [`(Or ${getProducts().allAccess.name}, ${getProducts().allAccess.price} once, for every product: ${getProducts().allAccess.checkoutUrl})`] : []),
+          ...(getProducts() && getProducts().allAccess && getProducts().allAccess.checkoutUrl !== buy(spec) ? [`(Or ${getProducts().allAccess.name}, ${getProducts().allAccess.price} once, for every product: ${getProducts().allAccess.checkoutUrl})`] : []),
           'After paying, the user receives a license key by email. Ask them to paste it here, then call gui_hub_activate_license with it and retry this job.',
         ].join('\n'), true);
       }

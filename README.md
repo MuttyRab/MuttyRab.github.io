@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (46)
+## MCP tools (47)
 
 | Tool | What it does |
 |---|---|
@@ -52,6 +52,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `ffmpeg_trim` | Cut out a part of a video instantly, without re-encoding (no quality loss). Cuts snap to the nearest keyframe. |
 | `ffmpeg_add_subtitles` | Add an .srt subtitle file to a video on the user's computer as a selectable subtitle track in a new MP4 (no re-encoding, full quality, fast). Use after transcribe_subtitles when the user wants captions inside the video file. |
 | `ffmpeg_loudness` | Normalize the loudness of an audio or video file on the user's computer (EBU R128 loudnorm): makes quiet or uneven recordings loud and consistent at a chosen target (podcast/YouTube −14/−16 LUFS, broadcast −23). Video is copied unchanged. Use whenever the user says audio is too quiet, too loud, uneven, or wants it 'normalized' or 'podcast-ready'. |
+| `ffmpeg_join` | Join (merge/concatenate) several video clips on the user's computer into one MP4, in the order given — works even when the clips differ in format, resolution or frame rate (each is converted to the same format first, then joined). Choose the output size (1080p/720p, landscape or portrait). Use whenever the user wants to combine, merge, stitch or join videos. Clips should all have sound or all be silent. |
 | `immich_go_from_google_photos` | Import Google Photos Takeout .zip files into an Immich server (keeps albums, dates, GPS). dryRun defaults to true: run it first and report the summary before uploading for real. |
 | `immich_go_from_folder` | Upload every photo and video in a folder and its subfolders. |
 | `karaoke_make` | Make a karaoke video (MP4) from a song on the user's computer, offline: removes the vocals (UVR MDX-Net), recognises the sung lyrics with Whisper and burns them in as timed on-screen text over the instrumental. Use whenever the user wants a karaoke version, sing-along or lyrics video of a song. Set `language` to the song's language for better lyrics. |

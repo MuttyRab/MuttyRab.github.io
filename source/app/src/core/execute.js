@@ -18,6 +18,8 @@ function fill(token, values, tmp, tmpDir) {
 
 async function prepareRun({ spec, action, values, specs, binCache, onOutput = () => {} }) {
   const v = { ...values };
+  // Prepare steps see the same defaults the main command gets (e.g. an output size nobody chose).
+  for (const f of action.fields || []) if (v[f.id] === undefined && f.default !== undefined) v[f.id] = f.default;
   let tmpDir = null;
   // prepare: one step or a list. Each step runs another catalog tool first. With `replaces`, its
   // output file ({tmp}) is handed to this action in place of that field (e.g. FFmpeg turns any
@@ -31,7 +33,10 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
       if (!tmpDir) tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guihub-prep-'));
       const f = path.join(tmpDir, p.write);
       const raw = String(v[p.from] ?? '');
-      const text = p.transform === 'srt' ? segmentsToSrt(raw) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
+      const list = Array.isArray(v[p.from]) ? v[p.from] : [];
+      // concatList: FFmpeg concat-demuxer list ("file '/path'"), quotes escaped the FFmpeg way.
+      const text = p.transform === 'concatList' ? list.map((f) => `file '${String(f).replace(/\\/g, '/').replace(/'/g, "'\\''")}'`).join('\n')
+        : p.transform === 'srt' ? segmentsToSrt(raw) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
       if (p.transform === 'srt' && !text.trim()) throw new Error(p.emptyMessage || 'no speech was found');
       fs.writeFileSync(f, `${text}\n`, 'utf8');
       if (p.sets) v[p.sets] = f;
@@ -40,6 +45,23 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
     const helper = (specs || []).find((s) => s.id === p.tool);
     if (!helper) throw new Error(`${spec.name} needs ${p.tool}, which is not available`);
     if (!tmpDir) tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guihub-prep-'));
+    // forEach: run the step once per file of a list field ({item} = that file, {tmp} = its own
+    // output), collecting the outputs in order (e.g. normalise every clip before joining them).
+    if (p.forEach) {
+      const items = Array.isArray(v[p.forEach]) ? v[p.forEach] : [v[p.forEach]].filter(Boolean);
+      const exe = await ensureBinary(helper, binCache);
+      const outs = [];
+      for (const [i, item] of items.entries()) {
+        const out = path.join(tmpDir, `part${String(i).padStart(3, '0')}${p.ext || ''}`);
+        const argv = p.argv.map((t) => fill(t, { ...v, item }, out, tmpDir));
+        onOutput({ stream: 'meta', text: `Preparing ${i + 1} of ${items.length} with ${helper.upstream.displayName || helper.id}…\n` });
+        const res = await new Promise((resolve) => runTool(exe, argv, { onOutput: () => {}, onExit: resolve }));
+        if (res.code !== 0 || !fs.existsSync(out)) throw new Error(`could not read ${path.basename(String(item))} (is it a video file?)`);
+        outs.push(out);
+      }
+      if (p.collect) v[p.collect] = outs;
+      continue;
+    }
     const tmp = path.join(tmpDir, `${p.replaces || p.captureStdout || 'step'}${p.ext || ''}`);
     const exe = await ensureBinary(helper, binCache);
     const argv = p.argv.map((t) => fill(t, v, tmp, tmpDir));

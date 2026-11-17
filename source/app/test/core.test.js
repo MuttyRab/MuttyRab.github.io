@@ -369,3 +369,9 @@ test('per-product server: Audio-only tool list, but prepare helpers (FFmpeg) sti
   assert.ok(/specs: allSpecs/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'main.js'), 'utf8')));
   delete process.env.GUIHUB_CATALOG; delete process.env.GUIHUB_USER_DATA;
 });
+
+test('join videos: one normalise step per clip, then a concat list, then a stream copy', async () => {
+  const a = action('ffmpeg', 'join');
+  assert.strictEqual(a.prepare[0].forEach, 'inputs');
+  assert.deepStrictEqual(buildCommand(a, { inputs: ['/a.mp4', '/b.mov'], out: '/o.mp4', _list: '/t/list.txt' }).argv.slice(0, 7), ['-y', '-f', 'concat', '-safe', '0', '-i', '/t/list.txt']);
+});

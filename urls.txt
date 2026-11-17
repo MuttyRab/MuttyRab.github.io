@@ -18,6 +18,7 @@ https://guihub.cc/ai/ffmpeg-gif.html
 https://guihub.cc/ai/ffmpeg-trim.html
 https://guihub.cc/ai/ffmpeg-add-subtitles.html
 https://guihub.cc/ai/ffmpeg-loudness.html
+https://guihub.cc/ai/ffmpeg-join.html
 https://guihub.cc/ai/karaoke-make.html
 https://guihub.cc/ai/pandoc-convert.html
 https://guihub.cc/ai/pandoc-write.html

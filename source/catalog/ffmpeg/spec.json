@@ -811,6 +811,145 @@
           "full"
         ]
       ]
+    },
+    {
+      "id": "join",
+      "label": "Join videos into one",
+      "runLabel": "Join videos",
+      "description": "Puts several clips one after another into a single MP4 — even if they come from different phones or cameras (different sizes, formats or frame rates). Clips are joined in the order you add them.",
+      "mcpDescription": "Join (merge/concatenate) several video clips on the user's computer into one MP4, in the order given — works even when the clips differ in format, resolution or frame rate (each is converted to the same format first, then joined). Choose the output size (1080p/720p, landscape or portrait). Use whenever the user wants to combine, merge, stitch or join videos. Clips should all have sound or all be silent.",
+      "fields": [
+        {
+          "id": "inputs",
+          "label": "Clips (in order)",
+          "type": "files",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "m4v",
+                "mkv",
+                "webm",
+                "avi",
+                "3gp",
+                "wmv",
+                "flv"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "size",
+          "label": "Output size",
+          "type": "select",
+          "default": "1920:1080",
+          "options": [
+            {
+              "value": "1920:1080",
+              "label": "1080p landscape"
+            },
+            {
+              "value": "1280:720",
+              "label": "720p landscape"
+            },
+            {
+              "value": "1080:1920",
+              "label": "1080p portrait (phone)"
+            },
+            {
+              "value": "720:1280",
+              "label": "720p portrait (phone)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "forEach": "inputs",
+          "ext": ".mkv",
+          "collect": "_parts",
+          "argv": [
+            "-y",
+            "-i",
+            "{item}",
+            "-vf",
+            "scale={size}:force_original_aspect_ratio=decrease,pad={size}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30",
+            "-map",
+            "0:v:0",
+            "-map",
+            "0:a:0?",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "20",
+            "-pix_fmt",
+            "yuv420p",
+            "-acodec",
+            "aac",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-f",
+            "matroska",
+            "{tmp}"
+          ]
+        },
+        {
+          "write": "list.txt",
+          "from": "_parts",
+          "transform": "concatList",
+          "sets": "_list"
+        }
+      ],
+      "argv": [
+        "-y",
+        "-f",
+        "concat",
+        "-safe",
+        "0",
+        "-i",
+        {
+          "fmt": "{_list}"
+        },
+        "-vcodec",
+        "copy",
+        "-acodec",
+        "copy",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Videos joined.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
     }
   ]
 }

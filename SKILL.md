@@ -48,6 +48,8 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run ffmpeg_add_subtitles --input /path/to/input.mp4 --subs /path/to/input.srt --out /path/to/output.mp4`
 - make a quiet recording louder or normalize audio → `ffmpeg_loudness`
   `npx -y https://guihub.cc/cli.tgz run ffmpeg_loudness --input /path/to/input.mp3 --out /path/to/output.mp3`
+- merge or join video clips into one video → `ffmpeg_join`
+  `npx -y https://guihub.cc/cli.tgz run ffmpeg_join --inputs /path/to/input.mp4 --out /path/to/output.mp4`
 - make a karaoke version of a song → `karaoke_make`
   `npx -y https://guihub.cc/cli.tgz run karaoke_make --input /path/to/input.mp3 --out /path/to/output.mp4`
 - convert a Word document to Markdown → `pandoc_convert`
@@ -90,9 +92,9 @@ Full list with descriptions: `npx -y https://guihub.cc/cli.tgz list` or https://
 - `npx -y https://guihub.cc/cli.tgz status` shows free uses left and the purchase links.
 
 ## Products
-- GUI Hub Essentials — $9 once: Video, photos, Word/PowerPoint/PDF files, renaming and sending — for you and your AI. https://buy.polar.sh/polar_cl_5W9WEBwxNsjjbHRYb9j4hhD8bKUCG4sohMrZW17awUN
-- GUI Hub Data — $9 once: Open, convert, combine and analyse CSV, Excel, Parquet and JSON files — for you and your AI. https://buy.polar.sh/polar_cl_dSIVlgdWuKKgkXrRlbhfU5Ld3N4TchEcK31HS2Cw6vy
-- GUI Hub Audio — $9 once: Text to speech, vocal remover and voice clean-up — offline, for you and your AI. https://buy.polar.sh/polar_cl_63248A3WY5Ikr5RkSq2aMtSZpIlHmFpH5ePCJ09KpjA
-- GUI Hub All-Access — $14 once: everything. https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
+- GUI Hub Essentials — $9 once: Video, photos, Word/PowerPoint/PDF files, renaming and sending — for you and your AI. https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
+- GUI Hub Data — $9 once: Open, convert, combine and analyse CSV, Excel, Parquet and JSON files — for you and your AI. https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
+- GUI Hub Audio — $9 once: Text to speech, vocal remover and voice clean-up — offline, for you and your AI. https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
+- GUI Hub All-Access — $9 once: everything. https://buy.polar.sh/polar_cl_s711Mo4uMC9LU6wUPxCPq47a0H6Nkzw8ayqtr1gsTjD
 
 GUI Hub is independent and unofficial; each upstream project keeps its own license and is credited at https://guihub.cc. Support: support@guihub.cc.
