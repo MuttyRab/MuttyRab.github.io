@@ -22,6 +22,8 @@ https://guihub.cc/ai/ffmpeg-trim.html
 https://guihub.cc/ai/ffmpeg-add-subtitles.html
 https://guihub.cc/ai/ffmpeg-loudness.html
 https://guihub.cc/ai/ffmpeg-join.html
+https://guihub.cc/ai/jumpcut-silence.html
+https://guihub.cc/ai/jumpcut-cut.html
 https://guihub.cc/ai/karaoke-make.html
 https://guihub.cc/ai/pandoc-convert.html
 https://guihub.cc/ai/pandoc-write.html
@@ -423,6 +425,7 @@ https://guihub.cc/tools/duckdb.html
 https://guihub.cc/tools/f2.html
 https://guihub.cc/tools/ffmpeg.html
 https://guihub.cc/tools/immich-go.html
+https://guihub.cc/tools/jumpcut.html
 https://guihub.cc/tools/karaoke.html
 https://guihub.cc/tools/pandoc.html
 https://guihub.cc/tools/pdfcpu.html
@@ -486,4 +489,5 @@ https://guihub.cc/guides/how-to-sign-a-pdf-without-printing.html
 https://guihub.cc/guides/remove-location-from-photos.html
 https://guihub.cc/guides/turn-long-video-into-shorts-with-ai.html
 https://guihub.cc/guides/add-translated-subtitles-to-video-with-ai.html
+https://guihub.cc/guides/edit-video-by-transcript-with-ai.html
 https://guihub.cc/legal.html

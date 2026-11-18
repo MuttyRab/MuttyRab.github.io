@@ -395,3 +395,17 @@ test('fmt |filter: FFmpeg filter paths survive colons (Windows) and apostrophes'
   const vf = argv[argv.indexOf('-vf') + 1];
   assert.ok(vf.startsWith("subtitles='C\\:/Users/Pat O'\\\\\\''Neil/talk.srt':charenc=UTF-8:"), vf);
 });
+
+test('cutting: time ranges, silences and the one-pass keep filtergraph', () => {
+  const { rangesToKeep, silenceToKeep, keepGraph, parseTime } = require('../src/core/execute');
+  assert.strictEqual(parseTime('1:02:03.5'), 3723.5); assert.strictEqual(parseTime('12:30'), 750); assert.ok(Number.isNaN(parseTime('soon')));
+  assert.deepStrictEqual(rangesToKeep('1:10 to 3:05, 0:00-0:42; 0:40-0:50'), [[0, 50], [70, 185]]);
+  assert.deepStrictEqual(rangesToKeep('0:05-0:10, 1:00-end', true), [[0, 5], [10, 60]]);
+  assert.throws(() => rangesToKeep('later'), /1:10-3:05/);
+  const keep = silenceToKeep('frame:1\nlavfi.silence_start=0\nlavfi.silence_end=1.2\nlavfi.silence_start=4.0\nlavfi.silence_end=6.0\nlavfi.silence_start=9.0\n', 0.15);
+  assert.deepStrictEqual(keep, [[1.05, 4.15], [5.85, 9.15]]);
+  assert.deepStrictEqual(silenceToKeep('no pauses', 0.15), [[0, 1e9]]);
+  const g = keepGraph([[0, 2], [4, 1e9]]);
+  assert.ok(g.includes("select='between(t,0.000,2.000)+between(t,4.000,1000000000)'") && g.includes('aselect=') && g.endsWith('[a]'));
+  assert.throws(() => keepGraph([]), /nothing would be left/);
+});

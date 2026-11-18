@@ -1,0 +1,319 @@
+{
+  "id": "jumpcut",
+  "product": "audio",
+  "name": "Talking Video Editor",
+  "tagline": "Cut the pauses out of talking videos, or keep only the parts you choose — exact, in one pass, on your own computer.",
+  "keywords": [
+    "remove silence from video",
+    "jump cut editor",
+    "cut dead air",
+    "edit video by transcript",
+    "remove pauses from video",
+    "automatic jump cuts",
+    "timebolt alternative",
+    "video editing mcp"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "FFmpeg/FFmpeg",
+    "stars": 50000,
+    "displayName": "FFmpeg",
+    "license": "GPL (FFmpeg static build)",
+    "homepage": "https://ffmpeg.org"
+  },
+  "binary": {
+    "name": "ffmpeg",
+    "version": "6.1.1",
+    "sourceRepo": "eugeneware/ffmpeg-static",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64",
+        "path": "ffmpeg",
+        "sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64",
+        "path": "ffmpeg",
+        "sha256": "a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-x64",
+        "path": "ffmpeg",
+        "sha256": "ebdddc936f61e14049a2d4b549a412b8a40deeff6540e58a9f2a2da9e6b18894"
+      },
+      "win32-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64",
+        "path": "ffmpeg.exe",
+        "sha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "silence",
+      "label": "Remove pauses (jump cuts)",
+      "runLabel": "Remove pauses",
+      "description": "Cuts out the silent pauses in a talking video — vlogs, tutorials, lectures, interviews — so it moves faster. A short moment around every pause is kept so speech never sounds clipped.",
+      "mcpDescription": "Remove the silent pauses (dead air) from a talking video on the user's computer, offline, in one pass (FFmpeg silencedetect → exact cuts of picture and sound together). Use when the user wants jump cuts, a tighter/faster video, or 'remove the silences'. `pause`: the shortest pause that gets cut; `level`: how quiet counts as silence (noisy rooms need 'noisy'). For removing filler words, retakes or off-topic parts instead, get a timestamped transcript (watch_video or transcribe_transcribe) and call jumpcut_cut with the ranges to remove.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Talking video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "avi",
+                "m4v"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pause",
+          "label": "Cut pauses longer than",
+          "type": "select",
+          "default": "0.6",
+          "options": [
+            {
+              "value": "0.4",
+              "label": "0.4 s (very tight)"
+            },
+            {
+              "value": "0.6",
+              "label": "0.6 s (tight)"
+            },
+            {
+              "value": "1",
+              "label": "1 s (natural)"
+            },
+            {
+              "value": "2",
+              "label": "2 s (only long gaps)"
+            }
+          ]
+        },
+        {
+          "id": "level",
+          "label": "Recording",
+          "type": "select",
+          "default": "-35dB",
+          "options": [
+            {
+              "value": "-45dB",
+              "label": "Quiet room / good microphone"
+            },
+            {
+              "value": "-35dB",
+              "label": "Normal"
+            },
+            {
+              "value": "-28dB",
+              "label": "Noisy room"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save edited video as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-hide_banner",
+            "-nostats",
+            "-i",
+            "{input}",
+            "-vn",
+            "-af",
+            "silencedetect=noise={level}:d={pause},ametadata=mode=print:file=-",
+            "-f",
+            "null",
+            "-"
+          ],
+          "captureStdout": "_sil"
+        },
+        {
+          "write": "cuts.txt",
+          "from": "_sil",
+          "transform": "silenceKeep",
+          "pad": 0.15,
+          "sets": "_graph"
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-filter_complex_script",
+        {
+          "fmt": "{_graph}"
+        },
+        "-map",
+        "[v]",
+        "-map",
+        "[a]",
+        "-vcodec",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "20",
+        "-pix_fmt",
+        "yuv420p",
+        "-acodec",
+        "aac",
+        "-ab",
+        "192k",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Pauses removed.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
+    },
+    {
+      "id": "cut",
+      "label": "Keep or remove parts (edit by transcript)",
+      "runLabel": "Cut video",
+      "description": "Type the parts to remove (or to keep) as time ranges, like 0:12-0:18, 2:40-3:05 — every cut is made in one pass, picture and sound together. Ask your AI to read the transcript and find the retakes, “ums” and off-topic bits for you.",
+      "mcpDescription": "Edit a video on the user's computer by time ranges, offline, in one exact pass (picture and sound stay in sync): `mode` remove deletes the listed parts, keep keeps only them, in time order. Use for 'edit my video by its transcript': get a timestamped transcript first (watch_video or transcribe_transcribe), decide what to cut — retakes, false starts, filler, off-topic tangents, long gaps — and pass `ranges` like '0:12-0:18, 2:40-3:05.5, 10:00-end'. Use jumpcut_silence for automatic pause removal.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "avi",
+                "m4v"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mode",
+          "label": "The ranges are",
+          "type": "select",
+          "default": "remove",
+          "options": [
+            {
+              "value": "remove",
+              "label": "Parts to remove"
+            },
+            {
+              "value": "keep",
+              "label": "Parts to keep"
+            }
+          ]
+        },
+        {
+          "id": "ranges",
+          "label": "Time ranges",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "0:12-0:18, 2:40-3:05, 10:00-end"
+        },
+        {
+          "id": "out",
+          "label": "Save edited video as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "write": "cuts.txt",
+          "from": "ranges",
+          "transform": "rangesKeep",
+          "modeField": "mode",
+          "sets": "_graph"
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-filter_complex_script",
+        {
+          "fmt": "{_graph}"
+        },
+        "-map",
+        "[v]",
+        "-map",
+        "[a]",
+        "-vcodec",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "20",
+        "-pix_fmt",
+        "yuv420p",
+        "-acodec",
+        "aac",
+        "-ab",
+        "192k",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Video cut.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
+    }
+  ]
+}

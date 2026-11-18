@@ -56,6 +56,10 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run ffmpeg_loudness --input /path/to/input.mp3 --out /path/to/output.mp3`
 - merge or join video clips into one video → `ffmpeg_join`
   `npx -y https://guihub.cc/cli.tgz run ffmpeg_join --inputs /path/to/input.mp4 --out /path/to/output.mp4`
+- remove the silences from my video → `jumpcut_silence`
+  `npx -y https://guihub.cc/cli.tgz run jumpcut_silence --input /path/to/input.mp4 --out /path/to/output.mp4`
+- edit my video by reading the transcript → `jumpcut_cut`
+  `npx -y https://guihub.cc/cli.tgz run jumpcut_cut --input /path/to/input.mp4 --ranges "…" --out /path/to/output.mp4`
 - make a karaoke version of a song → `karaoke_make`
   `npx -y https://guihub.cc/cli.tgz run karaoke_make --input /path/to/input.mp3 --out /path/to/output.mp4`
 - convert a Word document to Markdown → `pandoc_convert`

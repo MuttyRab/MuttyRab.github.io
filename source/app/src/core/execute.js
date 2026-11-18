@@ -40,7 +40,7 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
       const list = Array.isArray(v[p.from]) ? v[p.from] : [];
       // concatList: FFmpeg concat-demuxer list ("file '/path'"), quotes escaped the FFmpeg way.
       const text = p.transform === 'concatList' ? list.map((f) => `file '${String(f).replace(/\\/g, '/').replace(/'/g, "'\\''")}'`).join('\n')
-        : p.transform === 'srt' ? segmentsToSrt(raw, p.maxChars || 80) : p.transform === 'srtScript' ? scriptToSrt(raw, String(v[p.script] ?? '')) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
+        : p.transform === 'silenceKeep' ? keepGraph(silenceToKeep(raw, p.pad ?? 0.15)) : p.transform === 'rangesKeep' ? keepGraph(rangesToKeep(raw, v[p.modeField] === 'remove')) : p.transform === 'srt' ? segmentsToSrt(raw, p.maxChars || 80) : p.transform === 'srtScript' ? scriptToSrt(raw, String(v[p.script] ?? '')) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
       if (!text.trim() && p.emptyText) { fs.writeFileSync(f, `${p.emptyText}\n`, 'utf8'); if (p.sets) v[p.sets] = f; continue; }
       if ((p.transform === 'srt' || p.transform === 'srtScript') && !text.trim()) throw new Error(p.emptyMessage || 'no speech was found');
       fs.writeFileSync(f, `${text}\n`, 'utf8');
@@ -164,6 +164,60 @@ function segmentsToSrt(stdout, maxChars = 80) {
   return cues.map(([a, b, x], i) => `${i + 1}\n${srtTime(a)} --> ${srtTime(b)}\n${x}\n`).join('\n');
 }
 
+// Cutting a talking video in one pass: "keep" ranges (seconds) become an FFmpeg filtergraph that
+// keeps only those parts of the picture and the sound, in order, without drifting out of sync.
+const END = 1e9; // "until the end" — FFmpeg's between(t,a,b) needs a number
+function keepGraph(keep) {
+  if (!keep.length) throw new Error('nothing would be left of the video — check the times');
+  const e = keep.map(([a, b]) => `between(t,${a.toFixed(3)},${b >= END ? END : b.toFixed(3)})`).join('+');
+  return `[0:v]select='${e}',setpts=N/FRAME_RATE/TB[v];[0:a]aselect='${e}',asetpts=N/SR/TB[a]`;
+}
+// "1:02:03.5", "12:30", "750", "750.5s" → seconds
+function parseTime(t) {
+  const s = String(t).trim().replace(/s$/i, '').replace(',', '.');
+  if (!/^\d+(?::\d{1,2}){0,2}(?:\.\d+)?$/.test(s)) return NaN;
+  return s.split(':').reduce((acc, x) => acc * 60 + Number(x), 0);
+}
+// "0:00-0:42, 1:10 to 3:05" → [[0,42],[70,185]], sorted and merged. With remove, the complement.
+function rangesToKeep(text, remove) {
+  const out = [];
+  for (const part of String(text).split(/[,;\n]+/)) {
+    if (!part.trim()) continue;
+    const m = part.trim().match(/^(.+?)\s*(?:-|–|—|to)\s*(.+|end)$/i);
+    const a = m ? parseTime(m[1]) : NaN; const b = m ? (/^end$/i.test(m[2].trim()) ? END : parseTime(m[2])) : NaN;
+    if (!(a >= 0) || !(b > a)) throw new Error(`can't read the time range "${part.trim()}" — write it like 1:10-3:05`);
+    out.push([a, b]);
+  }
+  if (!out.length) throw new Error('no time ranges given — write them like 0:00-0:42, 1:10-3:05');
+  out.sort((x, y) => x[0] - y[0]);
+  const merged = [];
+  for (const r of out) { const last = merged[merged.length - 1]; if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]); else merged.push([...r]); }
+  if (!remove) return merged;
+  const keep = []; let t = 0;
+  for (const [a, b] of merged) { if (a > t) keep.push([t, a]); t = b; }
+  if (t < END) keep.push([t, END]);
+  return keep;
+}
+// FFmpeg silencedetect + ametadata print ("lavfi.silence_start=12.3" / "lavfi.silence_end=13.9")
+// → the parts to keep. Each pause keeps `pad` seconds at both ends so speech isn't clipped.
+function silenceToKeep(stdout, pad) {
+  const sil = []; let start = null;
+  for (const l of String(stdout).split(/\r?\n/)) {
+    const a = l.match(/lavfi\.silence_start=(-?[\d.]+)/); if (a) { start = Math.max(0, Number(a[1])); continue; }
+    const b = l.match(/lavfi\.silence_end=([\d.]+)/); if (b && start !== null) { sil.push([start, Number(b[1])]); start = null; }
+  }
+  if (start !== null) sil.push([start, END]); // silent until the end
+  const keep = []; let t = 0;
+  for (const [a, b] of sil) {
+    const cutA = a === 0 ? 0 : a + pad; const cutB = b >= END ? END : b - pad;
+    if (cutB - cutA < 0.1) continue;
+    if (cutA > t) keep.push([t, cutA]);
+    t = cutB;
+  }
+  if (t < END) keep.push([t, END]);
+  return keep;
+}
+
 // "0.031 -- 3.102 speaker_01" → "[00:00:00 → 00:00:03] Speaker 2"
 function speakersToText(stdout) {
   const hms = (x) => { const t = Math.floor(Number(x)); return `${String(Math.floor(t / 3600)).padStart(2, '0')}:${String(Math.floor((t % 3600) / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; };
@@ -208,4 +262,4 @@ function finishRun({ action, values, stdout }) {
   return text;
 }
 
-module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript };
+module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript, keepGraph, rangesToKeep, silenceToKeep, parseTime };

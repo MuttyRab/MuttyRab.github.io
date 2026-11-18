@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, DuckDB, F2, FFmpeg, immich-go, FFmpeg, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (52)
+## MCP tools (54)
 
 | Tool | What it does |
 |---|---|
@@ -58,6 +58,8 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `ffmpeg_join` | Join (merge/concatenate) several video clips on the user's computer into one MP4, in the order given — works even when the clips differ in format, resolution or frame rate (each is converted to the same format first, then joined). Choose the output size (1080p/720p, landscape or portrait). Use whenever the user wants to combine, merge, stitch or join videos. Clips should all have sound or all be silent. |
 | `immich_go_from_google_photos` | Import Google Photos Takeout .zip files into an Immich server (keeps albums, dates, GPS). dryRun defaults to true: run it first and report the summary before uploading for real. |
 | `immich_go_from_folder` | Upload every photo and video in a folder and its subfolders. |
+| `jumpcut_silence` | Remove the silent pauses (dead air) from a talking video on the user's computer, offline, in one pass (FFmpeg silencedetect → exact cuts of picture and sound together). Use when the user wants jump cuts, a tighter/faster video, or 'remove the silences'. `pause`: the shortest pause that gets cut; `level`: how quiet counts as silence (noisy rooms need 'noisy'). For removing filler words, retakes or off-topic parts instead, get a timestamped transcript (watch_video or transcribe_transcribe) and call jumpcut_cut with the ranges to remove. |
+| `jumpcut_cut` | Edit a video on the user's computer by time ranges, offline, in one exact pass (picture and sound stay in sync): `mode` remove deletes the listed parts, keep keeps only them, in time order. Use for 'edit my video by its transcript': get a timestamped transcript first (watch_video or transcribe_transcribe), decide what to cut — retakes, false starts, filler, off-topic tangents, long gaps — and pass `ranges` like '0:12-0:18, 2:40-3:05.5, 10:00-end'. Use jumpcut_silence for automatic pause removal. |
 | `karaoke_make` | Make a karaoke video (MP4) from a song on the user's computer, offline: removes the vocals (UVR MDX-Net), recognises the sung lyrics with Whisper and burns them in as timed on-screen text over the instrumental. Use whenever the user wants a karaoke version, sing-along or lyrics video of a song. Set `language` to the song's language for better lyrics. |
 | `pandoc_convert` | Convert documents between formats with Pandoc (input format is detected from the file extension: .docx .md .html .epub .odt .rtf .txt .tex). Several inputs are concatenated in order. Use to='gfm' to turn Word/HTML into Markdown for reading or editing. |
 | `pandoc_write` | Create a real document file on the user's computer from Markdown you write (pass the full text in `text`): Word (.docx), PowerPoint (.pptx — each `## heading` starts a new slide), OpenDocument (.odt), HTML, EPUB or RTF. The `out` file extension should match `to`. |
@@ -178,6 +180,7 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [How to remove your location from photos before you post or send them](https://guihub.cc/guides/remove-location-from-photos.html)
 - [Turn a long video into Shorts, Reels and TikToks with Claude (captions included)](https://guihub.cc/guides/turn-long-video-into-shorts-with-ai.html)
 - [Add translated subtitles to a video with Claude (burned in, any language)](https://guihub.cc/guides/add-translated-subtitles-to-video-with-ai.html)
+- [Edit a talking video by its transcript with Claude (cut retakes, ums and pauses)](https://guihub.cc/guides/edit-video-by-transcript-with-ai.html)
 
 ## About this repository
 

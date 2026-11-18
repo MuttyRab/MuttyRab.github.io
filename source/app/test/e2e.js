@@ -107,7 +107,8 @@ function seed(id) {
   const answers = await new Promise((resolve, reject) => {
     let buf = ''; const got = [];
     const timer = setTimeout(() => reject(new Error(`MCP server did not answer: ${buf}`)), 30000);
-    srv.stdout.on('data', (d) => { buf += d; const lines = buf.split('\n').filter(Boolean); if (lines.length >= 2) { clearTimeout(timer); resolve(lines.map((l) => JSON.parse(l))); } });
+    // Only complete lines count: the tools/list answer is larger than one pipe chunk.
+    srv.stdout.on('data', (d) => { buf += d; const lines = buf.split('\n').slice(0, -1).filter(Boolean); if (lines.length >= 2) { clearTimeout(timer); resolve(lines.map((l) => JSON.parse(l))); } });
     srv.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'e2e', version: '1' } } })}\n`);
     srv.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/list' })}\n`);
   });
