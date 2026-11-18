@@ -145,7 +145,7 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
     const t = tools().find((x) => x.name === name);
     if (!t) return { isError: true, content: [{ type: 'text', text: `Unknown tool: ${name}` }] };
     const { _spec: spec, _action: action } = t;
-    if (!(await confirmWithUser(action))) return { isError: true, content: [{ type: 'text', text: 'The user declined. Nothing was recorded. Ask them before trying again.' }] };
+    if (!(await confirmWithUser(action))) return { isError: true, content: [{ type: 'text', text: 'Not allowed: the user declined, or this app could not show the permission prompt. Nothing was recorded. Ask the user in chat; if they say yes but this keeps happening, their app may not support MCP permission prompts (elicitation) yet, and they can use the GUI Hub desktop app for this tool instead.' }] };
     let cmd;
     try { cmd = buildCommand(action, args || {}); } catch (e) { return { isError: true, content: [{ type: 'text', text: `Invalid arguments: ${e.message}` }] }; }
     if (license) {

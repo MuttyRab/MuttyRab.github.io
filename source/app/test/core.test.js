@@ -632,6 +632,6 @@ test('MCP: camera/screen tools ask the person first via elicitation when the cli
   assert.match(ask.params.message, /webcam/);
   input.write(`${JSON.stringify({ jsonrpc: '2.0', id: ask.id, result: { action: 'decline' } })}\n`);
   const res = await until((m) => m.id === 2);
-  assert.ok(res.result.isError && /declined/.test(res.result.content[0].text));
+  assert.ok(res.result.isError && /declined/.test(res.result.content[0].text) && /could not show the permission prompt/.test(res.result.content[0].text));
   input.end(); await new Promise((r) => setTimeout(r, 100)); process.exit = origExit; // let readline's close (→ exit) fire on the stub
 });
