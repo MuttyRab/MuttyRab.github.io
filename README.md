@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, FFmpeg, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, Czkawka, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, FFmpeg, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (57)
+## MCP tools (61)
 
 | Tool | What it does |
 |---|---|
@@ -36,6 +36,10 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `7zip_test` | Test an archive's integrity (and password) on the user's computer without extracting. |
 | `caesium_compress` | Compress, resize and/or convert image files (JPG, PNG, WebP, GIF, TIFF) on the user's computer. Writes compressed copies (same file names) into outDir; never modifies originals or overwrites existing files. Use mode=size with maxSize (bytes) to fit upload limits. File dates are kept by default (keepDates). |
 | `caesium_folder` | Compress, resize and/or convert every image in a folder on the user's computer, optionally including subfolders (folder structure is kept). Copies go to outDir; originals are never modified. File dates are kept by default (keepDates). |
+| `cleanup_duplicates` | Find exact duplicate files (same content, any name) in a folder tree on the user's computer, offline (Czkawka, BLAKE3 hashes) and write a grouped report to `out`. Use for 'free up space', 'find duplicate photos/files', 'clean up my Downloads/Pictures/backup drive'. `minsize` skips small files. Nothing is deleted or moved: it only writes a report. Read the report, show the user what you found (groups, sizes, paths) and ask before deleting anything; when they agree, delete only the files they approved, keeping one copy of each group. |
+| `cleanup_photos` | Find visually similar or near-duplicate photos (resized, re-compressed, edited copies, burst shots) in a folder tree on the user's computer, offline (Czkawka perceptual hashes), and write a grouped report to `out`. `similarity`: strict finds only near-identical copies, loose also finds similar shots. Nothing is deleted or moved: it only writes a report. Read the report, show the user what you found (groups, sizes, paths) and ask before deleting anything; when they agree, delete only the files they approved, keeping one copy of each group. |
+| `cleanup_biggest` | List the biggest files in a folder tree on the user's computer (Czkawka) and write them to `out`, largest first. Use for 'what is taking up my disk space' or 'find large files I can delete or archive'. Nothing is deleted or moved: it only writes a report. Read the report, show the user what you found (groups, sizes, paths) and ask before deleting anything; when they agree, delete only the files they approved, keeping one copy of each group. |
+| `cleanup_empty` | List empty folders (no files anywhere inside) in a folder tree on the user's computer (Czkawka) and write them to `out`. Nothing is deleted or moved: it only writes a report. Read the report, show the user what you found (groups, sizes, paths) and ask before deleting anything; when they agree, delete only the files they approved, keeping one copy of each group. |
 | `cleanvoice_denoise` | Remove background noise (hiss, hum, fans, traffic, room noise) from a speech recording on the user's computer — any audio or video file — offline, and save a cleaned .wav copy (16 kHz mono, optimised for speech). Use whenever the user wants to clean up, denoise or improve the audio of a voice memo, interview, podcast, lecture, call or video narration. Combine with transcription for better transcripts of noisy audio. |
 | `clips_make` | Make a short social-media clip (MP4) from a longer video on the user's computer, offline: the part from `start` to `end` is cut out, cropped to vertical 9:16 for TikTok/Reels/Shorts (or square / original shape) and captions timed to the speech (Whisper) are burned in. Use when the user wants shorts, reels, TikToks, highlights or clips from a podcast, interview, stream, lecture or webinar. To find good moments first, get the timestamped transcript (watch_video or transcribe_transcribe), pick self-contained 20–60 s passages with a strong opening line, then call this once per clip with a clear file name for each. |
 | `clips_burn` | Burn (hard-code) subtitles from an .srt file into a video on the user's computer, offline (FFmpeg + libass, Inter font): the captions become part of the picture, so they show on Instagram, TikTok, WhatsApp, LinkedIn and in any player. Use when the user wants captions/subtitles 'in the video', 'always visible' or translated into another language: make the .srt with transcribe_subtitles, translate or correct it yourself if asked (keep the numbering and timestamps exactly), save it, then call this. `style`: 'bottom' (classic), 'big' (large, higher up — vertical/short videos), 'box' (white on a dark box — busy backgrounds). |
@@ -189,6 +193,7 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [Headliner alternative: make podcast audiograms (waveform + captions) without a subscription](https://guihub.cc/guides/headliner-alternative-audiogram.html)
 - [Dub a video into Spanish (or 30 other languages) with Claude — on your own computer](https://guihub.cc/guides/dub-video-into-another-language-with-ai.html)
 - [Show Claude your screen: let it watch you reproduce a bug or do a task (with your voice)](https://guihub.cc/guides/show-claude-your-screen.html)
+- [Find duplicate files and look-alike photos with Claude — and delete only what you approve](https://guihub.cc/guides/find-duplicate-photos-and-files-with-ai.html)
 
 ## About this repository
 

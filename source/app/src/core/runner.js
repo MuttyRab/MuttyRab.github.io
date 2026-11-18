@@ -12,7 +12,8 @@ function clean(text) {
 // is not a terminal, and would wait forever on an open pipe. Pass {stdin: true} only for tools
 // that genuinely take input.
 // Pass {input: '...'} to send a fixed text on stdin and then close it.
-function runTool(exe, argv, { env = {}, cwd, onOutput, onExit, stdin = false, input } = {}) {
+// okCodes: extra exit codes that mean success for this program (e.g. Czkawka exits 11 when it found something).
+function runTool(exe, argv, { env = {}, cwd, onOutput, onExit, stdin = false, input, okCodes } = {}) {
   const child = spawn(exe, argv, {
     cwd,
     env: { ...process.env, NO_COLOR: '1', TERM: 'dumb', ...env },
@@ -24,7 +25,7 @@ function runTool(exe, argv, { env = {}, cwd, onOutput, onExit, stdin = false, in
   child.stdout.on('data', emit('stdout'));
   child.stderr.on('data', emit('stderr'));
   child.on('error', (e) => onOutput && onOutput({ stream: 'stderr', text: `Could not start tool: ${e.message}\n` }));
-  child.on('close', (code, signal) => onExit && onExit({ code, signal }));
+  child.on('close', (code, signal) => onExit && onExit({ code: Array.isArray(okCodes) && okCodes.includes(code) ? 0 : code, signal }));
   return {
     pid: child.pid,
     write: (s) => { if (child.stdin) child.stdin.write(s); },

@@ -134,7 +134,7 @@ ipcMain.handle('tool:run', async (e, { runId, toolId, actionId, values }) => {
   const { cwd } = prep;
   let stdoutText = '';
   const handle = runTool(exe, argv, {
-    env, cwd, input: stdin,
+    env, cwd, input: stdin, okCodes: action.okCodes,
     onOutput: (o) => { if (o.stream === 'stdout') stdoutText += o.text; send('run:output', o); },
     onExit: ({ code, signal }) => {
       running.delete(runId);

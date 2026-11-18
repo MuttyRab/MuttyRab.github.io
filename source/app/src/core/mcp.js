@@ -138,7 +138,7 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
     if (license) license.recordRun(spec);
     let out = ''; let stdoutText = '';
     const res = await new Promise((resolve) => {
-      runTool(exe, cmd.argv, { env: cmd.env, input: cmd.stdin, cwd: prep.cwd, onOutput: (o) => { if (o.stream === 'stdout' && action.saveStdout) stdoutText += o.text; out += o.text; if (out.length > MAX_OUTPUT * 4) out = out.slice(-MAX_OUTPUT * 2); }, onExit: resolve });
+      runTool(exe, cmd.argv, { env: cmd.env, input: cmd.stdin, cwd: prep.cwd, okCodes: action.okCodes, onOutput: (o) => { if (o.stream === 'stdout' && action.saveStdout) stdoutText += o.text; out += o.text; if (out.length > MAX_OUTPUT * 4) out = out.slice(-MAX_OUTPUT * 2); }, onExit: resolve });
     });
     let saved = null;
     try { if (res.code === 0) saved = finishRun({ action, values: prep.values, stdout: stdoutText }); } catch (e) { out += `\nCould not save the result: ${e.message}`; }

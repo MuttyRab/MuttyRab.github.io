@@ -428,3 +428,10 @@ test('screen recording helpers: dshow microphone pick', () => {
   assert.strictEqual(dshowAudio(list), 'Microphone Array (Realtek(R) Audio)');
   assert.strictEqual(dshowAudio('nothing here'), '');
 });
+
+test('runner: okCodes turn a "found something" exit code into success', async () => {
+  const { runTool } = require('../src/core/runner');
+  const run = (okCodes) => new Promise((resolve) => runTool(process.execPath, ['-e', 'process.exit(11)'], { onOutput: () => {}, onExit: resolve, okCodes }));
+  assert.strictEqual((await run([11])).code, 0);
+  assert.strictEqual((await run(undefined)).code, 11);
+});

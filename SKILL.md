@@ -1,6 +1,6 @@
 ---
 name: gui-hub
-description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx)) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
+description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, Czkawka, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx)) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
 ---
 
 # GUI Hub — local file jobs for agents with a computer
@@ -24,6 +24,10 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run caesium_compress --inputs /path/to/input.jpg --outDir /path/to/folder`
 - resize all photos in a folder → `caesium_folder`
   `npx -y https://guihub.cc/cli.tgz run caesium_folder --folder /path/to/folder --outDir /path/to/folder`
+- find duplicate files on my computer → `cleanup_duplicates`
+  `npx -y https://guihub.cc/cli.tgz run cleanup_duplicates --folder /path/to/folder --out /path/to/output.txt`
+- find similar or duplicate photos in my library → `cleanup_photos`
+  `npx -y https://guihub.cc/cli.tgz run cleanup_photos --folder /path/to/folder --out /path/to/output.txt`
 - remove background noise from an audio recording → `cleanvoice_denoise`
   `npx -y https://guihub.cc/cli.tgz run cleanvoice_denoise --input /path/to/input.mp3 --out /path/to/output.wav`
 - turn a long video into Shorts, Reels or TikToks → `clips_make`

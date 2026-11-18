@@ -6,6 +6,8 @@ https://guihub.cc/ai/7zip-extract.html
 https://guihub.cc/ai/7zip-create.html
 https://guihub.cc/ai/caesium-compress.html
 https://guihub.cc/ai/caesium-folder.html
+https://guihub.cc/ai/cleanup-duplicates.html
+https://guihub.cc/ai/cleanup-photos.html
 https://guihub.cc/ai/cleanvoice-denoise.html
 https://guihub.cc/ai/clips-make.html
 https://guihub.cc/ai/clips-burn.html
@@ -423,6 +425,7 @@ https://guihub.cc/data/
 https://guihub.cc/audio/
 https://guihub.cc/tools/7zip.html
 https://guihub.cc/tools/caesium.html
+https://guihub.cc/tools/cleanup.html
 https://guihub.cc/tools/cleanvoice.html
 https://guihub.cc/tools/clips.html
 https://guihub.cc/tools/croc.html
@@ -501,4 +504,5 @@ https://guihub.cc/guides/descript-alternative-edit-video-by-transcript.html
 https://guihub.cc/guides/headliner-alternative-audiogram.html
 https://guihub.cc/guides/dub-video-into-another-language-with-ai.html
 https://guihub.cc/guides/show-claude-your-screen.html
+https://guihub.cc/guides/find-duplicate-photos-and-files-with-ai.html
 https://guihub.cc/legal.html
