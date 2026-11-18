@@ -258,7 +258,11 @@
           "-h",
           "full"
         ]
-      ]
+      ],
+      "returnImages": {
+        "field": "outDir",
+        "max": 8
+      }
     },
     {
       "id": "screen",
@@ -697,6 +701,217 @@
       ],
       "openAfter": "outDir",
       "successMessage": "Recording saved — screenshots of every change and a transcript.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ],
+      "returnImages": {
+        "field": "outDir",
+        "max": 8
+      }
+    },
+    {
+      "id": "camera",
+      "label": "Look through my webcam",
+      "runLabel": "Take photo",
+      "description": "Takes a photo with your computer's camera after a short countdown, so your AI can see something physical: a part you're holding up, a whiteboard, a handwritten note, a plant, a 3D print in progress. Nothing is uploaded by this app; the photo is saved where you choose.",
+      "mcpDescription": "Take a photo with the user's webcam and return it to you as an image, so you can see something physical: an object or part the user holds up, a whiteboard, handwriting, a label, a device's lights or screen, a 3D print or plant to check on. `wait` is the countdown in seconds before the photo (gives the camera time to adjust and the user time to position things — ask them to hold the object close and steady). Call it again whenever you need another look; for monitoring something over time, call it on an interval. Use only when the user asks you to look; the photo is saved to `out` on their computer. If no camera is found, ask the user to connect one and allow camera access for GUI Hub (macOS: System Settings → Privacy & Security → Camera).",
+      "fields": [
+        {
+          "id": "wait",
+          "label": "Countdown before the photo",
+          "type": "select",
+          "default": "3",
+          "options": [
+            {
+              "value": "2",
+              "label": "2 seconds"
+            },
+            {
+              "value": "3",
+              "label": "3 seconds"
+            },
+            {
+              "value": "5",
+              "label": "5 seconds"
+            },
+            {
+              "value": "10",
+              "label": "10 seconds"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save photo as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "JPEG image",
+              "extensions": [
+                "jpg"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "linux",
+          "unless": "_rec",
+          "argv": [
+            "-y",
+            "-f",
+            "v4l2",
+            "-i",
+            "/dev/video0",
+            "-t",
+            "{wait}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-pix_fmt",
+            "yuv420p",
+            "-an",
+            "{tmp:cam.mp4}"
+          ],
+          "sets": {
+            "_rec": "cam.mp4"
+          }
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "darwin",
+          "unless": "_rec",
+          "optional": true,
+          "argv": [
+            "-y",
+            "-f",
+            "avfoundation",
+            "-framerate",
+            "30",
+            "-i",
+            "default",
+            "-t",
+            "{wait}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-pix_fmt",
+            "yuv420p",
+            "-an",
+            "{tmp:cam.mp4}"
+          ],
+          "sets": {
+            "_rec": "cam.mp4"
+          }
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "darwin",
+          "unless": "_rec",
+          "argv": [
+            "-y",
+            "-f",
+            "avfoundation",
+            "-framerate",
+            "15",
+            "-i",
+            "default",
+            "-t",
+            "{wait}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-pix_fmt",
+            "yuv420p",
+            "-an",
+            "{tmp:cam.mp4}"
+          ],
+          "sets": {
+            "_rec": "cam.mp4"
+          }
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "win32",
+          "unless": "_rec",
+          "argv": [
+            "-hide_banner",
+            "-list_devices",
+            "true",
+            "-f",
+            "dshow",
+            "-i",
+            "dummy"
+          ],
+          "captureStderr": "_devices"
+        },
+        {
+          "pick": "_devices",
+          "transform": "dshowVideo",
+          "sets": "_cam",
+          "requires": "_devices"
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "win32",
+          "unless": "_rec",
+          "argv": [
+            "-y",
+            "-f",
+            "dshow",
+            "-i",
+            "video={_cam}",
+            "-t",
+            "{wait}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-pix_fmt",
+            "yuv420p",
+            "-an",
+            "{tmp:cam.mp4}"
+          ],
+          "sets": {
+            "_rec": "cam.mp4"
+          }
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "fmt": "{_rec}"
+        },
+        "-vf",
+        "scale='min(1600,iw)':-2",
+        "-update",
+        "1",
+        "-qscale",
+        "2",
+        {
+          "field": "out"
+        }
+      ],
+      "returnImages": {
+        "field": "out"
+      },
+      "openAfter": "out",
+      "successMessage": "Photo saved.",
       "helpArgs": [
         [
           "-h",

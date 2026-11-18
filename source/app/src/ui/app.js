@@ -57,6 +57,17 @@ function renderLicense() {
   $('deactivate-btn').hidden = !pro;
 }
 
+// Whether this tool works offline yet; opening it starts its one-time download in the background.
+async function showOffline(t) {
+  const line = $('tool-offline');
+  const net = t.needsInternet ? ' It still needs a connection while it runs (it sends or uploads over the network).' : '';
+  if (t.installed) { line.textContent = `✓ Ready — works offline.${net}`; return; }
+  line.textContent = 'Getting this tool ready (one-time download of its engine)…';
+  const r = await api.prefetch(t.id).catch((e) => ({ ok: false, error: String(e.message || e) }));
+  if (state.tool !== t) return;
+  if (r.ok) { t.installed = true; line.textContent = `✓ Ready — works offline.${net}`; } else line.textContent = `Not downloaded yet — it needs internet once, then works offline. ${String(r.error || '').replace(/^Error invoking remote method '[^']+': (Error: )?/, '').split('. Tip:')[0]}`;
+}
+
 function selectTool(id) {
   state.tool = state.tools.find((t) => t.id === id);
   $('empty').hidden = true;
@@ -78,6 +89,7 @@ function selectTool(id) {
   }, ac.label)));
   renderList();
   selectAction(t.actions[0].id);
+  showOffline(t);
 }
 
 function selectAction(id) {
@@ -293,6 +305,12 @@ async function init() {
     $('mcp-claude').onclick = install('claude', 'Claude Desktop');
     $('mcp-cursor').onclick = install('cursor', 'Cursor');
   });
+  $('offline-btn').addEventListener('click', async () => {
+    $('offline-btn').disabled = true;
+    $('offline-status').textContent = 'Starting…';
+    try { await api.prepareAll(); } finally { $('offline-btn').disabled = false; await refreshTools(); if (state.tool) showOffline(state.tools.find((x) => x.id === state.tool.id) || state.tool); }
+  });
+  api.onToolsProgress((p) => { $('offline-status').textContent = p.text; });
   api.onLicenseChanged(refreshTools);
   api.onCatalogChanged(refreshTools);
   $('update-btn').addEventListener('click', () => api.open(state.info.update.url));

@@ -1,0 +1,645 @@
+{
+  "id": "docs",
+  "product": "essentials",
+  "name": "Document, Email & Recording Search",
+  "tagline": "Let your AI search inside thousands of your own PDFs, Word, PowerPoint and Excel files, old email archives and voice memos — without uploading them.",
+  "keywords": [
+    "search inside pdf files",
+    "search documents on my computer",
+    "full text search pdf word",
+    "find document containing text",
+    "pdftotext gui",
+    "document search mcp",
+    "xpdf gui",
+    "search voice memos",
+    "search mbox",
+    "search google takeout email",
+    "eml viewer search"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "xpdf/xpdf-tools",
+    "stars": 0,
+    "displayName": "Xpdf",
+    "guiName": "pdftotext",
+    "license": "GPL-2.0/3.0 (Xpdf tools); GPL-2.0 (Pandoc); Apache-2.0 (sherpa-onnx), MIT (Whisper model); GPL (FFmpeg static build)",
+    "homepage": "https://www.xpdfreader.com"
+  },
+  "binary": {
+    "name": "pdftotext",
+    "version": "4.06",
+    "assets": {
+      "linux-x64": {
+        "url": "https://dl.xpdfreader.com/xpdf-tools-linux-4.06.tar.gz",
+        "path": "xpdf-tools-linux-4.06/bin64/pdftotext",
+        "sha256": "940c137cbd1856e45813da1a25c12e8dd3dc8997b8ea735feb858684603031e3"
+      },
+      "darwin-arm64": {
+        "url": "https://dl.xpdfreader.com/xpdf-tools-mac-4.06.tar.gz",
+        "path": "xpdf-tools-mac-4.06/binARM/pdftotext",
+        "sha256": "c0a2992348c0407356cec39f2f4b2e73705fb77edc852a4e9196e222712451a8"
+      },
+      "darwin-x64": {
+        "url": "https://dl.xpdfreader.com/xpdf-tools-mac-4.06.tar.gz",
+        "path": "xpdf-tools-mac-4.06/bin64/pdftotext",
+        "sha256": "c0a2992348c0407356cec39f2f4b2e73705fb77edc852a4e9196e222712451a8"
+      },
+      "win32-x64": {
+        "url": "https://dl.xpdfreader.com/xpdf-tools-win-4.06.zip",
+        "path": "xpdf-tools-win-4.06/bin64/pdftotext.exe",
+        "sha256": "2b6ca45da794e7854a6468fd6c8063fde62701f001ce03fa4f603eab7e15a0b6"
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": "index",
+      "label": "Index my documents",
+      "runLabel": "Index documents",
+      "description": "Reads the text of every PDF, Word, PowerPoint, Excel, OpenDocument, EPUB, HTML, RTF, Markdown and text file in a folder (and its subfolders) into one index file on your computer, so you or your AI can search them all at once. Run it again any time — files already indexed are skipped. Nothing is uploaded.",
+      "mcpDescription": "Build or extend a full-text index of the documents in a folder on the user's computer, offline: PDFs (Xpdf pdftotext) and Word/PowerPoint/Excel/ODT/EPUB/HTML/RTF/Markdown/TXT (Pandoc) are read into `out` (one line per file: path, date, text). Already-indexed files are skipped, so call again with the same `folder` and `out` to continue a big folder (`limit` files of each kind per run; the result says how many are left and which PDFs had no text — scanned ones need ocr_pdf first). Then use docs_search ('the contract with the termination fee', 'invoice 4821', 'everything mentioning Project Falcon') and docs_read to read a whole document. Nothing is uploaded or changed.",
+      "fields": [
+        {
+          "id": "folder",
+          "label": "Documents folder",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "out",
+          "label": "Save the index as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Document index",
+              "extensions": [
+                "tsv"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "limit",
+          "label": "Files per run",
+          "type": "select",
+          "default": "500",
+          "options": [
+            {
+              "value": "100",
+              "label": "100"
+            },
+            {
+              "value": "500",
+              "label": "500"
+            },
+            {
+              "value": "2000",
+              "label": "2,000"
+            },
+            {
+              "value": "0",
+              "label": "All of them"
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "listFiles": "folder",
+          "exts": [
+            "pdf"
+          ],
+          "skipIndexed": "out",
+          "limit": "limit",
+          "sets": "_pdfs",
+          "left": "_lp"
+        },
+        {
+          "tool": "docs",
+          "forEach": "_pdfs",
+          "eachStdout": "_ptext",
+          "skipFailed": true,
+          "argv": [
+            "-enc",
+            "UTF-8",
+            "-q",
+            "{item}",
+            "-"
+          ]
+        },
+        {
+          "listFiles": "folder",
+          "exts": [
+            "docx",
+            "pptx",
+            "xlsx",
+            "odt",
+            "epub",
+            "html",
+            "htm",
+            "rtf",
+            "md",
+            "txt"
+          ],
+          "skipIndexed": "out",
+          "limit": "limit",
+          "sets": "_others",
+          "left": "_lo"
+        },
+        {
+          "tool": "pandoc",
+          "forEach": "_others",
+          "eachStdout": "_otext",
+          "skipFailed": true,
+          "argv": [
+            "-t",
+            "plain",
+            "--wrap=none",
+            "{item}"
+          ]
+        },
+        {
+          "write": "index.tsv",
+          "to": "{out}",
+          "from": "_ptext",
+          "paths": [
+            "_pdfs",
+            "_others"
+          ],
+          "texts": [
+            "_ptext",
+            "_otext"
+          ],
+          "lefts": [
+            "_lp",
+            "_lo"
+          ],
+          "transform": "docIndex",
+          "summary": "_summary"
+        }
+      ],
+      "argv": [
+        "-v"
+      ],
+      "okCodes": [
+        99
+      ],
+      "resultValue": "_summary",
+      "openAfter": "out",
+      "successMessage": "Documents indexed.",
+      "helpArgs": [
+        [
+          "-h"
+        ]
+      ]
+    },
+    {
+      "id": "audio",
+      "label": "Index my recordings (what was said)",
+      "runLabel": "Transcribe & index",
+      "description": "Transcribes every voice memo, meeting recording, podcast or video in a folder on your computer and adds what was said (with timestamps) to the same index as your documents — so you can search recordings and documents together. Already-indexed recordings are skipped. Nothing is uploaded.",
+      "mcpDescription": "Transcribe the audio/video files in a folder on the user's computer, offline (Whisper via sherpa-onnx), and add the timestamped transcripts to a docs index (`out`, the same file docs_index uses) — then docs_search finds 'the voice memo where I mentioned the gate code' or 'the meeting where we discussed the budget', with the timestamp, and docs_read returns a whole transcript. Already-indexed files are skipped; call again to continue (`limit` per run, about real-time/10 per file; the result says how many are left). Formats: MP3, M4A (iPhone voice memos), WAV, AAC, OGG, OPUS, FLAC, WMA, AMR, MP4, MOV, MKV, WEBM.",
+      "fields": [
+        {
+          "id": "folder",
+          "label": "Recordings folder",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "language",
+          "label": "Spoken language",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Detect automatically"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "he",
+              "label": "Hebrew"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Add to index",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Document index",
+              "extensions": [
+                "tsv"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "limit",
+          "label": "Recordings per run",
+          "type": "select",
+          "default": "20",
+          "options": [
+            {
+              "value": "20",
+              "label": "20"
+            },
+            {
+              "value": "100",
+              "label": "100"
+            },
+            {
+              "value": "500",
+              "label": "500"
+            },
+            {
+              "value": "0",
+              "label": "All of them"
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "listFiles": "folder",
+          "exts": [
+            "mp3",
+            "m4a",
+            "wav",
+            "aac",
+            "ogg",
+            "opus",
+            "flac",
+            "wma",
+            "amr",
+            "3gp",
+            "mp4",
+            "mov",
+            "m4v",
+            "mkv",
+            "webm",
+            "avi"
+          ],
+          "skipIndexed": "out",
+          "limit": "limit",
+          "sets": "_recs",
+          "left": "_left"
+        },
+        {
+          "tool": "ffmpeg",
+          "forEach": "_recs",
+          "ext": ".wav",
+          "collect": "_wavs",
+          "skipFailed": true,
+          "argv": [
+            "-y",
+            "-i",
+            "{item}",
+            "-vn",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "-af",
+            "apad=pad_dur=1",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp}"
+          ]
+        },
+        {
+          "tool": "transcribe",
+          "forEach": "_wavs",
+          "eachStdout": "_said",
+          "skipFailed": true,
+          "argv": [
+            "--silero-vad-model={_dir_transcribe}/extras/vad/silero_vad.onnx",
+            "--whisper-encoder={_dir_transcribe}/extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+            "--whisper-decoder={_dir_transcribe}/extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+            "--tokens={_dir_transcribe}/extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+            "--num-threads=4",
+            "--whisper-language={language}",
+            "{item}"
+          ]
+        },
+        {
+          "write": "index.tsv",
+          "to": "{out}",
+          "from": "_said",
+          "paths": [
+            "_recs"
+          ],
+          "texts": [
+            "_said"
+          ],
+          "lefts": [
+            "_left"
+          ],
+          "segments": true,
+          "noun": "recording",
+          "again": "docs_audio",
+          "emptyHint": "had no speech (silent, music only, or not a recording)",
+          "transform": "docIndex",
+          "summary": "_summary"
+        }
+      ],
+      "argv": [
+        "-v"
+      ],
+      "okCodes": [
+        99
+      ],
+      "resultValue": "_summary",
+      "openAfter": "out",
+      "successMessage": "Recordings transcribed and indexed.",
+      "helpArgs": [
+        [
+          "-h"
+        ]
+      ]
+    },
+    {
+      "id": "mail",
+      "label": "Index my email archive",
+      "runLabel": "Index emails",
+      "description": "Adds every email from mailbox exports in a folder — Google Takeout / Gmail .mbox, Thunderbird mailboxes, saved .eml files, Apple Mail .emlx — to the same index as your documents: sender, recipients, subject, date, attachment names and the text. Search years of old email in seconds. Nothing is uploaded.",
+      "mcpDescription": "Index email archives in a folder on the user's computer, offline: .mbox (Google Takeout/Gmail export, Thunderbird, Apple Mail export), .eml and .emlx files. Each email becomes one line in the docs index `out` (key `file::N`, date, From/To/Cc/Subject/attachment names + plain text; HTML-only mail is converted, quoted replies dropped). Multi-GB mboxes are read in chunks. Files already indexed are skipped; call again to continue. Then docs_search finds emails ('the email from the landlord about the gate code', 'invoice 4821', 'flight confirmation Lisbon') and docs_read with the `file::N` key returns the whole email. Use for old archives/exports — for a live inbox prefer the user's mail connector.",
+      "fields": [
+        {
+          "id": "folder",
+          "label": "Folder with mailbox exports",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "out",
+          "label": "Add to index",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Document index",
+              "extensions": [
+                "tsv"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "limit",
+          "label": "Files per run",
+          "type": "select",
+          "default": "0",
+          "options": [
+            {
+              "value": "0",
+              "label": "All of them"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            },
+            {
+              "value": "100",
+              "label": "100"
+            },
+            {
+              "value": "1000",
+              "label": "1,000"
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "listFiles": "folder",
+          "exts": [
+            "mbox",
+            "eml",
+            "emlx"
+          ],
+          "skipIndexed": "out",
+          "limit": "limit",
+          "sets": "_mail",
+          "left": "_left"
+        },
+        {
+          "write": "index.tsv",
+          "to": "{out}",
+          "from": "_mail",
+          "paths": "_mail",
+          "left": "_left",
+          "transform": "mailIndex",
+          "summary": "_summary"
+        }
+      ],
+      "argv": [
+        "-v"
+      ],
+      "okCodes": [
+        99
+      ],
+      "resultValue": "_summary",
+      "openAfter": "out",
+      "successMessage": "Emails indexed.",
+      "helpArgs": [
+        [
+          "-h"
+        ]
+      ]
+    },
+    {
+      "id": "search",
+      "label": "Search my documents",
+      "runLabel": "Search",
+      "description": "Type words or a phrase and get the documents that mention them, best first, with the matching passage.",
+      "mcpDescription": "Search a document index made by docs_index: documents are ranked by how many of the query words they contain (bonus for the exact phrase) and each result shows path, date, matched words and an excerpt around the match. Use for 'find the lease that mentions the parking space', 'which documents mention invoice 4821', 'where did we write about the Q3 budget'. Then call docs_read to read a whole document. Try synonyms if nothing matches.",
+      "fields": [
+        {
+          "id": "index",
+          "label": "Document index",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Document index",
+              "extensions": [
+                "tsv"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "query",
+          "label": "Words to look for",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "max",
+          "label": "Show up to",
+          "type": "select",
+          "default": "10",
+          "options": [
+            {
+              "value": "10",
+              "label": "10 documents"
+            },
+            {
+              "value": "25",
+              "label": "25 documents"
+            },
+            {
+              "value": "50",
+              "label": "50 documents"
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "write": "s.txt",
+          "to": "{index}",
+          "from": "query",
+          "query": "query",
+          "max": "max",
+          "transform": "docSearch",
+          "summary": "_summary"
+        }
+      ],
+      "argv": [
+        "-v"
+      ],
+      "okCodes": [
+        99
+      ],
+      "resultValue": "_summary",
+      "successMessage": "Search finished.",
+      "helpArgs": [
+        [
+          "-h"
+        ]
+      ]
+    },
+    {
+      "id": "read",
+      "label": "Read a document's text",
+      "runLabel": "Show text",
+      "description": "Shows the full text of one indexed document (by its path or part of its name).",
+      "mcpDescription": "Return the full text (up to 60,000 characters) of one document from a docs_index index, by its path or a unique part of its file name — use after docs_search to read the contract, report or invoice the user asked about, including PDFs and Word files you can't open directly.",
+      "fields": [
+        {
+          "id": "index",
+          "label": "Document index",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Document index",
+              "extensions": [
+                "tsv"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "doc",
+          "label": "Document (path or part of the name)",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "prepare": [
+        {
+          "write": "r.txt",
+          "to": "{index}",
+          "from": "doc",
+          "doc": "doc",
+          "transform": "docRead",
+          "summary": "_summary"
+        }
+      ],
+      "argv": [
+        "-v"
+      ],
+      "okCodes": [
+        99
+      ],
+      "resultValue": "_summary",
+      "successMessage": "Done.",
+      "helpArgs": [
+        [
+          "-h"
+        ]
+      ]
+    }
+  ]
+}

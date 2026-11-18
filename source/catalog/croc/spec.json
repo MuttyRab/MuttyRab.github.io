@@ -215,5 +215,6 @@
       ],
       "mcpDescription": "Receive files sent with croc: give the code phrase from the sender and a destination folder. Existing files are kept (renamed) unless existing=\"overwrite\"."
     }
-  ]
+  ],
+  "needsInternet": true
 }

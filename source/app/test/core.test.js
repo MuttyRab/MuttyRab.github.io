@@ -446,3 +446,137 @@ test('ocr: language picks a pinned model from the tool\'s extras; input and outp
   const folder = spec.actions.find((a) => a.id === 'folder');
   assert.deepStrictEqual(buildCommand(folder, { pages: '/p', lang: 'eng', outDir: '/o', _selfDir: '/c' }).argv, ['-t', '/c/extras/eng/eng.traineddata', '/p', '/o']);
 });
+
+test('webcam: dshow camera pick; last-frame argv; MCP returns images inline (folder sampled to max)', () => {
+  const { dshowVideo } = require('../src/core/execute');
+  const list = '[dshow @ 0] "Integrated Camera" (video)\n[dshow @ 0]   Alternative name "@device_pnp_x"\n[dshow @ 0] "Microphone (Realtek)" (audio)\n';
+  assert.strictEqual(dshowVideo(list), 'Integrated Camera');
+  assert.strictEqual(dshowVideo('[dshow @ 0] "Mic" (audio)'), '');
+  const cam = action('watch', 'camera');
+  const { argv } = buildCommand(cam, { wait: '3', out: '/o/look.jpg', _rec: '/t/cam.mp4' });
+  assert.deepStrictEqual(argv.slice(0, 3), ['-y', '-i', '/t/cam.mp4']);
+  assert.ok(argv.includes('-update'));
+  assert.strictEqual(argv[argv.length - 1], '/o/look.jpg');
+  const fs = require('fs'); const os = require('os'); const path = require('path');
+  const { imageContent } = require('../src/core/mcp');
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-img-'));
+  for (let i = 1; i <= 20; i++) fs.writeFileSync(path.join(d, `frame_${i}.jpg`), Buffer.from([0xff, 0xd8, i]));
+  fs.writeFileSync(path.join(d, 'transcript.txt'), 'x');
+  const imgs = imageContent({ returnImages: { field: 'outDir', max: 8 } }, { outDir: d });
+  assert.strictEqual(imgs.length, 8);
+  assert.deepStrictEqual(Buffer.from(imgs[0].data, 'base64')[2], 1);
+  assert.deepStrictEqual(Buffer.from(imgs[7].data, 'base64')[2], 20);
+  assert.deepStrictEqual(imageContent({}, { outDir: d }), []);
+  assert.strictEqual(imageContent({ returnImages: { field: 'out' } }, { out: path.join(d, 'frame_3.jpg') })[0].mimeType, 'image/jpeg');
+});
+
+test('photo index: list new images (skipping indexed ones, limit, left), append descriptions, search ranks matches', async () => {
+  const fs = require('fs'); const os = require('os'); const path = require('path');
+  const { prepareRun, finishRun, captionIndex, searchIndex } = require('../src/core/execute');
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-photos-')); fs.mkdirSync(path.join(d, 'trip', '.thumbs'), { recursive: true });
+  for (const f of ['b.jpg', 'a.PNG', 'notes.txt', 'trip/c.jpeg', 'trip/.thumbs/x.jpg', 'img10.jpg', 'img2.jpg']) fs.writeFileSync(path.join(d, f), 'x');
+  const idx = path.join(d, 'index.tsv');
+  const act = { fields: [], prepare: [
+    { listFiles: 'folder', exts: ['jpg', 'jpeg', 'png'], skipIndexed: 'out', limit: 'limit', sets: '_imgs', left: '_left' },
+    { write: 'i.tsv', to: '{out}', from: '_caps', paths: '_imgs', left: '_left', transform: 'captionIndex', summary: '_summary' }], resultValue: '_summary' };
+  let prep = await prepareRun({ spec: null, action: act, values: { folder: d, out: idx, limit: '3', _caps: [] } });
+  assert.deepStrictEqual(prep.values._imgs.map((f) => path.relative(d, f)), ['a.PNG', 'b.jpg', 'img2.jpg']);
+  assert.strictEqual(prep.values._left, 2);
+  assert.ok(/3 could not be read/.test(finishRun({ action: act, values: prep.values })) && /2 more still to describe/.test(prep.values._summary));
+  prep.cleanup();
+  prep = await prepareRun({ spec: null, action: act, values: { folder: d, out: idx, limit: '0' } });
+  assert.deepStrictEqual(prep.values._imgs.map((f) => path.relative(d, f)), ['img10.jpg', path.join('trip', 'c.jpeg')]);
+  assert.ok(/Every photo/.test(prep.values._summary)); prep.cleanup();
+  assert.strictEqual(fs.readFileSync(idx, 'utf8').trim().split('\n').length, 5);
+  const w = captionIndex(['/p/1.jpg', '/p/2.jpg'], ['  A photo of a <b>red</b>\n passport on a desk. ', ''], '/i.tsv', 0);
+  assert.ok(w.write.startsWith('/p/1.jpg\t') && w.write.includes('\tA photo of a red passport on a desk.\n') && w.write.includes('(could not read this image)'));
+  const text = '/p/1.jpg\t2025-03-01\tA receipt from a hardware store listing screws.\n/p/2.jpg\t2025-03-02\tA dog running on a sandy beach.\n/p/3.jpg\t2025-04-01\tTwo dogs on a beach at sunset.\n';
+  const r = searchIndex(text, 'photos of my dogs at the beach', 20, '/i.tsv');
+  assert.deepStrictEqual(r.hits, ['/p/3.jpg', '/p/2.jpg']);
+  assert.ok(/No photo descriptions match/.test(searchIndex(text, 'passport', 20, '/i.tsv').summary));
+  assert.ok(/empty or missing/.test(searchIndex('', 'x', 20, '/i.tsv').summary));
+  const ps = spec('photos');
+  assert.ok(ps.actions.find((a) => a.id === 'index').prepare[1].argv.includes('{item}'));
+});
+
+test('system steps: only whitelisted OS programs may run', async () => {
+  const { prepareRun } = require('../src/core/execute');
+  const act = { fields: [], prepare: [{ system: '/bin/sh', forEach: '_x', argv: ['-c', 'echo hi'] }] };
+  await assert.rejects(prepareRun({ spec: { name: 'T' }, action: act, values: { _x: ['a'] } }), /not available/);
+  const skipped = { fields: [], prepare: [{ system: '/usr/bin/sips', when: '_os', equals: 'nope', forEach: '_x', argv: ['{item}'] }] };
+  const prep = await prepareRun({ spec: { name: 'T' }, action: skipped, values: { _x: ['a'] } }); prep.cleanup();
+});
+
+test('documents: index text (newlines kept, empty = scanned hint), search ranks + excerpts, read by path or name part', () => {
+  const { docIndex, docSearch, docRead } = require('../src/core/execute');
+  const r = docIndex(['/d/lease.pdf', '/d/scan.pdf', '/d/notes.docx'], ['LEASE AGREEMENT\n\nTenant gets one parking space.\fPage 2: termination fee is 2 months rent.', '\f\f', 'Meeting notes\tabout the parking garage budget'], '/d/i.tsv', 3);
+  const lines = r.write.trim().split('\n');
+  assert.strictEqual(lines.length, 3);
+  assert.ok(lines[0].startsWith('/d/lease.pdf\t') && lines[0].includes('LEASE AGREEMENT ¶ Tenant gets one parking space. ¶ Page 2'));
+  assert.ok(/Indexed 2 new documents/.test(r.summary) && /1 had no readable text.*ocr_pdf.*scan\.pdf/s.test(r.summary) && /3 more still to index/.test(r.summary));
+  const idx = r.write;
+  const s = docSearch(idx, 'parking space termination fee', 10, '/d/i.tsv');
+  const res = s.split('\n');
+  assert.ok(res[1].startsWith('/d/lease.pdf') && res[2].startsWith('/d/notes.docx') && res.length === 3, s);
+  assert.ok(/matches: parking, space, termination, fee/.test(res[1]) && /….*parking space/.test(res[1]));
+  assert.ok(/No documents mention/.test(docSearch(idx, 'unicorn', 10, '/i')));
+  assert.ok(/empty or missing/.test(docSearch('', 'x', 10, '/i')));
+  assert.ok(docRead(idx, 'lease', '/i').includes('Tenant gets one parking space.\nPage 2'));
+  assert.ok(/Several documents/.test(docRead(idx, '/d/', '/i')) && /No document matching/.test(docRead(idx, 'zzz', '/i')));
+  const d = spec('docs');
+  assert.deepStrictEqual(buildCommand(d.actions.find((a) => a.id === 'search'), { index: '/i.tsv', query: 'x' }).argv, ['-v']);
+});
+
+test('recordings index: Whisper segments become timestamped text; no speech gets its own hint; other tools\' folders are placeholders', async () => {
+  const { docIndex, prepareRun } = require('../src/core/execute');
+  const r = docIndex(['/m/memo.m4a', '/m/music.mp3'], ['log line\n3.2 -- 6.0: The gate code is 4471.\n70 -- 72: Bring the keys.\n', 'nothing'], '/i.tsv', 0, { segments: true, noun: 'recording', again: 'docs_audio', emptyHint: 'had no speech' });
+  assert.ok(r.write.includes('\t[00:00:03] The gate code is 4471. ¶ [00:01:10] Bring the keys.\n'));
+  assert.ok(/Indexed 1 new recording\./.test(r.summary) && /1 had no speech: music\.mp3/.test(r.summary) && /Every recording/.test(r.summary));
+  const os = require('os');
+  const act = { fields: [], prepare: [{ tool: 'transcribe', when: '_os', equals: 'never', argv: ['{_dir_transcribe}'] }] };
+  const prep = await prepareRun({ spec: spec('docs'), action: act, values: {}, specs, binCache: os.tmpdir() });
+  assert.ok(/transcribe/.test(prep.values._dir_transcribe) && !prep.values._dir_transcribe.includes('\\')); prep.cleanup();
+});
+
+test('email archives: mbox (multipart, encoded subject, escaped From, HTML-only, attachments) and .eml → index lines; resume by file', async () => {
+  const fs = require('fs'); const os = require('os'); const path = require('path');
+  const { prepareRun } = require('../src/core/execute');
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-mail-'));
+  const mbox = ['From 1782345678@xxx Tue Mar 05 09:00:00 +0000 2024', 'From: Anna <anna@example.com>', 'To: me@example.com', 'Subject: =?utf-8?B?UmVjaG51bmcgZsO8ciBNw6Ryeg==?=', 'Date: Tue, 05 Mar 2024 10:00:00 +0100',
+    'Content-Type: multipart/mixed; boundary="XYZ"', '', '--XYZ', 'Content-Type: text/plain; charset=utf-8', 'Content-Transfer-Encoding: quoted-printable', '', 'Anbei die Rechnung 4821 f=C3=BCr M=C3=A4rz.', '>From now on monthly.', '> old quoted line', '--XYZ',
+    'Content-Type: application/pdf; name="rechnung.pdf"', 'Content-Disposition: attachment; filename="rechnung.pdf"', 'Content-Transfer-Encoding: base64', '', 'JVBERi0=', '--XYZ--', '',
+    'From - Mon Jul 01 09:00:00 2024', 'From: Landlord <ll@example.com>', 'Subject: Lease', 'Date: Mon, 01 Jul 2024 09:00:00 +0000', 'Content-Type: text/html; charset=utf-8', '', '<p>The gate code is&nbsp;4471.</p>', ''].join('\n');
+  fs.writeFileSync(path.join(d, 'All mail.mbox'), mbox);
+  fs.writeFileSync(path.join(d, 'saved.eml'), 'From: dentist@example.com\r\nSubject: Appointment\r\nDate: Thu, 01 Feb 2024 12:00:00 +0000\r\n\r\nSee you at 3pm.\r\n');
+  const idx = path.join(d, 'i.tsv');
+  const act = spec('docs').actions.find((a) => a.id === 'mail');
+  let prep = await prepareRun({ spec: spec('docs'), action: act, values: { folder: d, out: idx, limit: '0' } });
+  assert.ok(/Indexed 3 emails from 2 files/.test(prep.values._summary), prep.values._summary); prep.cleanup();
+  const lines = fs.readFileSync(idx, 'utf8').trim().split('\n');
+  assert.strictEqual(lines.length, 3);
+  assert.ok(lines[0].endsWith('All mail.mbox::1\t2024-03-05\tFrom: Anna <anna@example.com> · To: me@example.com · Subject: Rechnung für März · Attachments: rechnung.pdf ¶ Anbei die Rechnung 4821 für März. ¶ From now on monthly.') || /Rechnung für März · Attachments: rechnung\.pdf ¶ Anbei die Rechnung 4821 für März\. ¶ From now on monthly\.$/.test(lines[0]), lines[0]);
+  assert.ok(/::2\t2024-07-01\tFrom: Landlord .* ¶ The gate code is 4471\./.test(lines[1]), lines[1]);
+  assert.ok(/saved\.eml\t2024-02-01\t.*Appointment ¶ See you at 3pm\./.test(lines[2]), lines[2]);
+  prep = await prepareRun({ spec: spec('docs'), action: act, values: { folder: d, out: idx, limit: '0' } });
+  assert.ok(/Indexed 0 emails/.test(prep.values._summary)); prep.cleanup();
+  const { docRead } = require('../src/core/execute');
+  assert.ok(/gate code is 4471/.test(docRead(fs.readFileSync(idx, 'utf8'), `${path.join(d, 'All mail.mbox')}::2`, idx)));
+});
+
+test('offline: remote specs may use release repos the installer already trusts (not new ones); downloads retry, fall back, and explain', async () => {
+  const { remoteProblems, trustedPrefixes } = require('../src/core/remote-catalog');
+  const tr = trustedPrefixes(specs);
+  for (const s of specs) assert.deepStrictEqual(remoteProblems(s, tr), [], s.id);
+  const ff = spec('ffmpeg');
+  const evil = { ...ff, binary: { ...ff.binary, assets: Object.fromEntries(Object.entries(ff.binary.assets).map(([k, a]) => [k, { ...a, url: 'https://github.com/evil/x/releases/download/1/ffmpeg' }])) } };
+  assert.ok(remoteProblems(evil, tr).length > 0);
+  const { withRetries, friendlyError } = require('../src/core/binaries');
+  const calls = [];
+  const bad = (name) => async () => { calls.push(name); throw new Error('getaddrinfo ENOTFOUND github.com'); };
+  const good = async (url, dest) => { calls.push('node'); return dest; };
+  assert.strictEqual(await withRetries([bad('net'), good], 2)('u', '/d'), '/d');
+  assert.deepStrictEqual(calls, ['net', 'net', 'node']);
+  const m = friendlyError(ff, new Error('getaddrinfo ENOTFOUND github.com')).message;
+  assert.ok(/one-time download/.test(m) && /works offline/.test(m) && /github\.com/.test(m) && /VPN, proxy or firewall/.test(m), m);
+  assert.ok(/Couldn't get/.test(friendlyError(ff, new Error('download failed: HTTP 500 for x')).message));
+});

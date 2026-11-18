@@ -12,6 +12,11 @@ https://guihub.cc/ai/cleanvoice-denoise.html
 https://guihub.cc/ai/clips-make.html
 https://guihub.cc/ai/clips-burn.html
 https://guihub.cc/ai/clips-audiogram.html
+https://guihub.cc/ai/docs-index.html
+https://guihub.cc/ai/docs-audio.html
+https://guihub.cc/ai/docs-mail.html
+https://guihub.cc/ai/docs-search.html
+https://guihub.cc/ai/docs-read.html
 https://guihub.cc/ai/dub-make.html
 https://guihub.cc/ai/dub-voiceover.html
 https://guihub.cc/ai/duckdb-convert.html
@@ -38,6 +43,8 @@ https://guihub.cc/ai/pdfcpu-split.html
 https://guihub.cc/ai/pdfcpu-optimize.html
 https://guihub.cc/ai/pdfcpu-encrypt.html
 https://guihub.cc/ai/pdfcpu-form-fill.html
+https://guihub.cc/ai/photos-index.html
+https://guihub.cc/ai/photos-search.html
 https://guihub.cc/ai/speak-speak.html
 https://guihub.cc/ai/speakers-diarize.html
 https://guihub.cc/ai/transcribe-transcribe.html
@@ -49,6 +56,7 @@ https://guihub.cc/ai/videomaker-make.html
 https://guihub.cc/ai/vocals-split.html
 https://guihub.cc/ai/watch-video.html
 https://guihub.cc/ai/watch-screen.html
+https://guihub.cc/ai/watch-camera.html
 https://guihub.cc/free/
 https://guihub.cc/free/video-converter.html
 https://guihub.cc/free/audio-converter.html
@@ -431,6 +439,7 @@ https://guihub.cc/tools/cleanup.html
 https://guihub.cc/tools/cleanvoice.html
 https://guihub.cc/tools/clips.html
 https://guihub.cc/tools/croc.html
+https://guihub.cc/tools/docs.html
 https://guihub.cc/tools/dub.html
 https://guihub.cc/tools/duckdb.html
 https://guihub.cc/tools/f2.html
@@ -441,6 +450,7 @@ https://guihub.cc/tools/karaoke.html
 https://guihub.cc/tools/ocr.html
 https://guihub.cc/tools/pandoc.html
 https://guihub.cc/tools/pdfcpu.html
+https://guihub.cc/tools/photos.html
 https://guihub.cc/tools/speak.html
 https://guihub.cc/tools/speakers.html
 https://guihub.cc/tools/transcribe.html
@@ -509,4 +519,7 @@ https://guihub.cc/guides/dub-video-into-another-language-with-ai.html
 https://guihub.cc/guides/show-claude-your-screen.html
 https://guihub.cc/guides/find-duplicate-photos-and-files-with-ai.html
 https://guihub.cc/guides/make-scanned-pdf-searchable-offline.html
+https://guihub.cc/guides/let-claude-see-through-your-webcam.html
+https://guihub.cc/guides/search-your-photos-with-ai-offline.html
+https://guihub.cc/guides/search-inside-pdf-and-word-files-with-ai.html
 https://guihub.cc/legal.html

@@ -1,6 +1,6 @@
 ---
 name: gui-hub
-description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, Czkawka, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Rescribe, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx)) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
+description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, Czkawka, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Xpdf, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Rescribe, Pandoc, pdfcpu, llama.cpp, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx)) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
 ---
 
 # GUI Hub — local file jobs for agents with a computer
@@ -36,6 +36,16 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run clips_burn --input /path/to/input.mp4 --subs /path/to/input.srt --out /path/to/output.mp4`
 - make an audiogram from my podcast → `clips_audiogram`
   `npx -y https://guihub.cc/cli.tgz run clips_audiogram --input /path/to/input.mp3 --cover /path/to/input.jpg --start "…" --end "…" --out /path/to/output.mp4`
+- search inside my PDFs and Word documents → `docs_index`
+  `npx -y https://guihub.cc/cli.tgz run docs_index --folder /path/to/folder --out /path/to/output.tsv`
+- search my voice memos → `docs_audio`
+  `npx -y https://guihub.cc/cli.tgz run docs_audio --folder /path/to/folder --out /path/to/output.tsv`
+- search my old emails from a Gmail export → `docs_mail`
+  `npx -y https://guihub.cc/cli.tgz run docs_mail --folder /path/to/folder --out /path/to/output.tsv`
+- find a document on my computer by what it says → `docs_search`
+  `npx -y https://guihub.cc/cli.tgz run docs_search --index /path/to/input.tsv --query "…"`
+- read a PDF that is on my computer → `docs_read`
+  `npx -y https://guihub.cc/cli.tgz run docs_read --index /path/to/input.tsv --doc "…"`
 - dub my video into Spanish → `dub_make`
   `npx -y https://guihub.cc/cli.tgz run dub_make --input /path/to/input.mp4 --subs /path/to/input.srt --out /path/to/output.mp4`
 - make a voice-over in Spanish → `dub_voiceover`
@@ -88,6 +98,10 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run pdfcpu_encrypt --input /path/to/input.pdf --upw "…" --opw "…" --out /path/to/output.pdf`
 - fill out a PDF form → `pdfcpu_form_fill`
   `npx -y https://guihub.cc/cli.tgz run pdfcpu_form_fill --input /path/to/input.pdf --data "…" --out /path/to/output.pdf`
+- search my photos for something → `photos_index`
+  `npx -y https://guihub.cc/cli.tgz run photos_index --folder /path/to/folder --out /path/to/output.tsv`
+- find a specific photo on my computer → `photos_search`
+  `npx -y https://guihub.cc/cli.tgz run photos_search --index /path/to/input.tsv --query "…"`
 - make a voiceover or read a document aloud as an audio file → `speak_speak`
   `npx -y https://guihub.cc/cli.tgz run speak_speak --text "…" --out /path/to/output.wav`
 - tell who said what in a meeting recording → `speakers_diarize`
@@ -110,6 +124,8 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run watch_video --input /path/to/input.mp4 --outDir /path/to/folder`
 - watch my screen while I show it something → `watch_screen`
   `npx -y https://guihub.cc/cli.tgz run watch_screen --outDir /path/to/folder`
+- see through my webcam → `watch_camera`
+  `npx -y https://guihub.cc/cli.tgz run watch_camera --out /path/to/output.jpg`
 
 Full list with descriptions: `npx -y https://guihub.cc/cli.tgz list` or https://guihub.cc/llms.txt
 

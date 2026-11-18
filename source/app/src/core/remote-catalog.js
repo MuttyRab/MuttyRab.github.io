@@ -7,27 +7,40 @@ const fs = require('fs');
 const https = require('https');
 const { checkSpec } = require('./spec');
 
-function remoteProblems(spec) {
+// Official download sites of upstream projects that don't publish on GitHub releases (exact prefixes).
+const OFFICIAL = ['https://rescribe.xyz/rescribe/', 'https://dl.xpdfreader.com/', 'https://huggingface.co/ggml-org/', 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/'];
+function remoteProblems(spec, trusted = []) {
   const problems = checkSpec(spec);
   if (problems.length) return problems;
+  const prefix = `https://github.com/${spec.binary.sourceRepo || spec.upstream.repo}/releases/download/`;
+  const okUrl = (u) => typeof u === 'string' && (u.startsWith(prefix) || OFFICIAL.some((o) => u.startsWith(o)) || trusted.some((o) => u.startsWith(o)));
   for (const [plat, a] of Object.entries(spec.binary.assets)) {
-    const prefix = `https://github.com/${spec.binary.sourceRepo || spec.upstream.repo}/releases/download/`;
-    if (!a.url.startsWith(prefix)) problems.push(`${plat}: remote specs may only download from ${prefix}`);
+    if (!okUrl(a.url)) problems.push(`${plat}: remote specs may only download from ${prefix} or an official project site`);
     if (!/^[0-9a-f]{64}$/.test(a.sha256 || '')) problems.push(`${plat}: remote specs need a sha256`);
   }
   for (const x of spec.binary.extras || []) {
-    if (!x.url.startsWith(`https://github.com/${spec.binary.sourceRepo || spec.upstream.repo}/releases/download/`)) problems.push(`extra ${x.name}: must come from the upstream GitHub releases`);
+    if (!okUrl(x.url)) problems.push(`extra ${x.name}: must come from the upstream GitHub releases or an official project site`);
     if (!/^[0-9a-f]{64}$/.test(x.sha256 || '')) problems.push(`extra ${x.name}: remote specs need a sha256`);
     if (!/^[a-z0-9-]+$/.test(x.name || '')) problems.push('extra: bad name');
   }
   return problems;
 }
 
+// GitHub release repos the bundled (installer) catalog already downloads from.
+function trustedPrefixes(bundled) {
+  const out = new Set();
+  for (const sp of bundled) for (const u of [...Object.values(sp.binary.assets || {}), ...(sp.binary.extras || [])].map((a) => a.url)) {
+    const m = String(u).match(/^https:\/\/github\.com\/[^/]+\/[^/]+\/releases\/download\//); if (m) out.add(m[0]);
+  }
+  return [...out];
+}
+
 function mergeCatalog(bundled, remote) {
   const byId = new Map(bundled.map((s) => [s.id, s]));
   const rejected = [];
+  const trusted = trustedPrefixes(bundled);
   for (const spec of (remote && remote.specs) || []) {
-    const p = remoteProblems(spec);
+    const p = remoteProblems(spec, trusted);
     if (p.length) { rejected.push({ id: spec && spec.id, problems: p }); continue; }
     if (spec.status === 'live') byId.set(spec.id, spec);
     else if (spec.status === 'retired') byId.delete(spec.id);
@@ -67,4 +80,4 @@ async function loadRemote(url, cacheFile, { fetcher = fetchJson } = {}) {
   }
 }
 
-module.exports = { mergeCatalog, remoteProblems, newerVersion, loadRemote };
+module.exports = { mergeCatalog, remoteProblems, newerVersion, loadRemote, trustedPrefixes };

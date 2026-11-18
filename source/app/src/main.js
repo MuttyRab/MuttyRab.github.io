@@ -11,7 +11,7 @@ const path = require('path');
 const fs = require('fs');
 const { loadCatalog } = require('./core/spec');
 const { buildCommand } = require('./core/args');
-const { ensureBinary, isInstalled } = require('./core/binaries');
+const { ensureBinary: ensureBinaryRaw, isInstalled, download: nodeDownload } = require('./core/binaries');
 const { runTool } = require('./core/runner');
 const { prepareRun, finishRun } = require('./core/execute');
 const { LicenseStore } = require('./core/license');
@@ -65,9 +65,20 @@ async function refreshRemoteCatalog() {
   if (win) win.webContents.send('catalog:changed');
 }
 
+const { netDownload } = require('./net-download');
+const ensureBinary = (spec, cache, opts = {}) => ensureBinaryRaw(spec, cache, { ...opts, fetchers: [netDownload, nodeDownload] });
+
+// Every catalog tool a tool's actions run (itself + helpers such as FFmpeg or the speech model).
+function toolsNeeded(spec) {
+  const ids = new Set([spec.id]);
+  for (const a of spec.actions || []) for (const p of [].concat(a.prepare || [])) if (p.tool) ids.add(p.tool);
+  return [...ids].map((id) => allSpecs.find((x) => x.id === id) || specs.find((x) => x.id === id)).filter(Boolean);
+}
+const readyOffline = (spec) => { try { return toolsNeeded(spec).every((t) => isInstalled(t, binCache)); } catch (_) { return false; } };
+
 function toolSummary(spec) {
   const p = findProduct(products, productId(spec)) || {};
-  return { ...spec, installed: isInstalled(spec, binCache), access: license.canRun(spec), productName: p.name || config.productName, checkoutUrl: p.checkoutUrl || config.checkoutUrl, price: p.price || config.price };
+  return { ...spec, installed: readyOffline(spec), access: license.canRun(spec), productName: p.name || config.productName, checkoutUrl: p.checkoutUrl || config.checkoutUrl, price: p.price || config.price };
 }
 
 function createWindow() {
@@ -99,6 +110,37 @@ ipcMain.handle('app:info', () => ({
 }));
 ipcMain.handle('catalog:list', () => specs.map(toolSummary));
 
+// Opening a tool fetches its engine (and helpers) in the background, so Run works right away — and offline later.
+const fetching = new Map();
+// One download per tool at a time, whoever asks (Run, prefetch, "all offline").
+function getTool(t, onProgress) {
+  if (isInstalled(t, binCache)) return ensureBinary(t, binCache);
+  if (!fetching.has(t.id)) fetching.set(t.id, ensureBinary(t, binCache, { onProgress: (g, n) => { for (const f of fetchWatchers.get(t.id) || []) f(g, n); } }).finally(() => { fetching.delete(t.id); fetchWatchers.delete(t.id); }));
+  if (onProgress) fetchWatchers.set(t.id, [...(fetchWatchers.get(t.id) || []), onProgress]);
+  return fetching.get(t.id);
+}
+const fetchWatchers = new Map();
+function fetchTools(list, onEach) {
+  return list.reduce((chain, t, i) => chain.then(async (failed) => {
+    if (onEach) onEach(t, i);
+    try { await getTool(t); } catch (e) { failed.push({ id: t.id, name: t.name, error: e.message }); }
+    return failed;
+  }), Promise.resolve([]));
+}
+ipcMain.handle('tools:prefetch', async (_e, { toolId }) => {
+  const spec = specs.find((s) => s.id === toolId); if (!spec) return { ok: false };
+  const failed = await fetchTools(toolsNeeded(spec));
+  return { ok: !failed.length, ready: readyOffline(spec), error: failed[0] && failed[0].error };
+});
+// "Make all tools work offline": download every engine now, with progress.
+ipcMain.handle('tools:prepareAll', async (e) => {
+  const all = [...new Map(specs.flatMap(toolsNeeded).map((t) => [t.id, t])).values()];
+  const send = (payload) => { if (!e.sender.isDestroyed()) e.sender.send('tools:progress', payload); };
+  const failed = await fetchTools(all, (t, i) => send({ text: `Downloading ${i + 1} of ${all.length}: ${t.name}…` }));
+  send({ text: failed.length ? `${all.length - failed.length} of ${all.length} tools ready offline. ${failed.length} could not be downloaded — check the connection and try again.` : `All ${all.length} tools are ready to use offline.`, done: true });
+  return { total: all.length, failed };
+});
+
 ipcMain.handle('dialog:pick', async (_e, { type, filters, title }) => {
   if (type === 'savefile') {
     const r = await dialog.showSaveDialog(win, { title, filters });
@@ -120,9 +162,12 @@ ipcMain.handle('tool:run', async (e, { runId, toolId, actionId, values }) => {
   buildCommand(action, values); // validates first: throws with fieldErrors on bad input
   const send = (ch, payload) => { if (!e.sender.isDestroyed()) e.sender.send(ch, { runId, ...payload }); };
   send('run:status', { text: `Preparing ${spec.name} ${spec.binary.version}…` });
-  const exe = await ensureBinary(spec, binCache, {
-    onProgress: (got, total) => send('run:status', { text: total ? `Downloading ${spec.name}… ${Math.round((got / total) * 100)}%` : `Downloading ${spec.name}… ${Math.round(got / 1e6)} MB` }),
-  });
+  // The tool's engine and any helpers it uses (one-time downloads; offline afterwards).
+  let exe;
+  for (const t of toolsNeeded(spec)) {
+    const r = await getTool(t, (got, total) => send('run:status', { text: total ? `One-time download: ${t.name}… ${Math.round((got / total) * 100)}%` : `One-time download: ${t.name}… ${Math.round(got / 1e6)} MB` }));
+    if (t.id === spec.id) exe = r;
+  }
   let prep;
   try { prep = await prepareRun({ spec, action, values, specs: allSpecs, binCache, onOutput: (o) => send('run:output', o) }); } catch (err) { send('run:output', { stream: 'stderr', text: `${err.message}\n` }); send('run:exit', { code: 1 }); return { started: true, trial: null }; }
   const { argv, env, stdin } = buildCommand(action, prep.values);
@@ -138,7 +183,7 @@ ipcMain.handle('tool:run', async (e, { runId, toolId, actionId, values }) => {
     onOutput: (o) => { if (o.stream === 'stdout') stdoutText += o.text; send('run:output', o); },
     onExit: ({ code, signal }) => {
       running.delete(runId);
-      try { if (code === 0) finishRun({ action, values: prep.values, stdout: stdoutText }); } catch (err) { send('run:output', { stream: 'stderr', text: `Could not save: ${err.message}\n` }); }
+      try { if (code === 0) { const r = finishRun({ action, values: prep.values, stdout: stdoutText }); if (action.resultValue && r) send('run:output', { stream: 'stdout', text: `\n${r}\n` }); } } catch (err) { send('run:output', { stream: 'stderr', text: `Could not save: ${err.message}\n` }); }
       prep.cleanup();
       send('run:exit', { code, signal });
     },

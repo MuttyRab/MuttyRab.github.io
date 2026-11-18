@@ -1,0 +1,424 @@
+{
+  "id": "photos",
+  "product": "essentials",
+  "name": "Photo Library Search (AI descriptions)",
+  "tagline": "Let your AI search thousands of your own photos by what is in them — a receipt, your passport, the whiteboard from that meeting — without uploading your library.",
+  "keywords": [
+    "search photos by content",
+    "find a photo on my computer",
+    "ai photo search offline",
+    "photo library search mcp",
+    "describe photos ai",
+    "llama.cpp gui",
+    "find receipt photo"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "ggml-org/llama.cpp",
+    "stars": 95000,
+    "displayName": "llama.cpp",
+    "guiName": "llama.cpp",
+    "license": "MIT (llama.cpp), Apache-2.0 (SmolVLM-500M model, Hugging Face)",
+    "homepage": "https://github.com/ggml-org/llama.cpp"
+  },
+  "binary": {
+    "name": "llama-mtmd-cli",
+    "version": "b12359",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12359/llama-b12359-bin-ubuntu-x64.tar.gz",
+        "path": "llama-b12359/llama-mtmd-cli",
+        "sha256": "0bc1f091e8916102b6d8f2cf944233a620e90a0f856c72d0ce41150c65c2e72e"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12359/llama-b12359-bin-macos-arm64.tar.gz",
+        "path": "llama-b12359/llama-mtmd-cli",
+        "sha256": "82b00abc740160e1b9980e6cc79c117345fa34af058c80e6c0a69aa8ddccde75"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12359/llama-b12359-bin-macos-x64.tar.gz",
+        "path": "llama-b12359/llama-mtmd-cli",
+        "sha256": "25320d529077ef5a3d16e7b5da26438f221d88c8c0930a32b0c79457f5eede56"
+      },
+      "win32-x64": {
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12359/llama-b12359-bin-win-cpu-x64.zip",
+        "path": "llama-mtmd-cli.exe",
+        "sha256": "837c1655e87df3b66989f4be33a792a1399c785bf259038dc75c900096683e69"
+      }
+    },
+    "extras": [
+      {
+        "name": "model",
+        "url": "https://huggingface.co/ggml-org/SmolVLM-500M-Instruct-GGUF/resolve/72e986006ef53e37cdd3f6d4241c90b0f01df376/SmolVLM-500M-Instruct-Q8_0.gguf",
+        "sha256": "9d4612de6a42214499e301494a3ecc2be0abdd9de44e663bda63f1152fad1bf4"
+      },
+      {
+        "name": "mmproj",
+        "url": "https://huggingface.co/ggml-org/SmolVLM-500M-Instruct-GGUF/resolve/72e986006ef53e37cdd3f6d4241c90b0f01df376/mmproj-SmolVLM-500M-Instruct-Q8_0.gguf",
+        "sha256": "d1eb8b6b23979205fdf63703ed10f788131a3f812c7b1f72e0119d5d81295150"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "index",
+      "label": "Describe my photos (build the search index)",
+      "runLabel": "Describe photos",
+      "description": "Looks at every photo in a folder (and its subfolders) with a small AI model that runs on your computer, and writes one line per photo — what's in it, any readable text, the date — into an index file. Run it again any time: photos already in the index are skipped, so it picks up where it left off. The first run downloads the model once (about 550 MB). Photos are never uploaded.",
+      "mcpDescription": "Build or extend a searchable index of a photo folder on the user's computer, offline: a small vision model (SmolVLM-500M via llama.cpp) writes a one-to-two-sentence description of each image (kind of image, subjects, place, readable text), saved as `path<TAB>date<TAB>description` lines in `out`. Photos already in that index are skipped, so call it repeatedly with the same `folder` and `out` to work through a big library `limit` photos at a time (a few seconds per photo); the result says how many are left. Formats: JPG, PNG, WebP, TIFF, BMP, GIF, and HEIC/HEIF (iPhone) on macOS. Then use photos_search to find photos ('my passport', 'receipt from the hardware store', 'whiteboard', 'dog on the beach'), or read the index yourself. Nothing is uploaded or changed. Descriptions come from a small model and can be wrong in details (it may misread or invent text, numbers or dates): before relying on a detail, look at the photo itself.",
+      "fields": [
+        {
+          "id": "folder",
+          "label": "Photo folder",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "out",
+          "label": "Save the index as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Photo index",
+              "extensions": [
+                "tsv"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "limit",
+          "label": "Photos per run",
+          "type": "select",
+          "default": "50",
+          "options": [
+            {
+              "value": "50",
+              "label": "50 (a few minutes)"
+            },
+            {
+              "value": "200",
+              "label": "200"
+            },
+            {
+              "value": "1000",
+              "label": "1,000 (about an hour)"
+            },
+            {
+              "value": "0",
+              "label": "All of them"
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "listFiles": "folder",
+          "exts": [
+            "jpg",
+            "jpeg",
+            "png",
+            "bmp",
+            "gif",
+            "webp",
+            "tif",
+            "tiff",
+            "heic",
+            "heif"
+          ],
+          "skipIndexed": "out",
+          "limit": "limit",
+          "sets": "_imgs",
+          "left": "_left"
+        },
+        {
+          "system": "/usr/bin/sips",
+          "when": "_os",
+          "equals": "darwin",
+          "forEach": "_imgs",
+          "ext": ".jpg",
+          "collect": "_small",
+          "skipFailed": true,
+          "argv": [
+            "-s",
+            "format",
+            "jpeg",
+            "-Z",
+            "1024",
+            "{item}",
+            "--out",
+            "{tmp}"
+          ]
+        },
+        {
+          "tool": "ffmpeg",
+          "unless": "_small",
+          "forEach": "_imgs",
+          "ext": ".jpg",
+          "collect": "_small",
+          "skipFailed": true,
+          "argv": [
+            "-y",
+            "-i",
+            "{item}",
+            "-vf",
+            "scale='min(1024,iw)':-2",
+            "-frames:v",
+            "1",
+            "-q:v",
+            "3",
+            "{tmp}"
+          ]
+        },
+        {
+          "tool": "photos",
+          "forEach": "_small",
+          "eachStdout": "_caps",
+          "skipFailed": true,
+          "argv": [
+            "-m",
+            "{_selfDir}/extras/model/SmolVLM-500M-Instruct-Q8_0.gguf",
+            "--mmproj",
+            "{_selfDir}/extras/mmproj/mmproj-SmolVLM-500M-Instruct-Q8_0.gguf",
+            "--image",
+            "{item}",
+            "-p",
+            "Describe what is visible in this image in one or two plain sentences: the kind of image (photo, screenshot, document, receipt, ID card, whiteboard, drawing...), the main subjects and the setting. Then copy up to 15 words of clearly readable text exactly. Never guess names, numbers or dates you cannot read.",
+            "-n",
+            "70",
+            "--temp",
+            "0",
+            "-t",
+            "4"
+          ]
+        },
+        {
+          "write": "index.tsv",
+          "to": "{out}",
+          "from": "_caps",
+          "paths": "_imgs",
+          "left": "_left",
+          "transform": "captionIndex",
+          "summary": "_summary"
+        }
+      ],
+      "argv": [
+        "--version"
+      ],
+      "resultValue": "_summary",
+      "openAfter": "out",
+      "successMessage": "Photos described and added to the index.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "videos",
+      "label": "Describe my videos (add them to the search index)",
+      "runLabel": "Describe videos",
+      "description": "Adds the videos in a folder (and its subfolders) to the same search index as your photos: nine frames from the start of each video are shown to the AI model on your computer, which writes what the video shows. Already-indexed videos are skipped. Nothing is uploaded.",
+      "mcpDescription": "Add the videos in a folder on the user's computer to a photo search index (same `out` file as photos_index), offline: 9 frames from each video's first ~45 seconds are put in a contact sheet and a small vision model (SmolVLM-500M via llama.cpp) describes what the video shows, saved as `path<TAB>date<TAB>description`. Already-indexed videos are skipped; call again to continue (`limit` per run, the result says how many are left). Formats: MP4, MOV, M4V, MKV, AVI, WEBM. Then use photos_search to find a video ('the kids at the beach', 'birthday cake', 'screen recording of the settings page'). For what is said in a video, use transcribe/watch tools. Descriptions come from a small model and can be wrong in details (it may misread or invent text, numbers or dates): before relying on a detail, look at the photo itself.",
+      "fields": [
+        {
+          "id": "folder",
+          "label": "Video folder",
+          "type": "folder",
+          "required": true
+        },
+        {
+          "id": "out",
+          "label": "Add to index",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Photo index",
+              "extensions": [
+                "tsv"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "limit",
+          "label": "Videos per run",
+          "type": "select",
+          "default": "20",
+          "options": [
+            {
+              "value": "20",
+              "label": "20"
+            },
+            {
+              "value": "100",
+              "label": "100"
+            },
+            {
+              "value": "500",
+              "label": "500"
+            },
+            {
+              "value": "0",
+              "label": "All of them"
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "listFiles": "folder",
+          "exts": [
+            "mp4",
+            "mov",
+            "m4v",
+            "mkv",
+            "avi",
+            "webm"
+          ],
+          "skipIndexed": "out",
+          "limit": "limit",
+          "sets": "_vids",
+          "left": "_left"
+        },
+        {
+          "tool": "ffmpeg",
+          "forEach": "_vids",
+          "ext": ".jpg",
+          "collect": "_sheets",
+          "skipFailed": true,
+          "argv": [
+            "-y",
+            "-i",
+            "{item}",
+            "-vf",
+            "fps=1/5,scale=384:384:force_original_aspect_ratio=decrease,pad=384:384:(ow-iw)/2:(oh-ih)/2,tile=3x3",
+            "-frames:v",
+            "1",
+            "-q:v",
+            "3",
+            "{tmp}"
+          ]
+        },
+        {
+          "tool": "photos",
+          "forEach": "_sheets",
+          "eachStdout": "_caps",
+          "skipFailed": true,
+          "argv": [
+            "-m",
+            "{_selfDir}/extras/model/SmolVLM-500M-Instruct-Q8_0.gguf",
+            "--mmproj",
+            "{_selfDir}/extras/mmproj/mmproj-SmolVLM-500M-Instruct-Q8_0.gguf",
+            "--image",
+            "{item}",
+            "-p",
+            "These are 9 frames from one video, in order, in a 3 by 3 grid. In one or two plain sentences, describe what is visible in the video: the setting, the main subjects and what happens. Never guess names, numbers or dates. Do not mention the grid.",
+            "-n",
+            "70",
+            "--temp",
+            "0",
+            "-t",
+            "4"
+          ]
+        },
+        {
+          "write": "index.tsv",
+          "to": "{out}",
+          "from": "_caps",
+          "paths": "_vids",
+          "left": "_left",
+          "transform": "captionIndex",
+          "summary": "_summary",
+          "noun": "video",
+          "again": "photos_videos"
+        }
+      ],
+      "argv": [
+        "--version"
+      ],
+      "resultValue": "_summary",
+      "openAfter": "out",
+      "successMessage": "Videos described and added to the index.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    },
+    {
+      "id": "search",
+      "label": "Search my photos",
+      "runLabel": "Search",
+      "description": "Type what you're looking for — \"passport\", \"receipt\", \"whiteboard\", \"dog on the beach\" — and get the best-matching photos from your index, with their dates and descriptions.",
+      "mcpDescription": "Search a photo index made by photos_index for photos matching a description (words are matched against each photo's AI description, date and file path; best matches first). Returns `path<TAB>date<TAB>description` lines. Use for 'find the photo of my passport / that receipt / the whiteboard from the March meeting / pictures of the dog at the beach'. If nothing matches, try different words (what would be visible in the picture). You can also read the index file directly for complex questions. Descriptions can be wrong in details — open the matching photo to confirm before telling the user it is the one.",
+      "fields": [
+        {
+          "id": "index",
+          "label": "Photo index",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Photo index",
+              "extensions": [
+                "tsv"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "query",
+          "label": "What are you looking for?",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "max",
+          "label": "Show up to",
+          "type": "select",
+          "default": "20",
+          "options": [
+            {
+              "value": "10",
+              "label": "10 photos"
+            },
+            {
+              "value": "20",
+              "label": "20 photos"
+            },
+            {
+              "value": "50",
+              "label": "50 photos"
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "write": "search.txt",
+          "to": "{index}",
+          "from": "query",
+          "query": "query",
+          "max": "max",
+          "transform": "searchIndex",
+          "summary": "_summary",
+          "hits": "_hits"
+        }
+      ],
+      "argv": [
+        "--version"
+      ],
+      "resultValue": "_summary",
+      "successMessage": "Search finished.",
+      "helpArgs": [
+        [
+          "--help"
+        ]
+      ]
+    }
+  ]
+}

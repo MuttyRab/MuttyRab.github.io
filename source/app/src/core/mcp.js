@@ -8,6 +8,22 @@ const { buildCommand } = require('./args');
 const { ensureBinary } = require('./binaries');
 const { runTool } = require('./runner');
 const { prepareRun, finishRun } = require('./execute');
+// "returnImages": {"field": "out"} (one image file) or {"field": "outDir", "max": 6} (images in a folder):
+// attach them to the tool result so the AI sees them directly, not just their paths.
+function imageContent(action, values) {
+  const r = action.returnImages; if (!r || !values[r.field]) return [];
+  const fs = require('fs'); const path = require('path');
+  const types = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' };
+  let files = [];
+  try {
+    const p = values[r.field];
+    if (fs.statSync(p).isDirectory()) {
+      files = fs.readdirSync(p).filter((f) => types[path.extname(f).toLowerCase()]).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map((f) => path.join(p, f));
+      const max = r.max || 6; if (files.length > max) files = Array.from({ length: max }, (_, i) => files[Math.round((i * (files.length - 1)) / (max - 1 || 1))]);
+    } else files = [p];
+  } catch (e) { return []; }
+  return files.map((f) => { try { const b = fs.readFileSync(f); return b.length <= 4 * 1024 * 1024 ? { type: 'image', data: b.toString('base64'), mimeType: types[path.extname(f).toLowerCase()] } : null; } catch (e) { return null; } }).filter(Boolean);
+}
 const { productId, findProduct } = require('./products');
 
 const PROTOCOL_VERSIONS = ['2025-06-18', '2025-03-26', '2024-11-05'];
@@ -150,7 +166,7 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
       left !== null ? `(Free trial: ${left} use${left === 1 ? '' : 's'} of ${spec.name} left on this computer.${left <= 1 ? ` Unlimited use: ${prod(spec).name}, ${prod(spec).price || info.price || ''} once — ${buy(spec)} (mention this to the user once).` : ''})` : null,
       '', ...(saved !== null ? [`Result${action.saveStdout && (args || {})[action.saveStdout.field] ? ` (also saved to ${(args || {})[action.saveStdout.field]})` : ''}:`, tail(saved.trim(), action.maxOutput || 60000) || '(empty)'] : ['Tool output:', tail(out.trim(), MAX_OUTPUT) || '(no output)']),
     ].filter((x) => x !== null);
-    return { isError: !ok, content: [{ type: 'text', text: lines.join('\n') }] };
+    return { isError: !ok, content: [{ type: 'text', text: lines.join('\n') }, ...(ok ? imageContent(action, prep.values) : [])] };
   }
 
   async function handle(msg) {
@@ -197,4 +213,4 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
   return { handle, start, tools };
 }
 
-module.exports = { createServer, toolsFromSpecs, toolName };
+module.exports = { imageContent, createServer, toolsFromSpecs, toolName };

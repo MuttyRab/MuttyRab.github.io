@@ -118,10 +118,48 @@ async function ensureExtras(spec, dir, { onProgress, fetcher = download } = {}) 
   }
 }
 
+// Network errors that mean "no connection / blocked", as opposed to a bad file.
+const OFFLINE = /net::ERR_|ENOTFOUND|EAI_AGAIN|ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENETUNREACH|EHOSTUNREACH|timed out|ERR_INTERNET_DISCONNECTED|ERR_NAME_NOT_RESOLVED|ERR_NETWORK|ERR_CONNECTION|ERR_PROXY|ERR_TIMED_OUT|ERR_ADDRESS_UNREACHABLE|socket hang up|CERT|certificate/i;
+
+// Try each download method in turn (e.g. the system network stack, then Node), each up to 3 times.
+function withRetries(fetchers, tries = 3) {
+  return async (url, dest, onProgress) => {
+    let last;
+    for (const f of fetchers) {
+      for (let i = 0; i < tries; i++) {
+        try { return await f(url, dest, onProgress); } catch (e) {
+          last = e;
+          if (/HTTP (404|410)/.test(e.message)) break; // not a connection problem: another try won't help
+          await new Promise((r) => setTimeout(r, 800 * (i + 1)));
+        }
+      }
+    }
+    throw last;
+  };
+}
+
+// The one-time download failed: say what it is, that it is only needed once, and what to check.
+function friendlyError(spec, err) {
+  const host = (() => { try { return new URL((Object.values(spec.binary.assets)[0] || {}).url).host; } catch (e) { return 'the internet'; } })();
+  const why = String((err && err.message) || err);
+  if (OFFLINE.test(why)) {
+    return new Error(`${spec.name} needs a one-time download of its engine (${spec.upstream.displayName || spec.id} ${spec.binary.version}) from ${host} before its first use — after that it works offline. `
+      + `This computer couldn't reach ${host} right now (${why.slice(0, 120)}). Connect to the internet (or check your VPN, proxy or firewall) and try again. `
+      + 'Tip: "Make all tools work offline" in the sidebar downloads every tool at once while you are online.');
+  }
+  return new Error(`Couldn't get ${spec.name}'s engine from ${host}: ${why}. Try again; if it keeps failing, email support with this message.`);
+}
+
 async function ensureBinary(spec, cacheRoot, opts = {}) {
-  const exe = await ensureMain(spec, cacheRoot, opts);
-  await ensureExtras(spec, binaryPaths(spec, cacheRoot, opts.key).dir, opts);
-  return exe;
+  const o = { ...opts, fetcher: withRetries(opts.fetchers || [opts.fetcher || download]) };
+  try {
+    const exe = await ensureMain(spec, cacheRoot, o);
+    await ensureExtras(spec, binaryPaths(spec, cacheRoot, o.key).dir, o);
+    return exe;
+  } catch (e) {
+    if (/is not available for/.test(e.message) || /checksum mismatch/.test(e.message)) throw e;
+    throw friendlyError(spec, e);
+  }
 }
 
 async function ensureMain(spec, cacheRoot, { onProgress, key, fetcher = download } = {}) {
@@ -156,4 +194,4 @@ async function ensureMain(spec, cacheRoot, { onProgress, key, fetcher = download
   return exe;
 }
 
-module.exports = { ensureBinary, isInstalled, binaryPaths, download, sha256, extract };
+module.exports = { ensureBinary, isInstalled, binaryPaths, download, sha256, extract, withRetries, friendlyError };

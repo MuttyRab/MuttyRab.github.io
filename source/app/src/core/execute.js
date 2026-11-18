@@ -29,6 +29,12 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
   v._os = process.platform; v._display = process.env.DISPLAY || ':0.0';
   // {_selfDir}: this tool's own folder (its extras, e.g. voice models used by a helper program).
   if (binCache && spec && spec.binary) { try { v._selfDir = binaryPaths(spec, binCache).dir.replace(/\\/g, '/'); } catch (e) { /* not installed yet */ } }
+  // {_dir_<tool>}: another catalog tool's folder (e.g. its speech model), for steps that run that tool.
+  const stepsAll = action.prepare ? (Array.isArray(action.prepare) ? action.prepare : [action.prepare]) : [];
+  for (const p of stepsAll) {
+    const h = p.tool && (specs || []).find((x) => x.id === p.tool);
+    if (h && binCache) { try { v[`_dir_${p.tool}`] = binaryPaths(h, binCache).dir.replace(/\\/g, '/'); } catch (e) { /* not installed yet */ } }
+  }
   let tmpDir = null;
   // prepare: one step or a list. Each step runs another catalog tool first. With `replaces`, its
   // output file ({tmp}) is handed to this action in place of that field (e.g. FFmpeg turns any
@@ -43,7 +49,21 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
     if (p.when && ('equals' in p ? v[p.when] !== p.equals : !v[p.when])) continue;
     if (p.unless && v[p.unless]) continue;
     // { pick: "_devices", transform: "dshowAudio", sets: "_mic" }: choose a value from earlier output.
-    if (p.pick) { const val = p.transform === 'dshowAudio' ? dshowAudio(v[p.pick]) : String(v[p.pick] ?? ''); if (val) v[p.sets] = val; continue; }
+    if (p.pick) { const val = p.transform === 'dshowAudio' ? dshowAudio(v[p.pick]) : p.transform === 'dshowVideo' ? dshowVideo(v[p.pick]) : String(v[p.pick] ?? ''); if (val) v[p.sets] = val; continue; }
+    // { listFiles: "folder", exts: ["jpg"], skipIndexed: "out", limit: "limit", sets: "_imgs", left: "_left" }:
+    // the matching files under a folder (subfolders too), sorted, minus those already listed in an
+    // index file (first tab-separated column), at most `limit` of them (0 = all).
+    if (p.listFiles) {
+      const all = listFilesDeep(String(v[p.listFiles] || ''), (p.exts || []).map((e) => `.${e.toLowerCase()}`));
+      const done = new Set();
+      try { for (const l of fs.readFileSync(String(v[p.skipIndexed] || ''), 'utf8').split(/\r?\n/)) { const f = l.split('\t')[0].replace(/::\d+$/, ''); if (f) done.add(f); } } catch (e) { /* no index yet */ }
+      const todo = all.filter((f) => !done.has(f));
+      const n = parseInt(v[p.limit], 10) > 0 ? parseInt(v[p.limit], 10) : todo.length;
+      v[p.sets] = todo.slice(0, n);
+      if (p.left) v[p.left] = todo.length - v[p.sets].length;
+      if (p.total) v[p.total] = all.length;
+      continue;
+    }
     // { write: "lyrics.srt", from: "_lyrics", transform: "srt", sets: "_srt" }: save text from an
     // earlier step as a file in the temp folder (no program runs).
     if (p.write) {
@@ -54,6 +74,26 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
       const raw = String(v[p.from] ?? '');
       const list = Array.isArray(v[p.from]) ? v[p.from] : [];
       // concatList: FFmpeg concat-demuxer list ("file '/path'"), quotes escaped the FFmpeg way.
+      if (p.transform === 'docIndex') {
+        const r = docIndex([].concat(...(p.paths || []).map((k) => v[k] || [])), [].concat(...(p.texts || []).map((k) => v[k] || [])), f, (p.lefts || []).reduce((n, k) => n + (v[k] || 0), 0), p);
+        fs.appendFileSync(f, r.write, 'utf8'); if (p.summary) v[p.summary] = r.summary; continue;
+      }
+      if (p.transform === 'mailIndex') {
+        const r = require('./mail').mailIndex(v[p.paths] || [], f, v[p.left] || 0);
+        if (p.summary) v[p.summary] = r.summary; continue;
+      }
+      if (p.transform === 'docSearch' || p.transform === 'docRead') {
+        const idx = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : '';
+        v[p.summary] = p.transform === 'docSearch' ? docSearch(idx, String(v[p.query] ?? ''), parseInt(v[p.max], 10) || 10, f) : docRead(idx, String(v[p.doc] ?? ''), f);
+        continue;
+      }
+      if (p.transform === 'captionIndex' || p.transform === 'searchIndex') {
+        const r = p.transform === 'captionIndex' ? captionIndex(v[p.paths] || [], list, f, v[p.left] || 0, p.noun, p.again) : searchIndex(fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : '', String(v[p.query] ?? ''), parseInt(v[p.max], 10) || 20, f);
+        if (r.write !== undefined) fs.appendFileSync(f, r.write, 'utf8');
+        if (p.summary) v[p.summary] = r.summary;
+        if (p.hits) v[p.hits] = r.hits || [];
+        continue;
+      }
       const text = p.transform === 'concatList' ? list.map((f) => `file '${String(f).replace(/\\/g, '/').replace(/'/g, "'\\''")}'`).join('\n')
         : p.transform === 'silenceKeep' ? keepGraph(silenceToKeep(raw, p.pad ?? 0.15)) : p.transform === 'rangesKeep' ? keepGraph(rangesToKeep(raw, v[p.modeField] === 'remove')) : p.transform === 'srt' ? segmentsToSrt(raw, p.maxChars || 80) : p.transform === 'srtScript' ? scriptToSrt(raw, String(v[p.script] ?? '')) : p.transform === 'segments' ? segmentsToText(raw, true) : raw;
       if (!text.trim() && p.emptyText) { fs.writeFileSync(f, `${p.emptyText}\n`, 'utf8'); if (p.sets) v[p.sets] = f; continue; }
@@ -79,28 +119,37 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
       v[p.sets] = f;
       continue;
     }
-    const helper = (specs || []).find((s) => s.id === p.tool);
-    if (!helper) throw new Error(`${spec.name} needs ${p.tool}, which is not available`);
+    // system: a program built into the OS (only fixed absolute paths, e.g. macOS /usr/bin/sips for HEIC photos).
+    const SYSTEM = { '/usr/bin/sips': 'macOS sips' };
+    const helper = p.system ? (SYSTEM[p.system] ? { id: 'system', name: SYSTEM[p.system], upstream: { displayName: SYSTEM[p.system] } } : null) : (specs || []).find((s) => s.id === p.tool);
+    if (!helper) throw new Error(`${spec.name} needs ${p.tool || p.system}, which is not available`);
     if (!tmpDir) tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guihub-prep-'));
     // forEach: run the step once per file of a list field ({item} = that file, {tmp} = its own
     // output), collecting the outputs in order (e.g. normalise every clip before joining them).
     if (p.forEach) {
       const items = Array.isArray(v[p.forEach]) ? v[p.forEach] : [v[p.forEach]].filter(Boolean);
-      const exe = await ensureBinary(helper, binCache);
+      const exe = p.system ? p.system : await ensureBinary(helper, binCache);
       const outs = [];
       for (const [i, item] of items.entries()) {
+        // An item an earlier skipFailed step could not make stays empty here too.
+        if (p.skipFailed && !item) { outs.push(''); continue; }
         const out = path.join(tmpDir, `part${String(i).padStart(3, '0')}${p.ext || ''}`);
         const argv = p.argv.map((t) => fill(t, { ...v, item }, out, tmpDir));
         onOutput({ stream: 'meta', text: `Preparing ${i + 1} of ${items.length} with ${helper.upstream.displayName || helper.id}…\n` });
-        const res = await new Promise((resolve) => runTool(exe, argv, { onOutput: () => {}, onExit: resolve }));
-        if (res.code !== 0 || !fs.existsSync(out)) throw new Error(`could not read ${path.basename(String(item))} (is it a video file?)`);
+        let said = '';
+        const res = await new Promise((resolve) => runTool(exe, argv, { onOutput: (o) => { if (o.stream === 'stdout') said += o.text; }, onExit: resolve }));
+        // eachStdout: keep what each run printed (e.g. a photo's description); skipFailed: a file the
+        // program can't read gets an empty entry instead of stopping the whole job.
+        if (p.eachStdout) { outs.push(res.code === 0 ? said : ''); if (res.code !== 0 && !p.skipFailed) throw new Error(`could not read ${path.basename(String(item))}`); continue; }
+        if (res.code !== 0 || !fs.existsSync(out)) { if (p.skipFailed) { outs.push(''); continue; } throw new Error(`could not read ${path.basename(String(item))} (is it a video file?)`); }
         outs.push(out);
       }
       if (p.collect) v[p.collect] = outs;
+      if (p.eachStdout) v[p.eachStdout] = outs;
       continue;
     }
     const tmp = path.join(tmpDir, `${p.replaces || p.captureStdout || 'step'}${p.ext || ''}`);
-    const exe = await ensureBinary(helper, binCache);
+    const exe = p.system ? p.system : await ensureBinary(helper, binCache);
     const argv = p.argv.map((t) => fill(t, v, tmp, tmpDir));
     onOutput({ stream: 'meta', text: `Preparing with ${helper.upstream.displayName || helper.id}…\n` });
     let printed = '';
@@ -199,9 +248,111 @@ function segmentsToSrt(stdout, maxChars = 80) {
   return cues.map(([a, b, x], i) => `${i + 1}\n${srtTime(a)} --> ${srtTime(b)}\n${x}\n`).join('\n');
 }
 
+// All files under a folder (recursively) with one of the extensions, sorted; hidden folders skipped.
+function listFilesDeep(dir, exts) {
+  const out = [];
+  const walk = (d) => {
+    let ents = []; try { ents = fs.readdirSync(d, { withFileTypes: true }); } catch (e) { return; }
+    for (const e of ents) {
+      if (e.name.startsWith('.')) continue;
+      const f = path.join(d, e.name);
+      if (e.isDirectory()) walk(f); else if (!exts.length || exts.includes(path.extname(e.name).toLowerCase())) out.push(f);
+    }
+  };
+  if (dir) walk(dir);
+  return out.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+}
+// Photo descriptions → index lines "path<TAB>YYYY-MM-DD<TAB>description" (date = file's modified date).
+function captionIndex(paths, texts, file, left, noun = 'photo', again = 'photos_index') {
+  let write = ''; let ok = 0; let bad = 0;
+  paths.forEach((p, i) => {
+    const t = String(texts[i] || '').replace(/<[^>]*>/g, ' ').replace(/\*\*|__|^#+\s*|\s[-*]\s/gm, ' ').replace(/\s+/g, ' ').trim().slice(0, 400);
+    let date = ''; try { date = fs.statSync(p).mtime.toISOString().slice(0, 10); } catch (e) { /* gone */ }
+    if (t) ok++; else bad++;
+    write += `${p}\t${date}\t${t || '(could not read this image)'}\n`;
+  });
+  const summary = [`Described ${ok} new ${noun}${ok === 1 ? '' : 's'}${bad ? ` (${bad} could not be read)` : ''}.`,
+    left > 0 ? `${left} more still to describe — run ${again} again with the same folder and index file to continue.` : `Every ${noun} in the folder is now in the index.`,
+    `Index file: ${file} (one line per file: path, date, description). Use photos_search to find photos by what is in them.`].join('\n');
+  return { write, summary };
+}
+// Search an index: rank lines by how many query words (or their stems) appear in the description, date or path.
+function searchIndex(text, query, max, file) {
+  const words = query.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length > 1 && !['the', 'a', 'an', 'of', 'and', 'or', 'my', 'with', 'in', 'on', 'photo', 'photos', 'picture', 'pictures', 'image', 'images', 'find', 'show', 'me'].includes(w));
+  const stem = (w) => w.replace(/(ies|es|s|ing|ed)$/, '');
+  const scored = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const hay = line.toLowerCase();
+    let score = 0;
+    for (const w of words) { if (hay.includes(w)) score += 2; else if (stem(w).length > 2 && hay.includes(stem(w))) score += 1; }
+    if (score > 0) scored.push([score, line]);
+  }
+  scored.sort((a, b) => b[0] - a[0]);
+  const top = scored.slice(0, max);
+  const lines = text.split(/\r?\n/).filter((l) => l.trim()).length;
+  const summary = !lines ? `The index ${file} is empty or missing — run photos_index on the folder first.`
+    : !top.length ? `No photo descriptions match "${query}" (searched ${lines} photos). Try other words — e.g. what is in the picture, a color, a place, a kind of document.`
+    : [`${top.length} best match${top.length === 1 ? '' : 'es'} for "${query}" (of ${lines} photos; path, date, description):`, ...top.map(([, l]) => l)].join('\n');
+  return { summary, hits: top.map(([, l]) => l.split('\t')[0]) };
+}
+// Document texts → index lines "path<TAB>YYYY-MM-DD<TAB>text" (newlines kept as " ¶ ", ≤300k chars each).
+function docIndex(paths, texts, file, left, o = {}) {
+  let write = ''; let ok = 0; const empty = [];
+  paths.forEach((p, i) => {
+    const t = String(o.segments ? segmentsToText(texts[i] || '', true) : texts[i] || '').replace(/\f/g, '\n').replace(/[\t\r]/g, ' ').replace(/[  ]+/g, ' ').split('\n').map((l) => l.trim()).filter(Boolean).join(' ¶ ').slice(0, 300000);
+    let date = ''; try { date = fs.statSync(p).mtime.toISOString().slice(0, 10); } catch (e) { /* gone */ }
+    if (t.length > 20) ok++; else empty.push(path.basename(p));
+    write += `${p}\t${date}\t${t || '(no text found)'}\n`;
+  });
+  const noun = o.noun || 'document';
+  const summary = [`Indexed ${ok} new ${noun}${ok === 1 ? '' : 's'}.`,
+    empty.length ? `${empty.length} ${o.emptyHint || 'had no readable text (scanned PDFs or images — make them searchable with ocr_pdf, then index again)'}: ${empty.slice(0, 10).join(', ')}${empty.length > 10 ? ', …' : ''}` : null,
+    left > 0 ? `${left} more still to index — run ${o.again || 'docs_index'} again with the same folder and index file to continue.` : `Every ${noun} in the folder is now in the index.`,
+    `Index file: ${file}. Use docs_search to find documents, docs_read to read one.`].filter(Boolean).join('\n');
+  return { write, summary };
+}
+const queryWords = (q) => String(q).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length > 1 && !['the', 'a', 'an', 'of', 'and', 'or', 'my', 'in', 'on', 'to', 'for', 'with', 'that', 'which', 'document', 'documents', 'file', 'files', 'find', 'mention', 'mentions', 'about'].includes(w));
+// Rank documents by query-word hits (+ a bonus for the exact phrase); show where they match.
+function docSearch(text, query, max, file) {
+  const words = queryWords(query); const phrase = String(query).toLowerCase().trim();
+  if (!text.trim()) return `The index ${file} is empty or missing — run docs_index on the folder first.`;
+  if (!words.length) return 'Give some words to search for.';
+  const res = [];
+  let n = 0;
+  for (const line of text.split('\n')) {
+    if (!line.trim()) continue; n++;
+    const [p, date, body = ''] = line.split('\t'); const low = body.toLowerCase();
+    let score = 0; const found = [];
+    for (const w of words) { let i = low.indexOf(w); let c = 0; while (i >= 0 && c < 50) { c++; i = low.indexOf(w, i + w.length); } if (c) { score += 1 + Math.log(c); found.push(w); } }
+    if (!found.length) continue;
+    score += found.length * 2 + (words.length > 1 && low.includes(phrase) ? 5 : 0) + (words.some((w) => p.toLowerCase().includes(w)) ? 1 : 0);
+    const at = low.indexOf(words.length > 1 && low.includes(phrase) ? phrase : found[0]);
+    const snip = body.slice(Math.max(0, at - 120), at + 200).replace(/ ¶ /g, ' / ');
+    res.push([score, `${p}\t${date}\tmatches: ${found.join(', ')}\t…${snip}…`]);
+  }
+  res.sort((a, b) => b[0] - a[0]);
+  if (!res.length) return `No documents mention ${words.join(' / ')} (searched ${n}). Try other words or synonyms.`;
+  return [`${Math.min(max, res.length)} best of ${res.length} matching documents (of ${n}) for "${query}" (path, date, matched words, excerpt):`, ...res.slice(0, max).map(([, l]) => l)].join('\n');
+}
+// One document's full text from the index (by exact path or a unique part of it).
+function docRead(text, want, file) {
+  const lines = text.split('\n').filter((l) => l.trim());
+  let hit = lines.filter((l) => l.split('\t')[0] === want);
+  if (!hit.length) hit = lines.filter((l) => l.split('\t')[0].toLowerCase().includes(want.toLowerCase()));
+  if (!hit.length) return `No document matching "${want}" in ${file}.`;
+  if (hit.length > 1) return `Several documents match "${want}" — give the full path:\n${hit.slice(0, 20).map((l) => l.split('\t')[0]).join('\n')}`;
+  const [p, date, body = ''] = hit[0].split('\t');
+  return `${p} (${date})\n\n${body.replace(/ ¶ /g, '\n').slice(0, 60000)}${body.length > 60000 ? '\n\n[… truncated at 60,000 characters]' : ''}`;
+}
 // FFmpeg "-list_devices true -f dshow -i dummy" output → the first audio input device's name.
 function dshowAudio(text) {
   for (const l of String(text || '').split(/\r?\n/)) { const m = l.match(/"([^"]+)"\s*\(audio\)/); if (m) return m[1]; }
+  return '';
+}
+// Same list → the first camera (video input) name.
+function dshowVideo(text) {
+  for (const l of String(text || '').split(/\r?\n/)) { const m = l.match(/"([^"]+)"\s*\(video\)/); if (m) return m[1]; }
   return '';
 }
 // SRT text → [{start, end, text}] (seconds). Tolerates BOMs, CRLF, "," or "." millis and blank lines.
@@ -319,6 +470,8 @@ function speakerTranscript(stdout, speakers) {
 }
 
 function finishRun({ action, values, stdout }) {
+  // resultValue: the job's answer is a value a prepare step made (e.g. a search summary), not program output.
+  if (action.resultValue) return String(values[action.resultValue] ?? '');
   const s = action.saveStdout;
   if (!s) return null;
   const text = s.transform === 'segments' ? segmentsToText(stdout, values[s.stampsField] === true || values[s.stampsField] === 'true') : s.transform === 'srt' ? segmentsToSrt(stdout) : s.transform === 'speakers' ? speakersToText(stdout) : s.transform === 'speakerTranscript' ? speakerTranscript(stdout, values[s.speakersField || '_speakers']) : String(stdout);
@@ -326,4 +479,4 @@ function finishRun({ action, values, stdout }) {
   return text;
 }
 
-module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript, keepGraph, rangesToKeep, silenceToKeep, parseTime, parseSrt, buildDubTrack, fill, dshowAudio };
+module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript, keepGraph, rangesToKeep, silenceToKeep, parseTime, parseSrt, buildDubTrack, fill, dshowAudio, dshowVideo, listFilesDeep, captionIndex, searchIndex, docIndex, docSearch, docRead };
