@@ -62,7 +62,7 @@
       "id": "speak",
       "label": "Text to speech",
       "runLabel": "Make audio",
-      "description": "Type or paste text and pick a voice. The first run downloads the voices once (about 130 MB); after that everything works offline.",
+      "description": "Type or paste text and pick a voice. Works offline — everything it needs is included in the app.",
       "mcpDescription": "Turn text into natural-sounding English speech and save it as a .wav audio file on the user's computer, offline (Kokoro voices; no account, no cloud). Use this whenever the user wants a voiceover, narration, podcast intro, audiobook chapter, announcement, or wants a document/notes read aloud or 'saved as audio'. Write or clean up the script first, then pass it as `text` (up to ~20,000 characters per call; split longer documents into chapters and call once per chapter). Pick `voice` to match the request (US/UK, female/male).",
       "fields": [
         {

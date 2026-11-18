@@ -65,7 +65,7 @@
       "id": "transcribe",
       "label": "Transcribe",
       "runLabel": "Transcribe",
-      "description": "Pick any audio or video file. The first run downloads the speech model once (about 200 MB); after that everything works offline.",
+      "description": "Pick any audio or video file. Works offline — everything it needs is included in the app.",
       "mcpDescription": "Transcribe an audio or video file on the user's computer (mp3, m4a, wav, mp4, mov, …) to text with Whisper, offline. Returns the full transcript (optionally with [hh:mm:ss] timestamps) and can also save it to a .txt file (`out`). Set `translate` to get an English translation instead. Use this whenever the user wants a recording, voice memo, meeting or video turned into text, notes or a summary.",
       "fields": [
         {
@@ -262,7 +262,7 @@
       "id": "meeting",
       "label": "Meeting transcript (who said what)",
       "runLabel": "Transcribe meeting",
-      "description": "For meetings, interviews and podcasts: a transcript where every line says who is speaking (Speaker 1, Speaker 2, …) with timestamps. Runs offline; the first run downloads the speech and speaker models once.",
+      "description": "For meetings, interviews and podcasts: a transcript where every line says who is speaking (Speaker 1, Speaker 2, …) with timestamps. Works offline — the models are included in the app.",
       "mcpDescription": "Transcribe a meeting, interview, call or podcast recording on the user's computer into a speaker-labelled transcript ('[00:01:05] Speaker 2: …'), offline: Whisper speech-to-text plus speaker diarization in one step. Use whenever the user wants meeting notes, minutes, action items per person, an interview transcript, or 'who said what'. Afterwards you can rename 'Speaker 1/2' to real names if the user tells you who is who, and summarize.",
       "fields": [
         {

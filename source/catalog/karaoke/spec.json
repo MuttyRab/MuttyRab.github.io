@@ -58,7 +58,7 @@
       "id": "make",
       "label": "Make a karaoke video",
       "runLabel": "Make karaoke video",
-      "description": "Pick a song (or a music video). The vocals are removed and the lyrics are recognised and shown on screen in time with the music. The first run downloads the AI models once (a few hundred MB); a 3-minute song takes a few minutes.",
+      "description": "Pick a song (or a music video). The vocals are removed and the lyrics are recognised and shown on screen in time with the music. Works offline (the AI models are included); a 3-minute song takes a few minutes.",
       "mcpDescription": "Make a karaoke video (MP4) from a song on the user's computer, offline: removes the vocals (UVR MDX-Net), recognises the sung lyrics with Whisper and burns them in as timed on-screen text over the instrumental. Use whenever the user wants a karaoke version, sing-along or lyrics video of a song. Set `language` to the song's language for better lyrics.",
       "fields": [
         {

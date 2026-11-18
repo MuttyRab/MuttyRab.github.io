@@ -59,7 +59,7 @@
       "id": "make",
       "label": "Make a narrated video",
       "runLabel": "Make video",
-      "description": "Pick your photos (in order), type or paste the script, choose a voice. You get an MP4: your photos in turn, the script read aloud by a natural AI voice, and captions timed to the speech. The photos loop until the narration ends. The first run downloads the voice and caption models once.",
+      "description": "Pick your photos (in order), type or paste the script, choose a voice. You get an MP4: your photos in turn, the script read aloud by a natural AI voice, and captions timed to the speech. The photos loop until the narration ends. Works offline — everything it needs is included in the app.",
       "mcpDescription": "Make a narrated video (MP4) on the user's computer, offline: the given photos/images are shown in order (each for `seconds`, looping until the narration ends), the `script` is read aloud by a natural AI voice (Kokoro, US/UK English) and captions timed to the speech are burned in (Whisper). Use whenever the user wants a video from photos with a voiceover — product promos, real-estate tours, recaps, explainers, social posts, slideshows with narration. Write the script yourself if the user only describes what they want (about 150 words per minute of video). Pick `size` for where it will be posted (landscape for YouTube, portrait for Reels/TikTok/Shorts, square for feeds).",
       "fields": [
         {

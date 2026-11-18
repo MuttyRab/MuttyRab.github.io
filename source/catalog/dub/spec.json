@@ -61,7 +61,7 @@
       "id": "make",
       "label": "Dub a video",
       "runLabel": "Dub video",
-      "description": "Pick a video and its subtitles in the new language (.srt). Each subtitle is read by a natural voice at its time and mixed over the original sound (kept quietly underneath, or replaced). Ask your AI to make the subtitles and translate them for you. The first run downloads the voices once (about 130 MB).",
+      "description": "Pick a video and its subtitles in the new language (.srt). Each subtitle is read by a natural voice at its time and mixed over the original sound (kept quietly underneath, or replaced). Ask your AI to make the subtitles and translate them for you. Works offline — everything it needs is included in the app.",
       "mcpDescription": "Dub a video into any of 31 languages (Spanish, Portuguese, French, German, Italian, Dutch, Polish, Turkish, Russian, Ukrainian, Japanese, Korean, Vietnamese, Indonesian, Hindi, Arabic, English and more) on the user's computer, offline: every caption of a translated .srt is spoken by a natural voice (Supertonic 3) at its start time, and the voice track is mixed over the original sound (`original`: kept quietly underneath, or replaced). Use when the user wants a video in another language with a voice-over ('dub this in Spanish', 'make a French version'). Steps: make subtitles with transcribe_subtitles, translate each caption yourself (keep numbering and timestamps; keep lines short enough to be spoken in their time slot — shorten rather than overrun), save the .srt, then call this. Add burned-in subtitles afterwards with clips_burn if wanted. Set `lang` to the subtitles' language.",
       "fields": [
         {

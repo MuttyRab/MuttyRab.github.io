@@ -61,7 +61,7 @@
       "id": "split",
       "label": "Remove vocals",
       "runLabel": "Split the song",
-      "description": "Pick a song or video. You get two files: the music without vocals (instrumental / karaoke) and the vocals on their own. The first run downloads the model once (about 67 MB).",
+      "description": "Pick a song or video. You get two files: the music without vocals (instrumental / karaoke) and the vocals on their own. Works offline — everything it needs is included in the app.",
       "mcpDescription": "Separate a song (any audio or video file on the user's computer) into an instrumental/karaoke track with the vocals removed and a vocals-only (acapella) track, offline with the UVR MDX-Net model. Saves two .wav files. Use whenever the user wants to remove vocals, make karaoke or a backing track, get an instrumental, or isolate/extract vocals or an acapella from a song. Takes roughly the song's length to run.",
       "fields": [
         {

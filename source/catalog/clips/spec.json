@@ -62,7 +62,7 @@
       "id": "make",
       "label": "Make a short clip",
       "runLabel": "Make clip",
-      "description": "Pick a video and the part you want (from – to). You get an MP4 cut to that part, cropped to vertical 9:16 (or square), with captions timed to the speech burned in. Ask your AI to find the best moments for you: it can read the transcript and make one clip per moment. The first run downloads the caption model once.",
+      "description": "Pick a video and the part you want (from – to). You get an MP4 cut to that part, cropped to vertical 9:16 (or square), with captions timed to the speech burned in. Ask your AI to find the best moments for you: it can read the transcript and make one clip per moment. Works offline — everything it needs is included in the app.",
       "mcpDescription": "Make a short social-media clip (MP4) from a longer video on the user's computer, offline: the part from `start` to `end` is cut out, cropped to vertical 9:16 for TikTok/Reels/Shorts (or square / original shape) and captions timed to the speech (Whisper) are burned in. Use when the user wants shorts, reels, TikToks, highlights or clips from a podcast, interview, stream, lecture or webinar. To find good moments first, get the timestamped transcript (watch_video or transcribe_transcribe), pick self-contained 20–60 s passages with a strong opening line, then call this once per clip with a clear file name for each.",
       "fields": [
         {

@@ -95,7 +95,7 @@
       "id": "pdf",
       "label": "Make a scanned PDF searchable",
       "runLabel": "Make searchable",
-      "description": "Pick a scanned PDF (from a scanner or a phone scanning app). Every page is read with OCR and you get a new PDF that looks the same but whose text you can search, select and copy, plus all the text in a .txt file. Runs on your computer; nothing is uploaded. The first run downloads the OCR engine once (about 60–130 MB).",
+      "description": "Pick a scanned PDF (from a scanner or a phone scanning app). Every page is read with OCR and you get a new PDF that looks the same but whose text you can search, select and copy, plus all the text in a .txt file. Runs on your computer; nothing is uploaded. Works offline — everything it needs is included in the app.",
       "mcpDescription": "Make a scanned (image-only) PDF searchable on the user's computer, offline: OCR every page (Tesseract via Rescribe) and save `<name> searchable.pdf` (same look, selectable/searchable text layer) plus `<name>.txt` (all the text) into `outDir`. Use for 'make this scan searchable', 'what does this scanned contract/invoice/letter say', 'extract text from my scanned PDFs', especially for long or private documents that should not be uploaded. Set `lang` to the document's language. Then read the .txt to answer questions about the document. Works with PDFs whose pages are JPEG/PNG/TIFF images (scanners, phone scan apps); if it reports an unsupported image type, export the pages as images and use ocr_folder.",
       "fields": [
         {

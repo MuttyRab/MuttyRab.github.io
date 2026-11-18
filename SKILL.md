@@ -13,7 +13,7 @@ npx -y https://guihub.cc/cli.tgz list                     # every job
 npx -y https://guihub.cc/cli.tgz info <tool>              # options of one job
 npx -y https://guihub.cc/cli.tgz run <tool> --option value …
 ```
-The first run of a job downloads its program (and model, if any) once. Use absolute paths; write results to new files, never over the user's originals.
+In the desktop app every program and model is included (works offline); via npx or the plugin, the first run of a job downloads its program (and model) once. Use absolute paths; write results to new files, never over the user's originals.
 
 ## Which tool for which request
 - unzip a file or open a RAR → `7zip_extract`
