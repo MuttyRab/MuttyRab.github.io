@@ -18,7 +18,8 @@
     "stars": 16000,
     "displayName": "Whisper (sherpa-onnx)",
     "license": "Apache-2.0 (Whisper model: MIT)",
-    "homepage": "https://k2-fsa.github.io/sherpa/onnx/"
+    "homepage": "https://k2-fsa.github.io/sherpa/onnx/",
+    "guiName": "Whisper"
   },
   "binary": {
     "name": "sherpa-onnx-vad-with-offline-asr",

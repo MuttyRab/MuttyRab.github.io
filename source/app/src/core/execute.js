@@ -12,14 +12,21 @@ const { runTool } = require('./runner');
 
 // {field} → its value; {tmp} → this step's temp file; {tmp:name.wav} → a named file in the run's
 // temp folder (so one step can write several files and later steps can use them).
+// {field}, {tmp}, {tmp:name.wav}; {field|dir} = the folder part of a path value (e.g. a voice model's folder).
 function fill(token, values, tmp, tmpDir) {
-  return token.replace(/\{([A-Za-z0-9_]+)(?::([A-Za-z0-9_.-]+))?\}/g, (_, k, name) => (k === 'tmp' ? (name ? path.join(tmpDir, name) : tmp) : String(values[k] ?? '')));
+  return token.replace(/\{([A-Za-z0-9_]+)(?::([A-Za-z0-9_.-]+))?(\|dir)?\}/g, (_, k, name, dir) => {
+    if (k === 'tmp') return name ? path.join(tmpDir, name) : tmp;
+    const val = String(values[k] ?? '');
+    return dir ? path.posix.dirname(val.replace(/\\/g, '/')) : val;
+  });
 }
 
 async function prepareRun({ spec, action, values, specs, binCache, onOutput = () => {} }) {
   const v = { ...values };
   // Prepare steps see the same defaults the main command gets (e.g. an output size nobody chose).
   for (const f of action.fields || []) if (v[f.id] === undefined && f.default !== undefined) v[f.id] = f.default;
+  // {_selfDir}: this tool's own folder (its extras, e.g. voice models used by a helper program).
+  if (binCache && spec && spec.binary) { try { v._selfDir = binaryPaths(spec, binCache).dir.replace(/\\/g, '/'); } catch (e) { /* not installed yet */ } }
   let tmpDir = null;
   // prepare: one step or a list. Each step runs another catalog tool first. With `replaces`, its
   // output file ({tmp}) is handed to this action in place of that field (e.g. FFmpeg turns any
@@ -45,6 +52,23 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
       if ((p.transform === 'srt' || p.transform === 'srtScript') && !text.trim()) throw new Error(p.emptyMessage || 'no speech was found');
       fs.writeFileSync(f, `${text}\n`, 'utf8');
       if (p.sets) v[p.sets] = f;
+      continue;
+    }
+    // { cues: "subs", sets: "_lines", times: "_times" }: read an .srt file into its caption texts and
+    // [start, end] seconds — one list item per caption (e.g. to speak each one with forEach).
+    if (p.cues) {
+      const cues = parseSrt(fs.readFileSync(String(v[p.cues]), 'utf8'));
+      if (!cues.length) throw new Error('no subtitles found in that .srt file');
+      v[p.sets] = cues.map((c) => c.text); v[p.times] = cues.map((c) => [c.start, c.end]);
+      continue;
+    }
+    // { dubTrack: "_parts", times: "_times", to: "dub.wav", sets: "_dub" }: place each spoken caption
+    // (16-bit PCM WAV) at its start time in one track; a line that runs long pushes the next one later.
+    if (p.dubTrack) {
+      if (!tmpDir) tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guihub-prep-'));
+      const f = path.join(tmpDir, p.to || 'dub.wav');
+      fs.writeFileSync(f, buildDubTrack((v[p.dubTrack] || []).map((x) => fs.readFileSync(x)), v[p.times] || []));
+      v[p.sets] = f;
       continue;
     }
     const helper = (specs || []).find((s) => s.id === p.tool);
@@ -164,6 +188,30 @@ function segmentsToSrt(stdout, maxChars = 80) {
   return cues.map(([a, b, x], i) => `${i + 1}\n${srtTime(a)} --> ${srtTime(b)}\n${x}\n`).join('\n');
 }
 
+// SRT text → [{start, end, text}] (seconds). Tolerates BOMs, CRLF, "," or "." millis and blank lines.
+function parseSrt(text) {
+  const out = []; const t = (h, m, sec, ms) => (+h) * 3600 + (+m) * 60 + (+sec) + (+ms) / 1000;
+  for (const block of String(text).replace(/^﻿/, '').split(/\r?\n\s*\r?\n/)) {
+    const lines = block.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const i = lines.findIndex((l) => /-->/.test(l)); if (i < 0) continue;
+    const m = lines[i].match(/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/); if (!m) continue;
+    const words = lines.slice(i + 1).join(' ').replace(/<[^>]+>/g, '').replace(/^[-–—]+\s*/, '').trim(); if (!words) continue;
+    out.push({ start: t(m[1], m[2], m[3], m[4]), end: t(m[5], m[6], m[7], m[8]), text: words });
+  }
+  return out;
+}
+// Spoken captions (mono/stereo 16-bit PCM WAVs, same rate) → one mono WAV with each at its start time.
+function buildDubTrack(wavs, times) {
+  const parse = (b) => { let o = 12, rate = 22050, ch = 1, data = null; while (o + 8 <= b.length) { const id = b.toString('ascii', o, o + 4), len = b.readUInt32LE(o + 4); if (id === 'fmt ') { ch = b.readUInt16LE(o + 10); rate = b.readUInt32LE(o + 12); } if (id === 'data') { data = b.subarray(o + 8, Math.min(b.length, o + 8 + len)); break; } o += 8 + len + (len % 2); } return { rate, ch, data: data || Buffer.alloc(0) }; };
+  const parts = wavs.map(parse); const rate = parts.length ? parts[0].rate : 22050;
+  const placed = []; let t = 0;
+  parts.forEach((p, i) => { const n = Math.floor(p.data.length / 2 / p.ch); const start = Math.max(Math.round(((times[i] || [0])[0]) * rate), t); placed.push([start, p, n]); t = start + n; });
+  const pcm = Buffer.alloc(t * 2);
+  for (const [start, p, n] of placed) for (let k = 0; k < n; k++) pcm.writeInt16LE(p.data.readInt16LE(k * 2 * p.ch), (start + k) * 2);
+  const h = Buffer.alloc(44); h.write('RIFF', 0); h.writeUInt32LE(36 + pcm.length, 4); h.write('WAVEfmt ', 8); h.writeUInt32LE(16, 16); h.writeUInt16LE(1, 20); h.writeUInt16LE(1, 22); h.writeUInt32LE(rate, 24); h.writeUInt32LE(rate * 2, 28); h.writeUInt16LE(2, 32); h.writeUInt16LE(16, 34); h.write('data', 36); h.writeUInt32LE(pcm.length, 40);
+  return Buffer.concat([h, pcm]);
+}
+
 // Cutting a talking video in one pass: "keep" ranges (seconds) become an FFmpeg filtergraph that
 // keeps only those parts of the picture and the sound, in order, without drifting out of sync.
 const END = 1e9; // "until the end" — FFmpeg's between(t,a,b) needs a number
@@ -262,4 +310,4 @@ function finishRun({ action, values, stdout }) {
   return text;
 }
 
-module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript, keepGraph, rangesToKeep, silenceToKeep, parseTime };
+module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript, keepGraph, rangesToKeep, silenceToKeep, parseTime, parseSrt, buildDubTrack, fill };

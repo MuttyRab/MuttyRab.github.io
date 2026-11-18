@@ -18,7 +18,8 @@
     "stars": 16000,
     "displayName": "pyannote + TitaNet (sherpa-onnx)",
     "license": "Apache-2.0 (pyannote segmentation: MIT; TitaNet: CC-BY-4.0)",
-    "homepage": "https://k2-fsa.github.io/sherpa/onnx/"
+    "homepage": "https://k2-fsa.github.io/sherpa/onnx/",
+    "guiName": "pyannote"
   },
   "binary": {
     "name": "sherpa-onnx-offline-speaker-diarization",

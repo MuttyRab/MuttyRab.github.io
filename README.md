@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, DuckDB, F2, FFmpeg, immich-go, FFmpeg, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, FFmpeg, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (54)
+## MCP tools (56)
 
 | Tool | What it does |
 |---|---|
@@ -41,6 +41,8 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `clips_burn` | Burn (hard-code) subtitles from an .srt file into a video on the user's computer, offline (FFmpeg + libass, Inter font): the captions become part of the picture, so they show on Instagram, TikTok, WhatsApp, LinkedIn and in any player. Use when the user wants captions/subtitles 'in the video', 'always visible' or translated into another language: make the .srt with transcribe_subtitles, translate or correct it yourself if asked (keep the numbering and timestamps exactly), save it, then call this. `style`: 'bottom' (classic), 'big' (large, higher up — vertical/short videos), 'box' (white on a dark box — busy backgrounds). |
 | `clips_audiogram` | Make an audiogram (MP4) on the user's computer, offline: the part of an audio file (podcast, interview, voice note) from `start` to `end` becomes a video with the `cover` image, an animated waveform and burned-in captions timed to the speech (Whisper). Use when the user wants to share audio on Instagram, TikTok, YouTube Shorts, LinkedIn or X, which need video. To pick a moment, get the transcript first (transcribe_transcribe), choose a self-contained 20–60 s passage, then call this; one call per clip. `shape`: vertical (Reels/TikTok/Shorts), square (feeds) or landscape (YouTube/X). |
 | `croc_receive` | Receive files sent with croc: give the code phrase from the sender and a destination folder. Existing files are kept (renamed) unless existing="overwrite". |
+| `dub_make` | Dub a video into any of 31 languages (Spanish, Portuguese, French, German, Italian, Dutch, Polish, Turkish, Russian, Ukrainian, Japanese, Korean, Vietnamese, Indonesian, Hindi, Arabic, English and more) on the user's computer, offline: every caption of a translated .srt is spoken by a natural voice (Supertonic 3) at its start time, and the voice track is mixed over the original sound (`original`: kept quietly underneath, or replaced). Use when the user wants a video in another language with a voice-over ('dub this in Spanish', 'make a French version'). Steps: make subtitles with transcribe_subtitles, translate each caption yourself (keep numbering and timestamps; keep lines short enough to be spoken in their time slot — shorten rather than overrun), save the .srt, then call this. Add burned-in subtitles afterwards with clips_burn if wanted. Set `lang` to the subtitles' language. |
+| `dub_voiceover` | Turn text into natural speech in any of 31 languages (Spanish, Portuguese, French, German, Italian, Dutch, Polish, Turkish, Russian, Ukrainian, Japanese, Korean, Vietnamese, Indonesian, Hindi, Arabic, English, …) and save an MP3 or WAV on the user's computer, offline (Supertonic 3). Use whenever the user wants a voice-over, narration or audio in a language other than English (for English, speak_speak has more voices). Write or translate the script yourself first; set `lang` to its language. Up to ~5,000 characters per call — split long texts into parts. |
 | `duckdb_summarize` | Inspect a local data file (CSV/TSV, Excel .xlsx, Parquet, JSON) without loading it into the chat: returns the first rows and per-column statistics (type, nulls, min, max, distinct count) as Markdown tables. Use this before writing a query. |
 | `duckdb_convert` | Convert a local data file between CSV, Excel (.xlsx), Parquet and JSON. Writes a new file; the original is not changed. |
 | `duckdb_combine` | Combine several local CSV files into one file (rows stacked, columns matched by name; missing columns become empty). Output format CSV, Excel, Parquet or JSON. |
@@ -184,6 +186,7 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [Opus Clip alternative: make Shorts with captions on your own computer (no subscription)](https://guihub.cc/guides/opus-clip-alternative-offline.html)
 - [Descript alternative for cutting talking videos: remove pauses and edit by transcript, offline](https://guihub.cc/guides/descript-alternative-edit-video-by-transcript.html)
 - [Headliner alternative: make podcast audiograms (waveform + captions) without a subscription](https://guihub.cc/guides/headliner-alternative-audiogram.html)
+- [Dub a video into Spanish (or 30 other languages) with Claude — on your own computer](https://guihub.cc/guides/dub-video-into-another-language-with-ai.html)
 
 ## About this repository
 

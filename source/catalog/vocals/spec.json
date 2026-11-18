@@ -19,7 +19,8 @@
     "stars": 16000,
     "license": "Apache-2.0 (UVR MDX-Net model: MIT)",
     "homepage": "https://k2-fsa.github.io/sherpa/onnx/",
-    "displayName": "UVR MDX-Net (sherpa-onnx)"
+    "displayName": "UVR MDX-Net (sherpa-onnx)",
+    "guiName": "UVR vocal remover"
   },
   "binary": {
     "name": "sherpa-onnx-offline-source-separation",

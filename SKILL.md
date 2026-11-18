@@ -1,6 +1,6 @@
 ---
 name: gui-hub
-description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx)) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
+description: Do real file jobs a chat model cannot do alone — transcribe audio/video, make subtitles, text-to-speech voiceovers, remove vocals from songs, clean noisy recordings, find who spoke when, fill in PDF forms, upscale images with AI, compress/convert/trim video, create Word/PowerPoint/PDF files, merge/split/protect PDFs, compress images, unzip RAR/7z, query huge CSV/Excel files. Runs trusted open-source engines (7-Zip, Caesium, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx)) locally via `npx -y https://guihub.cc/cli.tgz`. Use whenever a user asks for one of these jobs on a file.
 ---
 
 # GUI Hub — local file jobs for agents with a computer
@@ -32,6 +32,10 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run clips_burn --input /path/to/input.mp4 --subs /path/to/input.srt --out /path/to/output.mp4`
 - make an audiogram from my podcast → `clips_audiogram`
   `npx -y https://guihub.cc/cli.tgz run clips_audiogram --input /path/to/input.mp3 --cover /path/to/input.jpg --start "…" --end "…" --out /path/to/output.mp4`
+- dub my video into Spanish → `dub_make`
+  `npx -y https://guihub.cc/cli.tgz run dub_make --input /path/to/input.mp4 --subs /path/to/input.srt --out /path/to/output.mp4`
+- make a voice-over in Spanish → `dub_voiceover`
+  `npx -y https://guihub.cc/cli.tgz run dub_voiceover --text "…" --out /path/to/output.mp3`
 - convert CSV to Excel → `duckdb_convert`
   `npx -y https://guihub.cc/cli.tgz run duckdb_convert --input /path/to/input.csv --out /path/to/output.xlsx`
 - merge CSV files into one → `duckdb_combine`

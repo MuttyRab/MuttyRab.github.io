@@ -18,7 +18,8 @@
     "stars": 33000,
     "displayName": "Real-ESRGAN",
     "license": "BSD-3-Clause",
-    "homepage": "https://github.com/xinntao/Real-ESRGAN"
+    "homepage": "https://github.com/xinntao/Real-ESRGAN",
+    "guiName": "Real-ESRGAN"
   },
   "binary": {
     "name": "realesrgan-ncnn-vulkan",

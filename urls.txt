@@ -10,6 +10,8 @@ https://guihub.cc/ai/cleanvoice-denoise.html
 https://guihub.cc/ai/clips-make.html
 https://guihub.cc/ai/clips-burn.html
 https://guihub.cc/ai/clips-audiogram.html
+https://guihub.cc/ai/dub-make.html
+https://guihub.cc/ai/dub-voiceover.html
 https://guihub.cc/ai/duckdb-convert.html
 https://guihub.cc/ai/duckdb-combine.html
 https://guihub.cc/ai/duckdb-dedupe.html
@@ -423,6 +425,7 @@ https://guihub.cc/tools/caesium.html
 https://guihub.cc/tools/cleanvoice.html
 https://guihub.cc/tools/clips.html
 https://guihub.cc/tools/croc.html
+https://guihub.cc/tools/dub.html
 https://guihub.cc/tools/duckdb.html
 https://guihub.cc/tools/f2.html
 https://guihub.cc/tools/ffmpeg.html
@@ -495,4 +498,5 @@ https://guihub.cc/guides/edit-video-by-transcript-with-ai.html
 https://guihub.cc/guides/opus-clip-alternative-offline.html
 https://guihub.cc/guides/descript-alternative-edit-video-by-transcript.html
 https://guihub.cc/guides/headliner-alternative-audiogram.html
+https://guihub.cc/guides/dub-video-into-another-language-with-ai.html
 https://guihub.cc/legal.html

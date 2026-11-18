@@ -1,0 +1,631 @@
+{
+  "id": "dub",
+  "product": "audio",
+  "name": "Video Dubbing & Voice-over",
+  "tagline": "Give a video a natural voice-over in Spanish, French, German, Japanese and 27 more languages — from translated subtitles, timed to the original, on your own computer.",
+  "keywords": [
+    "dub video into spanish",
+    "ai dubbing offline",
+    "translate video voice over",
+    "video voice over another language",
+    "ai voice over translation",
+    "elevenlabs dubbing alternative",
+    "video dubbing mcp",
+    "multilingual text to speech"
+  ],
+  "tier": "pro",
+  "status": "live",
+  "upstream": {
+    "repo": "supertone-inc/supertonic",
+    "stars": 3000,
+    "displayName": "Supertonic voices (sherpa-onnx) + FFmpeg",
+    "license": "MIT (Supertonic 3 model), Apache-2.0 (sherpa-onnx), GPL (FFmpeg static build)",
+    "homepage": "https://github.com/supertone-inc/supertonic"
+  },
+  "binary": {
+    "name": "ffmpeg",
+    "version": "6.1.1",
+    "sourceRepo": "eugeneware/ffmpeg-static",
+    "assets": {
+      "linux-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64",
+        "path": "ffmpeg",
+        "sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99"
+      },
+      "darwin-arm64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64",
+        "path": "ffmpeg",
+        "sha256": "a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+      },
+      "darwin-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-x64",
+        "path": "ffmpeg",
+        "sha256": "ebdddc936f61e14049a2d4b549a412b8a40deeff6540e58a9f2a2da9e6b18894"
+      },
+      "win32-x64": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64",
+        "path": "ffmpeg.exe",
+        "sha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00"
+      }
+    },
+    "extras": [
+      {
+        "name": "voice",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/sherpa-onnx-supertonic-3-tts-int8-2026-05-11.tar.bz2",
+        "sha256": "82fa96f91c4ef8abaae3a14a3f4153facf88bed821d1f7331cec2700f432c427"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "make",
+      "label": "Dub a video",
+      "runLabel": "Dub video",
+      "description": "Pick a video and its subtitles in the new language (.srt). Each subtitle is read by a natural voice at its time and mixed over the original sound (kept quietly underneath, or replaced). Ask your AI to make the subtitles and translate them for you. The first run downloads the voices once (about 130 MB).",
+      "mcpDescription": "Dub a video into any of 31 languages (Spanish, Portuguese, French, German, Italian, Dutch, Polish, Turkish, Russian, Ukrainian, Japanese, Korean, Vietnamese, Indonesian, Hindi, Arabic, English and more) on the user's computer, offline: every caption of a translated .srt is spoken by a natural voice (Supertonic 3) at its start time, and the voice track is mixed over the original sound (`original`: kept quietly underneath, or replaced). Use when the user wants a video in another language with a voice-over ('dub this in Spanish', 'make a French version'). Steps: make subtitles with transcribe_subtitles, translate each caption yourself (keep numbering and timestamps; keep lines short enough to be spoken in their time slot — shorten rather than overrun), save the .srt, then call this. Add burned-in subtitles afterwards with clips_burn if wanted. Set `lang` to the subtitles' language.",
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "mkv",
+                "webm",
+                "m4v"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "subs",
+          "label": "Translated subtitles (.srt)",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Subtitles",
+              "extensions": [
+                "srt"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lang",
+          "label": "Language of the subtitles",
+          "type": "select",
+          "default": "es",
+          "options": [
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            },
+            {
+              "value": "vi",
+              "label": "Vietnamese"
+            },
+            {
+              "value": "id",
+              "label": "Indonesian"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "sv",
+              "label": "Swedish"
+            },
+            {
+              "value": "da",
+              "label": "Danish"
+            },
+            {
+              "value": "fi",
+              "label": "Finnish"
+            },
+            {
+              "value": "cs",
+              "label": "Czech"
+            },
+            {
+              "value": "sk",
+              "label": "Slovak"
+            },
+            {
+              "value": "ro",
+              "label": "Romanian"
+            },
+            {
+              "value": "hu",
+              "label": "Hungarian"
+            },
+            {
+              "value": "el",
+              "label": "Greek"
+            },
+            {
+              "value": "bg",
+              "label": "Bulgarian"
+            },
+            {
+              "value": "hr",
+              "label": "Croatian"
+            },
+            {
+              "value": "sl",
+              "label": "Slovenian"
+            },
+            {
+              "value": "et",
+              "label": "Estonian"
+            },
+            {
+              "value": "lv",
+              "label": "Latvian"
+            },
+            {
+              "value": "lt",
+              "label": "Lithuanian"
+            }
+          ]
+        },
+        {
+          "id": "voice",
+          "label": "Voice",
+          "type": "select",
+          "default": "0",
+          "options": [
+            {
+              "value": "0",
+              "label": "Female 1"
+            },
+            {
+              "value": "3",
+              "label": "Female 2"
+            },
+            {
+              "value": "6",
+              "label": "Male 1"
+            },
+            {
+              "value": "9",
+              "label": "Male 2"
+            }
+          ]
+        },
+        {
+          "id": "speed",
+          "label": "Speaking speed",
+          "type": "select",
+          "default": "1.05",
+          "options": [
+            {
+              "value": "0.95",
+              "label": "Calm"
+            },
+            {
+              "value": "1.05",
+              "label": "Normal"
+            },
+            {
+              "value": "1.2",
+              "label": "Brisk (for long translations)"
+            }
+          ]
+        },
+        {
+          "id": "original",
+          "label": "Original sound",
+          "type": "select",
+          "default": "0.15",
+          "options": [
+            {
+              "value": "0.15",
+              "label": "Keep it quietly underneath"
+            },
+            {
+              "value": "0",
+              "label": "Replace it (voice only)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save dubbed video as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "cues": "subs",
+          "sets": "_lines",
+          "times": "_times"
+        },
+        {
+          "tool": "speak",
+          "forEach": "_lines",
+          "ext": ".wav",
+          "collect": "_parts",
+          "argv": [
+            "--supertonic-duration-predictor={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/duration_predictor.int8.onnx",
+            "--supertonic-text-encoder={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/text_encoder.int8.onnx",
+            "--supertonic-vector-estimator={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/vector_estimator.int8.onnx",
+            "--supertonic-vocoder={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/vocoder.int8.onnx",
+            "--supertonic-tts-json={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/tts.json",
+            "--supertonic-unicode-indexer={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/unicode_indexer.bin",
+            "--supertonic-voice-style={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/voice.bin",
+            "--lang={lang}",
+            "--sid={voice}",
+            "--speed={speed}",
+            "--num-threads=4",
+            "--output-filename={tmp}",
+            "{item}"
+          ]
+        },
+        {
+          "dubTrack": "_parts",
+          "times": "_times",
+          "to": "dub.wav",
+          "sets": "_dub"
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-i",
+        {
+          "fmt": "{_dub}"
+        },
+        "-filter_complex",
+        {
+          "fmt": "[0:a]volume={original}[b];[1:a]aresample=48000,volume=1.3[d];[b][d]amix=inputs=2:duration=first:normalize=0[a]"
+        },
+        "-map",
+        "0:v",
+        "-map",
+        "[a]",
+        "-vcodec",
+        "copy",
+        "-acodec",
+        "aac",
+        "-ab",
+        "192k",
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Dubbed video ready.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
+    },
+    {
+      "id": "voiceover",
+      "label": "Voice-over in any language",
+      "runLabel": "Make audio",
+      "description": "Type or paste text in any of 31 languages and get it read by a natural voice — narration, e-learning, product videos, voicemail greetings. Saves MP3 or WAV.",
+      "mcpDescription": "Turn text into natural speech in any of 31 languages (Spanish, Portuguese, French, German, Italian, Dutch, Polish, Turkish, Russian, Ukrainian, Japanese, Korean, Vietnamese, Indonesian, Hindi, Arabic, English, …) and save an MP3 or WAV on the user's computer, offline (Supertonic 3). Use whenever the user wants a voice-over, narration or audio in a language other than English (for English, speak_speak has more voices). Write or translate the script yourself first; set `lang` to its language. Up to ~5,000 characters per call — split long texts into parts.",
+      "fields": [
+        {
+          "id": "text",
+          "label": "Text to read aloud",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "lang",
+          "label": "Language of the subtitles",
+          "type": "select",
+          "default": "es",
+          "options": [
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            },
+            {
+              "value": "vi",
+              "label": "Vietnamese"
+            },
+            {
+              "value": "id",
+              "label": "Indonesian"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "sv",
+              "label": "Swedish"
+            },
+            {
+              "value": "da",
+              "label": "Danish"
+            },
+            {
+              "value": "fi",
+              "label": "Finnish"
+            },
+            {
+              "value": "cs",
+              "label": "Czech"
+            },
+            {
+              "value": "sk",
+              "label": "Slovak"
+            },
+            {
+              "value": "ro",
+              "label": "Romanian"
+            },
+            {
+              "value": "hu",
+              "label": "Hungarian"
+            },
+            {
+              "value": "el",
+              "label": "Greek"
+            },
+            {
+              "value": "bg",
+              "label": "Bulgarian"
+            },
+            {
+              "value": "hr",
+              "label": "Croatian"
+            },
+            {
+              "value": "sl",
+              "label": "Slovenian"
+            },
+            {
+              "value": "et",
+              "label": "Estonian"
+            },
+            {
+              "value": "lv",
+              "label": "Latvian"
+            },
+            {
+              "value": "lt",
+              "label": "Lithuanian"
+            }
+          ]
+        },
+        {
+          "id": "voice",
+          "label": "Voice",
+          "type": "select",
+          "default": "0",
+          "options": [
+            {
+              "value": "0",
+              "label": "Female 1"
+            },
+            {
+              "value": "3",
+              "label": "Female 2"
+            },
+            {
+              "value": "6",
+              "label": "Male 1"
+            },
+            {
+              "value": "9",
+              "label": "Male 2"
+            }
+          ]
+        },
+        {
+          "id": "speed",
+          "label": "Speaking speed",
+          "type": "select",
+          "default": "1.0",
+          "options": [
+            {
+              "value": "0.9",
+              "label": "Calm"
+            },
+            {
+              "value": "1.0",
+              "label": "Normal"
+            },
+            {
+              "value": "1.15",
+              "label": "Brisk"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save audio as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "Audio",
+              "extensions": [
+                "mp3",
+                "wav"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "speak",
+          "argv": [
+            "--supertonic-duration-predictor={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/duration_predictor.int8.onnx",
+            "--supertonic-text-encoder={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/text_encoder.int8.onnx",
+            "--supertonic-vector-estimator={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/vector_estimator.int8.onnx",
+            "--supertonic-vocoder={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/vocoder.int8.onnx",
+            "--supertonic-tts-json={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/tts.json",
+            "--supertonic-unicode-indexer={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/unicode_indexer.bin",
+            "--supertonic-voice-style={_selfDir}/extras/voice/sherpa-onnx-supertonic-3-tts-int8-2026-05-11/voice.bin",
+            "--lang={lang}",
+            "--sid={voice}",
+            "--speed={speed}",
+            "--num-threads=4",
+            "--output-filename={tmp:voice.wav}",
+            "{text}"
+          ],
+          "sets": {
+            "_voice": "voice.wav"
+          }
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "fmt": "{_voice}"
+        },
+        "-ar",
+        "44100",
+        "-ab",
+        "192k",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Audio ready.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
+    }
+  ]
+}

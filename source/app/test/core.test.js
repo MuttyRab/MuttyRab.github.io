@@ -409,3 +409,15 @@ test('cutting: time ranges, silences and the one-pass keep filtergraph', () => {
   assert.ok(g.includes("select='between(t,0.000,2.000)+between(t,4.000,1000000000)'") && g.includes('aselect=') && g.endsWith('[a]'));
   assert.throws(() => keepGraph([]), /nothing would be left/);
 });
+
+test('dubbing: srt parsing, {x|dir} paths, voice lines placed at their times', () => {
+  const { parseSrt, buildDubTrack, fill } = require('../src/core/execute');
+  const cues = parseSrt('﻿1\r\n00:00:01,500 --> 00:00:03,000\r\n¿Cómo <i>estás</i>?\r\n\r\n2\n00:00:04.000 --> 00:00:06.250\nBien,\ngracias.\n\n3\n00:00:07,000 --> 00:00:08,000\n\n');
+  assert.deepStrictEqual(cues, [{ start: 1.5, end: 3, text: '¿Cómo estás?' }, { start: 4, end: 6.25, text: 'Bien, gracias.' }]);
+  assert.strictEqual(fill('--tokens=extras/{voice|dir}/tokens.txt', { voice: 'es/vits-piper-es_ES/es_ES' }), '--tokens=extras/es/vits-piper-es_ES/tokens.txt');
+  const wav = (n, rate = 1000) => { const h = Buffer.alloc(44); h.write('RIFF', 0); h.write('WAVEfmt ', 8); h.writeUInt32LE(16, 16); h.writeUInt16LE(1, 20); h.writeUInt16LE(1, 22); h.writeUInt32LE(rate, 24); h.write('data', 36); h.writeUInt32LE(n * 2, 40); const d = Buffer.alloc(n * 2); for (let i = 0; i < n; i++) d.writeInt16LE(1000, i * 2); return Buffer.concat([h, d]); };
+  // line 1 at 1 s (500 samples @1 kHz), line 2 wanted at 1.2 s but must wait until 1.5 s
+  const out = buildDubTrack([wav(500), wav(300)], [[1, 2], [1.2, 2]]);
+  const samples = (out.length - 44) / 2; assert.strictEqual(samples, 1800);
+  assert.strictEqual(out.readInt16LE(44 + 999 * 2), 0); assert.strictEqual(out.readInt16LE(44 + 1000 * 2), 1000); assert.strictEqual(out.readInt16LE(44 + 1799 * 2), 1000);
+});

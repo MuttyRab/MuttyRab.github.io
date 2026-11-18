@@ -1,6 +1,6 @@
 {
   "name": "gui-hub",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "Local file jobs for Claude Code: watch videos (screenshots + transcript), transcribe, make Shorts and audiograms with captions, cut pauses and edit video by transcript, voiceovers, fill PDF forms, convert and compress video, PDFs, images and documents — official open-source engines on your machine.",
   "author": {
     "name": "GUI Hub"

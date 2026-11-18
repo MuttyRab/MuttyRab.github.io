@@ -20,7 +20,8 @@
     "stars": 16000,
     "displayName": "Kokoro voices (sherpa-onnx)",
     "license": "Apache-2.0 (Kokoro model: Apache-2.0)",
-    "homepage": "https://k2-fsa.github.io/sherpa/onnx/"
+    "homepage": "https://k2-fsa.github.io/sherpa/onnx/",
+    "guiName": "Kokoro TTS"
   },
   "binary": {
     "name": "sherpa-onnx-offline-tts",
