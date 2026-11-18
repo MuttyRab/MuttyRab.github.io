@@ -1,0 +1,57 @@
+name: all-in-one
+# One portable Windows download with EVERY tool and every engine inside (offline out of the box),
+# attached to the current release as GUI-Hub-All-Tools-Windows.zip. Runs on every version bump.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['source/app/package.json']
+
+permissions:
+  contents: write
+
+jobs:
+  windows-all:
+    runs-on: windows-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+        working-directory: source/app
+      - run: node source/scripts/bundle-engines.js all source/app/engines --by-arch win32-x64
+      - name: Package (portable folder)
+        working-directory: source/app
+        shell: bash
+        env: { CSC_IDENTITY_AUTO_DISCOVERY: 'false' }
+        run: npx electron-builder --win dir --publish never
+      - name: Run real tools from the folder with an empty user folder (nothing may be downloaded)
+        shell: bash
+        run: OFFLINE_ALL=1 node source/scripts/offline-test.js source/app/dist/win-unpacked
+      - name: Zip
+        shell: pwsh
+        run: |
+          Rename-Item source/app/dist/win-unpacked "GUI Hub"
+          @(
+            'GUI Hub - every tool, works offline',
+            '',
+            '1. Right-click the zip > Extract All (put the folder anywhere, e.g. Documents).',
+            '2. Open the "GUI Hub" folder and double-click "GUI Hub.exe".',
+            '   Windows may say "Windows protected your PC" (the app is not code-signed yet): click "More info" then "Run anyway".',
+            '3. Pick a tool. Every engine and AI model is inside this folder - no internet needed',
+            '   (except Send Big Files and Google Photos -> Immich, which send/upload over the network).',
+            '',
+            'Use it with Claude Desktop / Cursor: click "Use with AI (MCP)" in the app.',
+            'Third-party licenses and source links: resources\tools\THIRD_PARTY_NOTICES.txt'
+          ) | Set-Content -Encoding utf8 "source/app/dist/GUI Hub/READ ME FIRST.txt"
+          Set-Location source/app/dist
+          & 7z a -tzip -mx=5 -mmt=on ../../../GUI-Hub-All-Tools-Windows.zip "GUI Hub" | Out-Null
+          "{0:N0} MB" -f ((Get-Item ../../../GUI-Hub-All-Tools-Windows.zip).Length / 1MB)
+      - name: Attach to the current release
+        shell: bash
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          v="v$(node -p "require('./source/app/package.json').version")"
+          for i in $(seq 1 90); do gh release view "$v" >/dev/null 2>&1 && break; echo "waiting for release $v"; sleep 60; done
+          gh release upload "$v" GUI-Hub-All-Tools-Windows.zip --clobber

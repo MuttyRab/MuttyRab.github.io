@@ -15,7 +15,7 @@ const [product, outDir, ...keys] = args.filter((a) => !a.startsWith('--'));
 if (!product || !outDir) { console.error('usage: bundle-engines.js <product> <outDir> [platformKey…]'); process.exit(2); }
 const root = path.join(__dirname, '..');
 const { specs } = loadCatalog(path.join(root, 'catalog'));
-const mine = specs.filter((s) => s.status === 'live' && (s.product || 'essentials') === product);
+const mine = specs.filter((s) => s.status === 'live' && (product === 'all' || (s.product || 'essentials') === product));
 const ids = new Set();
 for (const s of mine) { ids.add(s.id); for (const a of s.actions || []) for (const p of [].concat(a.prepare || [])) if (p.tool) ids.add(p.tool); }
 const need = [...ids].map((id) => specs.find((s) => s.id === id)).filter(Boolean);
