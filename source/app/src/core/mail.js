@@ -71,7 +71,7 @@ function indexLine(key, raw) {
   const head = [`From: ${decodeWords(h.from)}`, h.to ? `To: ${decodeWords(h.to)}` : '', h.cc ? `Cc: ${decodeWords(h.cc)}` : '', `Subject: ${decodeWords(h.subject)}`, attachments.length ? `Attachments: ${attachments.join(', ')}` : '']
     .filter(Boolean).join(' · ');
   const body = text.replace(/[\t\r]/g, ' ').split('\n').map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean).join(' ¶ ').slice(0, 8000);
-  return `${key}\t${date}\t${head} ¶ ${body}\n`;
+  return `${key}\t${date}\t[EMAIL — third-party content] ${head} ¶ ${body}\n`;
 }
 
 // Messages of one mbox file, read in 8 MB chunks; calls onMessage(raw) for each.
