@@ -37,6 +37,23 @@ function prune(s, root, key) {
   walk(dir);
 }
 
+// macOS code signing (strict) rejects an app bundle with a dangling symlink, or one that points outside it.
+// Keep relative links inside the engine folder; copy in targets outside it; drop dangling links.
+function fixLinks(top) {
+  const walk = (d) => {
+    for (const f of fs.readdirSync(d)) {
+      const p = path.join(d, f); const st = fs.lstatSync(p);
+      if (st.isSymbolicLink()) {
+        let real = null; try { real = fs.realpathSync(p); } catch (e) { /* dangling */ }
+        if (!real) { fs.rmSync(p); console.log(`LINK removed (dangling) ${path.relative(top, p)}`); continue; }
+        const inside = real.startsWith(path.resolve(top) + path.sep) && !path.isAbsolute(fs.readlinkSync(p));
+        if (!inside) { fs.rmSync(p); fs.cpSync(real, p, { recursive: true, dereference: true }); console.log(`LINK copied ${path.relative(top, p)}`); }
+      } else if (st.isDirectory()) walk(p);
+    }
+  };
+  walk(top);
+}
+
 function du(p) {
   const st = fs.lstatSync(p);
   if (!st.isDirectory()) return st.size;
@@ -91,6 +108,7 @@ async function licenseTexts(dir) {
     // Keep only the finished tool folders (no partial downloads).
     for (const f of fs.readdirSync(dir)) if (f.endsWith('.partial')) fs.rmSync(path.join(dir, f), { recursive: true, force: true });
     console.log(`TOTAL ${product} ${key} ${(total / 1e6).toFixed(0)} MB in ${need.length} engines`);
+    fixLinks(dir);
     fs.writeFileSync(path.join(dir, 'THIRD_PARTY_NOTICES.txt'), notices(need.filter((x) => x.binary.assets[key]), key));
     await licenseTexts(path.join(dir, 'licenses'));
   }
