@@ -421,3 +421,10 @@ test('dubbing: srt parsing, {x|dir} paths, voice lines placed at their times', (
   const samples = (out.length - 44) / 2; assert.strictEqual(samples, 1800);
   assert.strictEqual(out.readInt16LE(44 + 999 * 2), 0); assert.strictEqual(out.readInt16LE(44 + 1000 * 2), 1000); assert.strictEqual(out.readInt16LE(44 + 1799 * 2), 1000);
 });
+
+test('screen recording helpers: dshow microphone pick', () => {
+  const { dshowAudio } = require('../src/core/execute');
+  const list = '[dshow @ 0000] "Integrated Camera" (video)\n[dshow @ 0000]   Alternative name "@device_pnp_x"\n[dshow @ 0000] "Microphone Array (Realtek(R) Audio)" (audio)\n[dshow @ 0000] "Stereo Mix (Realtek)" (audio)\n';
+  assert.strictEqual(dshowAudio(list), 'Microphone Array (Realtek(R) Audio)');
+  assert.strictEqual(dshowAudio('nothing here'), '');
+});

@@ -100,6 +100,8 @@ The first run of a job downloads its program (and model, if any) once. Use absol
   `npx -y https://guihub.cc/cli.tgz run vocals_split --input /path/to/input.mp3 --instrumental /path/to/output.wav --vocals /path/to/output.wav`
 - watch a video or screen recording → `watch_video`
   `npx -y https://guihub.cc/cli.tgz run watch_video --input /path/to/input.mp4 --outDir /path/to/folder`
+- watch my screen while I show it something → `watch_screen`
+  `npx -y https://guihub.cc/cli.tgz run watch_screen --outDir /path/to/folder`
 
 Full list with descriptions: `npx -y https://guihub.cc/cli.tgz list` or https://guihub.cc/llms.txt
 

@@ -44,6 +44,7 @@ https://guihub.cc/ai/upscale-upscale.html
 https://guihub.cc/ai/videomaker-make.html
 https://guihub.cc/ai/vocals-split.html
 https://guihub.cc/ai/watch-video.html
+https://guihub.cc/ai/watch-screen.html
 https://guihub.cc/free/
 https://guihub.cc/free/video-converter.html
 https://guihub.cc/free/audio-converter.html
@@ -499,4 +500,5 @@ https://guihub.cc/guides/opus-clip-alternative-offline.html
 https://guihub.cc/guides/descript-alternative-edit-video-by-transcript.html
 https://guihub.cc/guides/headliner-alternative-audiogram.html
 https://guihub.cc/guides/dub-video-into-another-language-with-ai.html
+https://guihub.cc/guides/show-claude-your-screen.html
 https://guihub.cc/legal.html

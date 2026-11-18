@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (56)
+## MCP tools (57)
 
 | Tool | What it does |
 |---|---|
@@ -86,6 +86,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `videomaker_make` | Make a narrated video (MP4) on the user's computer, offline: the given photos/images are shown in order (each for `seconds`, looping until the narration ends), the `script` is read aloud by a natural AI voice (Kokoro, US/UK English) and captions timed to the speech are burned in (Whisper). Use whenever the user wants a video from photos with a voiceover — product promos, real-estate tours, recaps, explainers, social posts, slideshows with narration. Write the script yourself if the user only describes what they want (about 150 words per minute of video). Pick `size` for where it will be posted (landscape for YouTube, portrait for Reels/TikTok/Shorts, square for feeds). |
 | `vocals_split` | Separate a song (any audio or video file on the user's computer) into an instrumental/karaoke track with the vocals removed and a vocals-only (acapella) track, offline with the UVR MDX-Net model. Saves two .wav files. Use whenever the user wants to remove vocals, make karaoke or a backing track, get an instrumental, or isolate/extract vocals or an acapella from a song. Takes roughly the song's length to run. |
 | `watch_video` | Let the AI 'watch' a video on the user's computer, offline: saves a screenshot every `every` seconds into `outDir` (frame_0001.jpg = 0:00, frame_0002.jpg = `every` seconds later, and so on; at most 300) plus transcript.txt with timestamped speech ([hh:mm:ss] lines, Whisper). Then open the screenshots and the transcript yourself to answer questions about the video, summarise it, write step-by-step docs or a tutorial from a screen recording, find when something is shown or said, or pick timestamps for clips. Use `every` 2 for fast screen recordings, 5 for normal videos, 15-30 for long lectures or meetings. Silent videos are fine (the transcript then says no speech was found). |
+| `watch_screen` | Watch the user's screen live: records the screen (and microphone, when available) for `seconds`, while the user shows you something and explains it out loud — reproducing a bug, a task to automate, how an app is used. Saves into `outDir`: frame_<N>.jpg each time the screen changes (N = tenths of a second from the start, so frame_123.jpg = 12.3 s; only changed screens, at most 300), transcript.txt with [hh:mm:ss] lines of what the user said, and recording.mp4. BEFORE calling, tell the user: 'Recording your screen for N seconds starts now — show me and talk me through it.' Afterwards open transcript.txt and the frames to understand what happened. macOS needs Screen Recording (and Microphone) permission for the app that runs the MCP server; Linux needs an X11 session (not Wayland). |
 
 ## Using the desktop app as the MCP server
 
@@ -187,6 +188,7 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [Descript alternative for cutting talking videos: remove pauses and edit by transcript, offline](https://guihub.cc/guides/descript-alternative-edit-video-by-transcript.html)
 - [Headliner alternative: make podcast audiograms (waveform + captions) without a subscription](https://guihub.cc/guides/headliner-alternative-audiogram.html)
 - [Dub a video into Spanish (or 30 other languages) with Claude — on your own computer](https://guihub.cc/guides/dub-video-into-another-language-with-ai.html)
+- [Show Claude your screen: let it watch you reproduce a bug or do a task (with your voice)](https://guihub.cc/guides/show-claude-your-screen.html)
 
 ## About this repository
 

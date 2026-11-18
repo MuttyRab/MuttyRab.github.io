@@ -25,6 +25,8 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
   const v = { ...values };
   // Prepare steps see the same defaults the main command gets (e.g. an output size nobody chose).
   for (const f of action.fields || []) if (v[f.id] === undefined && f.default !== undefined) v[f.id] = f.default;
+  // {_os} (win32/darwin/linux) and {_display} let steps differ per platform (e.g. screen capture devices).
+  v._os = process.platform; v._display = process.env.DISPLAY || ':0.0';
   // {_selfDir}: this tool's own folder (its extras, e.g. voice models used by a helper program).
   if (binCache && spec && spec.binary) { try { v._selfDir = binaryPaths(spec, binCache).dir.replace(/\\/g, '/'); } catch (e) { /* not installed yet */ } }
   let tmpDir = null;
@@ -36,6 +38,12 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
   for (const p of steps) {
     // requires: skip a step whose input an earlier optional step could not make (e.g. no sound).
     if (p.requires && !v[p.requires]) continue;
+    // when/equals: run only on a matching value (e.g. when "_os" equals "darwin"); unless: skip once a
+    // value is set (a fallback that runs only if an earlier optional step failed).
+    if (p.when && ('equals' in p ? v[p.when] !== p.equals : !v[p.when])) continue;
+    if (p.unless && v[p.unless]) continue;
+    // { pick: "_devices", transform: "dshowAudio", sets: "_mic" }: choose a value from earlier output.
+    if (p.pick) { const val = p.transform === 'dshowAudio' ? dshowAudio(v[p.pick]) : String(v[p.pick] ?? ''); if (val) v[p.sets] = val; continue; }
     // { write: "lyrics.srt", from: "_lyrics", transform: "srt", sets: "_srt" }: save text from an
     // earlier step as a file in the temp folder (no program runs).
     if (p.write) {
@@ -96,7 +104,10 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
     const argv = p.argv.map((t) => fill(t, v, tmp, tmpDir));
     onOutput({ stream: 'meta', text: `Preparing with ${helper.upstream.displayName || helper.id}…\n` });
     let printed = '';
-    const res = await new Promise((resolve) => runTool(exe, argv, { cwd: p.cwd === 'tool' ? binaryPaths(helper, binCache).dir : undefined, onOutput: (o) => { if (o.stream === 'stdout') printed += o.text; }, onExit: resolve }));
+    let errText = '';
+    const res = await new Promise((resolve) => runTool(exe, argv, { cwd: p.cwd === 'tool' ? binaryPaths(helper, binCache).dir : undefined, onOutput: (o) => { if (o.stream === 'stdout') printed += o.text; else errText += o.text; }, onExit: resolve }));
+    // captureStderr: keep what the program printed to stderr whatever its exit code (e.g. a device list).
+    if (p.captureStderr) { v[p.captureStderr] = errText; continue; }
     // optional: a step that may fail without stopping the job (its values stay unset).
     const ok = res.code === 0 && (!p.replaces || fs.existsSync(tmp)) && Object.values(p.sets || {}).every((name) => fs.existsSync(path.join(tmpDir, name)));
     if (p.optional && !ok) continue;
@@ -188,6 +199,11 @@ function segmentsToSrt(stdout, maxChars = 80) {
   return cues.map(([a, b, x], i) => `${i + 1}\n${srtTime(a)} --> ${srtTime(b)}\n${x}\n`).join('\n');
 }
 
+// FFmpeg "-list_devices true -f dshow -i dummy" output → the first audio input device's name.
+function dshowAudio(text) {
+  for (const l of String(text || '').split(/\r?\n/)) { const m = l.match(/"([^"]+)"\s*\(audio\)/); if (m) return m[1]; }
+  return '';
+}
 // SRT text → [{start, end, text}] (seconds). Tolerates BOMs, CRLF, "," or "." millis and blank lines.
 function parseSrt(text) {
   const out = []; const t = (h, m, sec, ms) => (+h) * 3600 + (+m) * 60 + (+sec) + (+ms) / 1000;
@@ -310,4 +326,4 @@ function finishRun({ action, values, stdout }) {
   return text;
 }
 
-module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript, keepGraph, rangesToKeep, silenceToKeep, parseTime, parseSrt, buildDubTrack, fill };
+module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript, keepGraph, rangesToKeep, silenceToKeep, parseTime, parseSrt, buildDubTrack, fill, dshowAudio };

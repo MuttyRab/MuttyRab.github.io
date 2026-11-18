@@ -259,6 +259,450 @@
           "full"
         ]
       ]
+    },
+    {
+      "id": "screen",
+      "label": "Watch my screen (record + explain)",
+      "runLabel": "Start recording",
+      "description": "Records your screen — and your voice, if a microphone is available — for the time you choose, so you can show your AI something instead of describing it: a bug, a task you do every week, how a program works. You get a screenshot each time the screen changes (named by the second it happened) plus a timestamped transcript of what you said. On a Mac, allow Screen Recording (and Microphone) for the app that runs this, the first time.",
+      "mcpDescription": "Watch the user's screen live: records the screen (and microphone, when available) for `seconds`, while the user shows you something and explains it out loud — reproducing a bug, a task to automate, how an app is used. Saves into `outDir`: frame_<N>.jpg each time the screen changes (N = tenths of a second from the start, so frame_123.jpg = 12.3 s; only changed screens, at most 300), transcript.txt with [hh:mm:ss] lines of what the user said, and recording.mp4. BEFORE calling, tell the user: 'Recording your screen for N seconds starts now — show me and talk me through it.' Afterwards open transcript.txt and the frames to understand what happened. macOS needs Screen Recording (and Microphone) permission for the app that runs the MCP server; Linux needs an X11 session (not Wayland).",
+      "fields": [
+        {
+          "id": "seconds",
+          "label": "Record for",
+          "type": "select",
+          "default": "60",
+          "options": [
+            {
+              "value": "20",
+              "label": "20 seconds"
+            },
+            {
+              "value": "60",
+              "label": "1 minute"
+            },
+            {
+              "value": "120",
+              "label": "2 minutes"
+            },
+            {
+              "value": "300",
+              "label": "5 minutes"
+            }
+          ]
+        },
+        {
+          "id": "mic",
+          "label": "Also record my voice",
+          "type": "select",
+          "default": "yes",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes — I'll explain while I show"
+            },
+            {
+              "value": "",
+              "label": "No — screen only"
+            }
+          ]
+        },
+        {
+          "id": "language",
+          "label": "Spoken language",
+          "type": "select",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "Detect automatically"
+            },
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "it",
+              "label": "Italian"
+            },
+            {
+              "value": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "value": "nl",
+              "label": "Dutch"
+            },
+            {
+              "value": "ru",
+              "label": "Russian"
+            },
+            {
+              "value": "uk",
+              "label": "Ukrainian"
+            },
+            {
+              "value": "pl",
+              "label": "Polish"
+            },
+            {
+              "value": "tr",
+              "label": "Turkish"
+            },
+            {
+              "value": "ar",
+              "label": "Arabic"
+            },
+            {
+              "value": "he",
+              "label": "Hebrew"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            }
+          ]
+        },
+        {
+          "id": "outDir",
+          "label": "Save into folder",
+          "type": "folder",
+          "required": true
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "linux",
+          "argv": [
+            "-y",
+            "-f",
+            "x11grab",
+            "-framerate",
+            "10",
+            "-i",
+            "{_display}",
+            "-f",
+            "alsa",
+            "-i",
+            "default",
+            "-t",
+            "{seconds}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-crf",
+            "28",
+            "-pix_fmt",
+            "yuv420p",
+            "-acodec",
+            "aac",
+            "-ab",
+            "96k",
+            "{tmp:rec.mp4}"
+          ],
+          "sets": {
+            "_rec": "rec.mp4"
+          },
+          "requires": "mic",
+          "optional": true
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "linux",
+          "argv": [
+            "-y",
+            "-f",
+            "x11grab",
+            "-framerate",
+            "10",
+            "-i",
+            "{_display}",
+            "-t",
+            "{seconds}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-crf",
+            "28",
+            "-pix_fmt",
+            "yuv420p",
+            "-an",
+            "{tmp:rec.mp4}"
+          ],
+          "sets": {
+            "_rec": "rec.mp4"
+          },
+          "unless": "_rec"
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "darwin",
+          "argv": [
+            "-y",
+            "-f",
+            "avfoundation",
+            "-framerate",
+            "10",
+            "-capture_cursor",
+            "1",
+            "-i",
+            "Capture screen 0:default",
+            "-t",
+            "{seconds}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-crf",
+            "28",
+            "-pix_fmt",
+            "yuv420p",
+            "-acodec",
+            "aac",
+            "-ab",
+            "96k",
+            "{tmp:rec.mp4}"
+          ],
+          "sets": {
+            "_rec": "rec.mp4"
+          },
+          "requires": "mic",
+          "optional": true
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "darwin",
+          "argv": [
+            "-y",
+            "-f",
+            "avfoundation",
+            "-framerate",
+            "10",
+            "-capture_cursor",
+            "1",
+            "-i",
+            "Capture screen 0:none",
+            "-t",
+            "{seconds}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-crf",
+            "28",
+            "-pix_fmt",
+            "yuv420p",
+            "-an",
+            "{tmp:rec.mp4}"
+          ],
+          "sets": {
+            "_rec": "rec.mp4"
+          },
+          "unless": "_rec"
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "win32",
+          "requires": "mic",
+          "argv": [
+            "-hide_banner",
+            "-list_devices",
+            "true",
+            "-f",
+            "dshow",
+            "-i",
+            "dummy"
+          ],
+          "captureStderr": "_devices"
+        },
+        {
+          "pick": "_devices",
+          "transform": "dshowAudio",
+          "sets": "_mic",
+          "requires": "_devices"
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "win32",
+          "argv": [
+            "-y",
+            "-f",
+            "gdigrab",
+            "-framerate",
+            "10",
+            "-i",
+            "desktop",
+            "-f",
+            "dshow",
+            "-i",
+            "audio={_mic}",
+            "-t",
+            "{seconds}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-crf",
+            "28",
+            "-pix_fmt",
+            "yuv420p",
+            "-acodec",
+            "aac",
+            "-ab",
+            "96k",
+            "{tmp:rec.mp4}"
+          ],
+          "sets": {
+            "_rec": "rec.mp4"
+          },
+          "requires": "_mic",
+          "optional": true
+        },
+        {
+          "tool": "ffmpeg",
+          "when": "_os",
+          "equals": "win32",
+          "argv": [
+            "-y",
+            "-f",
+            "gdigrab",
+            "-framerate",
+            "10",
+            "-i",
+            "desktop",
+            "-t",
+            "{seconds}",
+            "-vcodec",
+            "libx264",
+            "-preset",
+            "ultrafast",
+            "-crf",
+            "28",
+            "-pix_fmt",
+            "yuv420p",
+            "-an",
+            "{tmp:rec.mp4}"
+          ],
+          "sets": {
+            "_rec": "rec.mp4"
+          },
+          "unless": "_rec"
+        },
+        {
+          "tool": "ffmpeg",
+          "optional": true,
+          "requires": "_rec",
+          "argv": [
+            "-y",
+            "-i",
+            "{_rec}",
+            "-vn",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "-af",
+            "apad=pad_dur=1",
+            "-c:a",
+            "pcm_s16le",
+            "{tmp:audio.wav}"
+          ],
+          "sets": {
+            "_audio": "audio.wav"
+          }
+        },
+        {
+          "tool": "transcribe",
+          "cwd": "tool",
+          "optional": true,
+          "requires": "_audio",
+          "argv": [
+            "--silero-vad-model=extras/vad/silero_vad.onnx",
+            "--whisper-encoder=extras/model/sherpa-onnx-whisper-base/base-encoder.int8.onnx",
+            "--whisper-decoder=extras/model/sherpa-onnx-whisper-base/base-decoder.int8.onnx",
+            "--tokens=extras/model/sherpa-onnx-whisper-base/base-tokens.txt",
+            "--num-threads=4",
+            "--whisper-language={language}",
+            "{_audio}"
+          ],
+          "captureStdout": "_speech"
+        },
+        {
+          "write": "transcript.txt",
+          "to": "{outDir}/transcript.txt",
+          "from": "_speech",
+          "transform": "segments",
+          "emptyText": "(Nothing was said during the recording, or no microphone was available.)"
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "fmt": "{_rec}"
+        },
+        "-vf",
+        "fps=10,select='eq(n\\,0)+gt(scene\\,0.008)',scale='min(1280,iw)':-2",
+        "-fps_mode",
+        "vfr",
+        "-frame_pts",
+        "1",
+        "-qscale",
+        "3",
+        "-vframes",
+        "300",
+        {
+          "fmt": "{outDir}/frame_%d.jpg"
+        },
+        "-map",
+        "0",
+        "-c",
+        "copy",
+        {
+          "fmt": "{outDir}/recording.mp4"
+        }
+      ],
+      "openAfter": "outDir",
+      "successMessage": "Recording saved — screenshots of every change and a transcript.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ]
     }
   ]
 }
