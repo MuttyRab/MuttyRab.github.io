@@ -126,11 +126,26 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
     }
   }
 
+  // Client capabilities from initialize, and a way to send the client a request (set by start()).
+  let clientCaps = {};
+  let requestClient = null;
+  // "confirm": ask the person directly (MCP elicitation) before tools that use the camera, microphone or
+  // screen — every time, whatever the client's "always allow" setting. Clients without elicitation still
+  // show their own per-tool permission prompt.
+  async function confirmWithUser(action) {
+    if (!action.confirm || !clientCaps.elicitation || !requestClient) return true;
+    try {
+      const r = await requestClient('elicitation/create', { message: action.confirm, requestedSchema: { type: 'object', properties: { allow: { type: 'boolean', title: 'Allow', default: true } }, required: [] } });
+      return r && r.action === 'accept' && !(r.content && r.content.allow === false);
+    } catch (e) { return false; }
+  }
+
   async function callTool(name, args) {
     if (ACCOUNT_TOOLS.some((a) => a.name === name)) return accountTool(name, args);
     const t = tools().find((x) => x.name === name);
     if (!t) return { isError: true, content: [{ type: 'text', text: `Unknown tool: ${name}` }] };
     const { _spec: spec, _action: action } = t;
+    if (!(await confirmWithUser(action))) return { isError: true, content: [{ type: 'text', text: 'The user declined. Nothing was recorded. Ask them before trying again.' }] };
     let cmd;
     try { cmd = buildCommand(action, args || {}); } catch (e) { return { isError: true, content: [{ type: 'text', text: `Invalid arguments: ${e.message}` }] }; }
     if (license) {
@@ -173,6 +188,7 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
     const { id, method, params } = msg;
     switch (method) {
       case 'initialize': {
+        clientCaps = (params && params.capabilities) || {};
         const v = params && PROTOCOL_VERSIONS.includes(params.protocolVersion) ? params.protocolVersion : PROTOCOL_VERSIONS[0];
         return { protocolVersion: v, capabilities: { tools: { listChanged: false } }, serverInfo: { name: 'gui-hub', title: info.productName, version: info.version },
           instructions: [
@@ -194,10 +210,19 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
   function start(input = process.stdin, output = process.stdout) {
     const rl = readline.createInterface({ input });
     const send = (obj) => output.write(`${JSON.stringify(obj)}\n`);
+    const waiting = new Map(); let next = 0;
+    requestClient = (method, params) => new Promise((resolve, reject) => {
+      const id = `guihub-${++next}`;
+      const t = setTimeout(() => { waiting.delete(id); reject(new Error('no answer')); }, 10 * 60 * 1000);
+      waiting.set(id, (m) => { clearTimeout(t); if (m.error) reject(new Error(m.error.message)); else resolve(m.result); });
+      send({ jsonrpc: '2.0', id, method, params });
+    });
     rl.on('line', async (line) => {
       if (!line.trim()) return;
       let msg;
       try { msg = JSON.parse(line); } catch (_) { send({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }); return; }
+      // A response to a request we sent (e.g. the person's answer to "allow the webcam?").
+      if (msg.method === undefined && msg.id !== undefined && waiting.has(msg.id)) { waiting.get(msg.id)(msg); waiting.delete(msg.id); return; }
       try {
         const result = await handle(msg);
         if (msg.id !== undefined && result !== undefined) send({ jsonrpc: '2.0', id: msg.id, result });

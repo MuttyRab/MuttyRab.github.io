@@ -613,3 +613,25 @@ test('prompt-injection defence: file and email text comes back fenced and labell
   assert.ok(/source="file \/d\/a\.pdf"/.test(docRead(idx, '/d/a.pdf', '/i.tsv')));
   assert.ok(!/emails written/.test(untrusted('file x', 'y')));
 });
+
+test('MCP: camera/screen tools ask the person first via elicitation when the client supports it; declining runs nothing', async () => {
+  const { PassThrough } = require('stream');
+  const { createServer } = require('../src/core/mcp');
+  const os = require('os');
+  const server = createServer({ getSpecs: () => specs, binCache: os.tmpdir(), info: { productName: 'GUI Hub', version: 't', siteUrl: 'https://x' } });
+  const input = new PassThrough(); const output = new PassThrough();
+  const origExit = process.exit; process.exit = () => {};
+  server.start(input, output);
+  const lines = []; let buf = '';
+  output.on('data', (d) => { buf += d; const p = buf.split('\n'); buf = p.pop(); lines.push(...p.filter(Boolean).map((l) => JSON.parse(l))); });
+  const until = async (fn) => { for (let i = 0; i < 100; i++) { const m = lines.find(fn); if (m) return m; await new Promise((r) => setTimeout(r, 20)); } throw new Error('timeout'); };
+  input.write(`${JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18', capabilities: { elicitation: {} }, clientInfo: { name: 't', version: '1' } } })}\n`);
+  await until((m) => m.id === 1);
+  input.write(`${JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'watch_camera', arguments: { out: '/tmp/x.jpg' } } })}\n`);
+  const ask = await until((m) => m.method === 'elicitation/create');
+  assert.match(ask.params.message, /webcam/);
+  input.write(`${JSON.stringify({ jsonrpc: '2.0', id: ask.id, result: { action: 'decline' } })}\n`);
+  const res = await until((m) => m.id === 2);
+  assert.ok(res.result.isError && /declined/.test(res.result.content[0].text));
+  input.end(); await new Promise((r) => setTimeout(r, 100)); process.exit = origExit; // let readline's close (→ exit) fire on the stub
+});

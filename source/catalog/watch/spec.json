@@ -710,7 +710,8 @@
       "returnImages": {
         "field": "outDir",
         "max": 8
-      }
+      },
+      "confirm": "Allow the AI to record your screen (and your microphone, if chosen) now?"
     },
     {
       "id": "camera",
@@ -917,7 +918,8 @@
           "-h",
           "full"
         ]
-      ]
+      ],
+      "confirm": "Allow the AI to take a photo with your webcam now?"
     }
   ]
 }
