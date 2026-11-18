@@ -1,4 +1,4 @@
-# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, Czkawka, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, FFmpeg, UVR + Whisper + FFmpeg, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
+# GUI Hub — desktop GUI + MCP server for 7-Zip, Caesium, Czkawka, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, FFmpeg, UVR + Whisper + FFmpeg, Rescribe, Pandoc, pdfcpu, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper
 
 **Website and downloads:** https://guihub.cc
 
@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (61)
+## MCP tools (63)
 
 | Tool | What it does |
 |---|---|
@@ -67,6 +67,8 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `jumpcut_silence` | Remove the silent pauses (dead air) from a talking video on the user's computer, offline, in one pass (FFmpeg silencedetect → exact cuts of picture and sound together). Use when the user wants jump cuts, a tighter/faster video, or 'remove the silences'. `pause`: the shortest pause that gets cut; `level`: how quiet counts as silence (noisy rooms need 'noisy'). For removing filler words, retakes or off-topic parts instead, get a timestamped transcript (watch_video or transcribe_transcribe) and call jumpcut_cut with the ranges to remove. |
 | `jumpcut_cut` | Edit a video on the user's computer by time ranges, offline, in one exact pass (picture and sound stay in sync): `mode` remove deletes the listed parts, keep keeps only them, in time order. Use for 'edit my video by its transcript': get a timestamped transcript first (watch_video or transcribe_transcribe), decide what to cut — retakes, false starts, filler, off-topic tangents, long gaps — and pass `ranges` like '0:12-0:18, 2:40-3:05.5, 10:00-end'. Use jumpcut_silence for automatic pause removal. |
 | `karaoke_make` | Make a karaoke video (MP4) from a song on the user's computer, offline: removes the vocals (UVR MDX-Net), recognises the sung lyrics with Whisper and burns them in as timed on-screen text over the instrumental. Use whenever the user wants a karaoke version, sing-along or lyrics video of a song. Set `language` to the song's language for better lyrics. |
+| `ocr_pdf` | Make a scanned (image-only) PDF searchable on the user's computer, offline: OCR every page (Tesseract via Rescribe) and save `<name> searchable.pdf` (same look, selectable/searchable text layer) plus `<name>.txt` (all the text) into `outDir`. Use for 'make this scan searchable', 'what does this scanned contract/invoice/letter say', 'extract text from my scanned PDFs', especially for long or private documents that should not be uploaded. Set `lang` to the document's language. Then read the .txt to answer questions about the document. Works with PDFs whose pages are JPEG/PNG/TIFF images (scanners, phone scan apps); if it reports an unsupported image type, export the pages as images and use ocr_folder. |
+| `ocr_folder` | Turn a folder of page images (JPG/PNG/TIFF photos or scans, ordered by file name) into one searchable PDF plus a .txt of all the text, offline on the user's computer (Tesseract OCR via Rescribe). Output goes into `outDir` (`<folder name> searchable.pdf` and `<folder name>.txt`). Use for 'turn these photos of a document into a PDF', 'OCR these scanned pages', 'extract the text from these images'. Set `lang` to the text's language. |
 | `pandoc_convert` | Convert documents between formats with Pandoc (input format is detected from the file extension: .docx .md .html .epub .odt .rtf .txt .tex). Several inputs are concatenated in order. Use to='gfm' to turn Word/HTML into Markdown for reading or editing. |
 | `pandoc_write` | Create a real document file on the user's computer from Markdown you write (pass the full text in `text`): Word (.docx), PowerPoint (.pptx — each `## heading` starts a new slide), OpenDocument (.odt), HTML, EPUB or RTF. The `out` file extension should match `to`. |
 | `pdfcpu_merge` | Combine several PDFs into one, in the order listed. |
@@ -194,6 +196,7 @@ GUI Hub has three apps — **Essentials** (video, photos, Word/PowerPoint/PDF, t
 - [Dub a video into Spanish (or 30 other languages) with Claude — on your own computer](https://guihub.cc/guides/dub-video-into-another-language-with-ai.html)
 - [Show Claude your screen: let it watch you reproduce a bug or do a task (with your voice)](https://guihub.cc/guides/show-claude-your-screen.html)
 - [Find duplicate files and look-alike photos with Claude — and delete only what you approve](https://guihub.cc/guides/find-duplicate-photos-and-files-with-ai.html)
+- [Make scanned PDFs searchable offline — and let your AI read them](https://guihub.cc/guides/make-scanned-pdf-searchable-offline.html)
 
 ## About this repository
 

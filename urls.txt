@@ -29,6 +29,8 @@ https://guihub.cc/ai/ffmpeg-join.html
 https://guihub.cc/ai/jumpcut-silence.html
 https://guihub.cc/ai/jumpcut-cut.html
 https://guihub.cc/ai/karaoke-make.html
+https://guihub.cc/ai/ocr-pdf.html
+https://guihub.cc/ai/ocr-folder.html
 https://guihub.cc/ai/pandoc-convert.html
 https://guihub.cc/ai/pandoc-write.html
 https://guihub.cc/ai/pdfcpu-merge.html
@@ -436,6 +438,7 @@ https://guihub.cc/tools/ffmpeg.html
 https://guihub.cc/tools/immich-go.html
 https://guihub.cc/tools/jumpcut.html
 https://guihub.cc/tools/karaoke.html
+https://guihub.cc/tools/ocr.html
 https://guihub.cc/tools/pandoc.html
 https://guihub.cc/tools/pdfcpu.html
 https://guihub.cc/tools/speak.html
@@ -505,4 +508,5 @@ https://guihub.cc/guides/headliner-alternative-audiogram.html
 https://guihub.cc/guides/dub-video-into-another-language-with-ai.html
 https://guihub.cc/guides/show-claude-your-screen.html
 https://guihub.cc/guides/find-duplicate-photos-and-files-with-ai.html
+https://guihub.cc/guides/make-scanned-pdf-searchable-offline.html
 https://guihub.cc/legal.html

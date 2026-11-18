@@ -435,3 +435,14 @@ test('runner: okCodes turn a "found something" exit code into success', async ()
   assert.strictEqual((await run([11])).code, 0);
   assert.strictEqual((await run(undefined)).code, 11);
 });
+
+test('ocr: language picks a pinned model from the tool\'s extras; input and output folder are positional', () => {
+  const spec = specs.find((s) => s.id === 'ocr');
+  const pdf = spec.actions.find((a) => a.id === 'pdf');
+  const { argv } = buildCommand(pdf, { input: '/s/my scan.pdf', lang: 'deu', outDir: '/o', _selfDir: '/c/ocr' });
+  assert.deepStrictEqual(argv, ['-t', '/c/ocr/extras/deu/deu.traineddata', '/s/my scan.pdf', '/o']);
+  const langs = pdf.fields.find((f) => f.id === 'lang').options.map((o) => o.value);
+  assert.deepStrictEqual(langs.slice().sort(), spec.binary.extras.map((x) => x.name).sort());
+  const folder = spec.actions.find((a) => a.id === 'folder');
+  assert.deepStrictEqual(buildCommand(folder, { pages: '/p', lang: 'eng', outDir: '/o', _selfDir: '/c' }).argv, ['-t', '/c/extras/eng/eng.traineddata', '/p', '/o']);
+});
