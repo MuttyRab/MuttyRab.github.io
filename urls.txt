@@ -492,4 +492,7 @@ https://guihub.cc/guides/remove-location-from-photos.html
 https://guihub.cc/guides/turn-long-video-into-shorts-with-ai.html
 https://guihub.cc/guides/add-translated-subtitles-to-video-with-ai.html
 https://guihub.cc/guides/edit-video-by-transcript-with-ai.html
+https://guihub.cc/guides/opus-clip-alternative-offline.html
+https://guihub.cc/guides/descript-alternative-edit-video-by-transcript.html
+https://guihub.cc/guides/headliner-alternative-audiogram.html
 https://guihub.cc/legal.html

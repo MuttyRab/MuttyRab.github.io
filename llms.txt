@@ -241,6 +241,9 @@ No MCP needed: run `npx -y https://guihub.cc/cli.tgz list`, then `npx -y https:/
 - [Turn a long video into Shorts, Reels and TikToks with Claude (captions included)](https://guihub.cc/guides/turn-long-video-into-shorts-with-ai.html)
 - [Add translated subtitles to a video with Claude (burned in, any language)](https://guihub.cc/guides/add-translated-subtitles-to-video-with-ai.html)
 - [Edit a talking video by its transcript with Claude (cut retakes, ums and pauses)](https://guihub.cc/guides/edit-video-by-transcript-with-ai.html)
+- [Opus Clip alternative: make Shorts with captions on your own computer (no subscription)](https://guihub.cc/guides/opus-clip-alternative-offline.html)
+- [Descript alternative for cutting talking videos: remove pauses and edit by transcript, offline](https://guihub.cc/guides/descript-alternative-edit-video-by-transcript.html)
+- [Headliner alternative: make podcast audiograms (waveform + captions) without a subscription](https://guihub.cc/guides/headliner-alternative-audiogram.html)
 
 ## Notes
 - GUI Hub is independent and not affiliated with the upstream projects; each program is downloaded from its official GitHub release and verified by SHA-256.
