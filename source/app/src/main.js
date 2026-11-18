@@ -25,8 +25,9 @@ const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config.jso
 if (process.env.GUIHUB_USER_DATA) app.setPath('userData', process.env.GUIHUB_USER_DATA);
 const catalogDir = process.env.GUIHUB_CATALOG || path.join(resources, 'catalog');
 const userDir = app.getPath('userData');
-const binCache = path.join(userDir, 'tools');
-fs.mkdirSync(binCache, { recursive: true });
+// Engines shipped inside the installer (offline out of the box); downloads/updates go to the user folder.
+const binCache = [path.join(userDir, 'tools'), path.join(resources, 'tools')];
+fs.mkdirSync(binCache[0], { recursive: true });
 
 // Each GUI Hub product ships as its own app: config.product (set at build time) limits the tools.
 const onlyProduct = config.product || process.env.GUIHUB_PRODUCT || '';

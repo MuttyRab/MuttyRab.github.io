@@ -68,11 +68,15 @@ function findFile(dir, name, depth = 0) {
   return null;
 }
 
+// cacheRoot: one folder, or a list — e.g. [the user's tool folder, the engines shipped inside the
+// installer]. A tool installed in any of them is used from there; downloads go to the first.
 function binaryPaths(spec, cacheRoot, key = platformKey()) {
   const asset = spec.binary.assets[key];
   if (!asset) throw new Error(`${spec.name} is not available for ${key}`);
-  const dir = path.join(cacheRoot, spec.id, spec.binary.version, key);
-  return { asset, dir, exe: path.join(dir, asset.path) };
+  const roots = (Array.isArray(cacheRoot) ? cacheRoot : [cacheRoot]).filter(Boolean);
+  const at = (r) => { const dir = path.join(r, spec.id, spec.binary.version, key); return { asset, dir, exe: path.join(dir, asset.path) }; };
+  for (const r of roots) { const p = at(r); if (fs.existsSync(p.exe) && (spec.binary.extras || []).every((x) => fs.existsSync(path.join(p.dir, 'extras', x.name)))) return p; }
+  return at(roots[0]);
 }
 
 function isInstalled(spec, cacheRoot, key) {
@@ -150,9 +154,27 @@ function friendlyError(spec, err) {
   return new Error(`Couldn't get ${spec.name}'s engine from ${host}: ${why}. Try again; if it keeps failing, email support with this message.`);
 }
 
+// macOS marks everything inside a downloaded DMG as quarantined, and Gatekeeper may block a quarantined
+// command-line program. So on a Mac a bundled engine is copied once into the user's tool folder (local,
+// no network) and the quarantine flag is removed there. Windows and Linux use bundled engines in place.
+async function adoptBundled(spec, roots, key) {
+  if (process.platform !== 'darwin' || !Array.isArray(roots) || roots.length < 2) return;
+  const here = binaryPaths(spec, roots, key);
+  const mine = binaryPaths(spec, [roots[0]], key);
+  if (here.dir === mine.dir || fs.existsSync(mine.exe)) return;
+  const tmp = `${mine.dir}.partial`;
+  fs.rmSync(tmp, { recursive: true, force: true });
+  fs.mkdirSync(path.dirname(tmp), { recursive: true });
+  fs.cpSync(here.dir, tmp, { recursive: true, verbatimSymlinks: true });
+  await run('xattr', ['-dr', 'com.apple.quarantine', tmp]).catch(() => {});
+  fs.rmSync(mine.dir, { recursive: true, force: true });
+  fs.renameSync(tmp, mine.dir);
+}
+
 async function ensureBinary(spec, cacheRoot, opts = {}) {
   const o = { ...opts, fetcher: withRetries(opts.fetchers || [opts.fetcher || download]) };
   try {
+    await adoptBundled(spec, cacheRoot, o.key).catch(() => {});
     const exe = await ensureMain(spec, cacheRoot, o);
     await ensureExtras(spec, binaryPaths(spec, cacheRoot, o.key).dir, o);
     return exe;

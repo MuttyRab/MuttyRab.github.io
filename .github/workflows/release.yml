@@ -19,7 +19,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         product: [essentials, data, audio]   # each GUI Hub product is its own app (catalog/products.json)
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 40
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,6 +30,12 @@ jobs:
         working-directory: source/app
       - name: Turn the source into the ${{ matrix.product }} app
         run: node source/scripts/set-product.js ${{ matrix.product }} source/app source/catalog
+      - name: Put every engine inside the installer (works offline out of the box)
+        shell: bash
+        run: |
+          case "${{ runner.os }}" in Linux) keys=linux-x64;; Windows) keys=win32-x64;; macOS) keys="darwin-arm64 darwin-x64";; esac
+          node source/scripts/bundle-engines.js ${{ matrix.product }} source/app/engines --by-arch $keys
+          du -sh source/app/engines/* || true
       - name: Build installers (unsigned)
         working-directory: source/app
         shell: bash

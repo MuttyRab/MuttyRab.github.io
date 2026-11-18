@@ -53,7 +53,7 @@ function setup({ argv = process.argv, remoteTimeoutMs = 0 } = {}) {
     getAllSpecs: () => allSpecs,
     getProducts: () => products,
     license,
-    binCache: path.join(userDir, 'tools'),
+    binCache: [path.join(userDir, 'tools'), ...[process.resourcesPath, path.resolve(appRoot, '..'), path.resolve(appRoot, '..', '..')].filter(Boolean).map((r) => path.join(r, 'tools')).filter((p, i, a) => a.indexOf(p) === i && fs.existsSync(p))],
     info: { productName, version: pkg.version, checkoutUrl: config.checkoutUrl, siteUrl: config.siteUrl, price: config.price || '$9' },
   });
   // New and fixed tools arrive from the remote catalog without reinstalling.

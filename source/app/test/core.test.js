@@ -580,3 +580,24 @@ test('offline: remote specs may use release repos the installer already trusts (
   assert.ok(/one-time download/.test(m) && /works offline/.test(m) && /github\.com/.test(m) && /VPN, proxy or firewall/.test(m), m);
   assert.ok(/Couldn't get/.test(friendlyError(ff, new Error('download failed: HTTP 500 for x')).message));
 });
+
+test('offline out of the box: engines shipped in the installer are used in place; the user folder wins; new downloads go there', async () => {
+  const fs = require('fs'); const os = require('os'); const path = require('path');
+  const { binaryPaths, isInstalled, ensureBinary } = require('../src/core/binaries');
+  const { platformKey } = require('../src/core/spec');
+  const user = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-user-')); const shipped = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-ship-'));
+  const key = platformKey();
+  const sp = { id: 'demo', name: 'Demo', upstream: { displayName: 'Demo' }, binary: { version: '1', assets: { [key]: { url: 'https://example.invalid/demo', path: 'bin/demo' } }, extras: [{ name: 'model', url: 'https://example.invalid/m.bin' }] } };
+  const put = (root) => { const d = path.join(root, 'demo', '1', key); fs.mkdirSync(path.join(d, 'bin'), { recursive: true }); fs.writeFileSync(path.join(d, 'bin', 'demo'), 'x'); fs.mkdirSync(path.join(d, 'extras', 'model'), { recursive: true }); return d; };
+  assert.strictEqual(binaryPaths(sp, [user, shipped]).dir, path.join(user, 'demo', '1', key)); // nothing yet → downloads go to the user folder
+  assert.ok(!isInstalled(sp, [user, shipped]));
+  const sd = put(shipped);
+  assert.ok(isInstalled(sp, [user, shipped]));
+  if (process.platform !== 'darwin') {
+    let fetched = 0;
+    const exe = await ensureBinary(sp, [user, shipped], { fetcher: async () => { fetched++; } });
+    assert.strictEqual(exe, path.join(sd, 'bin', 'demo')); assert.strictEqual(fetched, 0, 'no download when the installer has it');
+  }
+  const ud = put(user);
+  assert.strictEqual(binaryPaths(sp, [user, shipped]).dir, ud);
+});
