@@ -67,7 +67,8 @@ function seed(id) {
   assert.ok(out.includes('arg: -f') && out.includes('arg: IMG_') && out.includes('arg: holiday-{%03d}{ext}') && out.includes('arg: -R'), out);
   assert.ok(!out.includes('arg: -x'), 'preview must not apply');
   assert.ok(out.includes(`cwd=${fs.realpathSync(work)}`) || out.includes(`cwd=${work}`), 'runs inside chosen folder');
-  assert.match(await page.textContent('#tool-access'), /2 free runs left/);
+  // Trial counts down, unless the live catalog says purchases aren't open yet (free launch: nothing is used up).
+  assert.match(await page.textContent('#tool-access'), /2 free runs left|Free during launch/);
   await page.screenshot({ path: path.join(shots, '2-f2-preview.png') });
 
   // croc receive: secret goes through env, not argv.
