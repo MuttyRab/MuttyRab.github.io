@@ -1,0 +1,260 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script>if(location.protocol==="http:"&&/guihub.cc$/.test(location.hostname))location.replace("https:"+location.href.slice(5))</script><title>DuckDB command generator — CSV to Excel/Parquet/JSON, combine CSVs, dedupe, SQL | GUI Hub</title><meta name="description" content="Free DuckDB CLI command generator: convert CSV to Excel, Parquet or JSON, combine many CSV files into one, remove duplicate rows, preview and summarise a file, or run SQL — copy a working duckdb command."><link rel="canonical" href="https://guihub.cc/free/duckdb-command-generator.html"><meta name="theme-color" content="#ffffff">
+<meta property="og:title" content="DuckDB command generator — CSV to Excel/Parquet/JSON, combine CSVs, dedupe, SQL | GUI Hub"><meta property="og:description" content="Free DuckDB CLI command generator: convert CSV to Excel, Parquet or JSON, combine many CSV files into one, remove duplicate rows, preview and summarise a file, or run SQL — copy a working duckdb command."><meta property="og:type" content="website"><meta property="og:image" content="https://guihub.cc/assets/video-compress.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20aria-hidden%3D%22true%22%3E%3Crect%20width%3D%2224%22%20height%3D%2224%22%20rx%3D%226%22%20fill%3D%22%232f5bea%22%2F%3E%3Cpath%20d%3D%22M7%208.5l3.2%203.5L7%2015.5M12.6%2015.5h4.6%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>:root{color-scheme:light;--bg:#fff;--soft:#f6f7f9;--soft2:#eef0f4;--ink:#0f1115;--ink2:#454b55;--ink3:#6b7280;--line:#e5e7eb;--line2:#d5d9e0;--acc:#2f5bea;--acc2:#1f46c8;--acc-soft:#eef2fe;--ok:#15803d;--r:14px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink2);font:17px/1.65 "Geist",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--acc)}a:hover{color:var(--acc2)}img{max-width:100%;height:auto;display:block}
+h1,h2,h3{color:var(--ink);margin:0;letter-spacing:-.025em;font-weight:650}h1{font-size:clamp(2.3rem,5vw,3.6rem);line-height:1.08}h2{font-size:clamp(1.7rem,3.2vw,2.4rem);line-height:1.15;margin-bottom:12px}h3{font-size:1.12rem;line-height:1.3;margin-bottom:6px;letter-spacing:-.01em}
+p{margin:0 0 14px}code,.mono{font-family:"Geist Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.88em}code{background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--ink)}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px}.lead{font-size:1.2rem;color:var(--ink2);max-width:40ch}.muted{color:var(--ink3)}.small{font-size:.92rem}.center{text-align:center}.center .lead,.center p{margin-left:auto;margin-right:auto}
+.eyebrow{display:block;font-size:.85rem;font-weight:600;color:var(--acc);margin-bottom:10px}
+header{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.92);backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line)}header .wrap{display:flex;justify-content:space-between;align-items:center;height:64px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-weight:650;font-size:1.05rem}nav{display:flex;gap:24px;align-items:center}nav a{color:var(--ink2);text-decoration:none;font-size:.95rem}nav a:hover{color:var(--ink)}@media (max-width:760px){nav a.hide-sm{display:none}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:10px;font-weight:600;font-size:1rem;text-decoration:none;border:1px solid var(--line2);color:var(--ink);background:#fff;transition:background .15s,border-color .15s}
+.btn:hover{background:var(--soft);color:var(--ink)}.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}.btn.primary:hover{background:var(--acc2);color:#fff}.btn.big{min-height:52px;padding:0 24px;font-size:1.04rem}.btn.sm{min-height:38px;padding:0 14px;font-size:.92rem}
+@media (max-width:560px){.ctarow .btn{width:100%}}.ctarow{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.under{margin-top:12px}
+section{padding:96px 0}section.soft{background:var(--soft)}@media (max-width:720px){section{padding:64px 0}}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:72px 0 64px}.hero>*{min-width:0}@media (max-width:920px){.hero{grid-template-columns:1fr;gap:40px;padding:40px 0}}
+.hero .lead{margin:20px 0 28px}.proof{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:22px;color:var(--ink3);font-size:.92rem}.proof b{color:var(--ink);font-weight:600}
+.diagram{background:linear-gradient(180deg,#f7f9ff,#f3f5fa);border:1px solid var(--line);border-radius:20px;padding:26px;display:grid;gap:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.9rem;color:var(--ink)}
+.chip.ask{border-radius:12px;padding:10px 14px;max-width:100%;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.flow{height:26px;position:relative}.flow::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed #b7c3ea}
+.hub{margin:0 auto;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:14px;padding:12px 18px;font-weight:600}
+.files{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.88rem;display:grid;gap:4px}.files .row{display:flex;justify-content:space-between;gap:10px}.files .ok{color:var(--ok);font-weight:600}.lbl{font-size:.78rem;color:var(--ink3);text-align:center}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}@media (max-width:920px){.cards{grid-template-columns:1fr 1fr}}@media (max-width:600px){.cards{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:24px;display:flex;flex-direction:column;min-width:0}.cards>*,.install>*,.why>*,.plans>*{min-width:0}.card .ic{width:40px;height:40px;border-radius:10px;background:var(--acc-soft);color:var(--acc);display:grid;place-items:center;margin-bottom:16px}
+.card q{display:block;quotes:none;background:var(--soft);border-radius:10px;padding:10px 12px;margin:10px 0 14px;color:var(--ink);font-size:.95rem}.card .by{margin-top:auto;font-size:.85rem;color:var(--ink3)}.card a.more{font-weight:600;text-decoration:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}.two>*{min-width:0}@media (max-width:920px){.two{grid-template-columns:1fr}}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px}
+.chat{display:grid;gap:10px;margin-top:18px}.msg{max-width:88%;padding:10px 14px;border-radius:14px;font-size:.95rem}.msg.you{justify-self:end;background:var(--acc);color:#fff;border-bottom-right-radius:4px}.msg.ai{background:var(--soft);color:var(--ink);border-bottom-left-radius:4px}
+.call{font-family:"Geist Mono",monospace;font-size:.8rem;color:var(--ink3);border:1px dashed var(--line2);border-radius:10px;padding:8px 12px;background:#fff}.call b{color:var(--acc);font-weight:500}
+.shot{border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 40px rgba(16,24,40,.10)}
+.install{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}@media (max-width:920px){.install{grid-template-columns:1fr}}
+.install .card h3{display:flex;gap:10px;align-items:center}.step{width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;font-size:.85rem;display:inline-grid;place-items:center;flex:none}
+pre.code{font:13px/1.6 "Geist Mono",ui-monospace,monospace;background:#0f1115;color:#e6e8ee;border-radius:10px;padding:14px 16px;overflow-x:auto;white-space:pre;margin:10px 0}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:820px;margin:0 auto}@media (max-width:820px){.plans{grid-template-columns:1fr!important}.plans .pro{order:-1}}
+.plan{background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px;text-align:left}.plan.pro{border:2px solid var(--acc);box-shadow:0 12px 40px rgba(47,91,234,.12)}.plan .price{color:var(--ink);font-size:3rem;font-weight:700;letter-spacing:-.04em;line-height:1;margin:12px 0 4px}.plan .per{color:var(--ink3);font-size:.92rem}
+.plan ul{list-style:none;padding:0;margin:20px 0 24px}.plan li{padding:6px 0 6px 28px;position:relative}.plan li::before{content:"";position:absolute;left:4px;top:13px;width:10px;height:5px;border-left:2px solid var(--ok);border-bottom:2px solid var(--ok);transform:rotate(-45deg)}.plan .btn{width:100%}
+.why{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}@media (max-width:820px){.why{grid-template-columns:1fr}}.why h3{margin-top:12px}
+.plain-list{list-style:none;padding:0;margin:0 0 14px}.plain-list li{padding:5px 0 5px 24px;position:relative}.plain-list li::before{content:"";position:absolute;left:4px;top:12px;width:9px;height:5px;border-left:2px solid var(--ok);border-bottom:2px solid var(--ok);transform:rotate(-45deg)}
+.shop{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-bottom:72px}.shop>*{min-width:0}.prod{padding:28px}@media (max-width:980px){.shop{grid-template-columns:1fr}}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}@media (max-width:920px){.tools{grid-template-columns:1fr 1fr}}@media (max-width:520px){.tools{grid-template-columns:1fr}}
+.tool{display:block;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--ink2);transition:border-color .15s}.tool:hover{border-color:var(--acc)}.tool b{display:block;color:var(--ink)}.tool span{font-size:.85rem;color:var(--ink3)}
+.badge{display:inline-block;font-size:.72rem;font-weight:600;color:var(--ok);background:#ecfdf3;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:2px}
+details{border-bottom:1px solid var(--line);padding:18px 0}details:first-of-type{border-top:1px solid var(--line)}summary{cursor:pointer;color:var(--ink);font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}summary::-webkit-details-marker{display:none}summary::after{content:"+";color:var(--ink3);font-weight:400}details[open] summary::after{content:"–"}details p,details ol{margin:10px 0 0;max-width:70ch}
+.faq{max-width:780px;margin:0 auto}
+table{width:100%;border-collapse:collapse;font-size:.94rem}th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:.82rem;color:var(--ink3);font-weight:600;background:var(--soft)}tr:last-child td{border-bottom:0}.tablewrap{border:1px solid var(--line);border-radius:12px;overflow-x:auto;background:#fff}td b{color:var(--ink)}
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}.acts>div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px}.acts p{margin:4px 0 0;font-size:.94rem}
+.jobs{columns:2;padding:0;list-style:none;margin:16px 0 0;column-gap:32px}.jobs li{break-inside:avoid;padding:8px 0;border-bottom:1px solid var(--line)}.jobs a{text-decoration:none;font-weight:500}@media (max-width:640px){.jobs{columns:1}}
+.tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}.task{display:block;padding:18px;background:#fff;border:1px solid var(--line);border-radius:12px;text-decoration:none;color:var(--ink);font-weight:600}.task span{display:block;color:var(--ink3);font-weight:400;font-size:.92rem;margin-top:4px}
+.pill{display:inline-block;font-size:.85rem;font-weight:600;color:var(--acc);margin-bottom:14px}
+.cta{border:1px solid var(--line);border-radius:16px;padding:28px;background:var(--soft);margin:44px 0}.cta h2{font-size:1.5rem}
+article{max-width:720px}article h2{margin-top:40px;font-size:1.5rem}article ol,article ul{padding-left:22px}article li{margin:6px 0}
+.final{text-align:center;padding:96px 0}.final .ctarow{justify-content:center}
+footer{border-top:1px solid var(--line);padding:40px 0 56px;color:var(--ink3);font-size:.88rem;background:var(--soft)}footer p{max-width:85ch}footer a{color:var(--ink2)}
+:focus-visible{outline:3px solid rgba(47,91,234,.5);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}</style><script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Why does the Excel command start with INSTALL excel?","acceptedAnswer":{"@type":"Answer","text":"Writing .xlsx needs DuckDB’s excel extension; the first run downloads it once, after that it works offline."}},{"@type":"Question","name":"How big a file can it handle?","acceptedAnswer":{"@type":"Answer","text":"DuckDB streams the data, so CSV files of many gigabytes work on an ordinary laptop."}},{"@type":"Question","name":"Are these the right options for my version?","acceptedAnswer":{"@type":"Answer","text":"They are the commands GUI Hub itself runs, and every option is checked against the real DuckDB 2.0.0 help output on Windows, macOS and Linux in our automated tests."}},{"@type":"Question","name":"Do I need to install anything?","acceptedAnswer":{"@type":"Answer","text":"Only DuckDB itself (duckdb.org/docs/installation (single file), or winget install DuckDB.cli / brew install duckdb). This page just writes the command; nothing is uploaded. If you’d rather not use a terminal, the GUI Hub desktop app runs the same commands from a form, offline, and its MCP server lets Claude or Cursor run them for you."}},{"@type":"Question","name":"Windows: why do the quotes look different?","acceptedAnswer":{"@type":"Answer","text":"cmd and PowerShell don’t understand single quotes, so the Windows version wraps arguments with spaces in double quotes. Pick your system above the command."}}]}</script></head>
+<body><header><div class="wrap"><a class="brand" href="/"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#2f5bea"/><path d="M7 8.5l3.2 3.5L7 15.5M12.6 15.5h4.6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>GUI Hub</a><nav><a class="hide-sm" href="/essentials/">Essentials</a><a class="hide-sm" href="/data/">Data</a><a class="hide-sm" href="/audio/">Audio</a><a class="hide-sm" href="/free/">Free tools</a><a class="hide-sm" href="/ai/">For AI</a><a class="hide-sm" href="/#tools">All tools</a><a class="hide-sm" href="/guides/">Guides</a><a class="hide-sm" href="/#pricing">Pricing</a><a class="btn sm primary" href="/#products">Get the apps</a></nav></div></header>
+<main class="wrap"><article style="padding:64px 0 24px;max-width:820px"><span class="pill">Free tool · runs in your browser</span><h1 style="font-size:clamp(2rem,4vw,3rem)">DuckDB command generator</h1>
+<p class="lead" style="margin:16px 0 24px">Convert CSV ↔ Excel, Parquet and JSON, merge many CSV files (columns matched by name), remove duplicate rows, or look inside a big file — one <code>duckdb</code> command, no database to set up.</p>
+<div class="panel" id="gen"><p style="margin:0 0 12px"><label>Job: <select id="job"><option value="summarize">Look inside a file</option><option value="convert">Convert</option><option value="combine">Combine files</option><option value="dedupe">Remove duplicates</option><option value="query">Ask with SQL</option></select></label> · <label>System: <select id="os"><option value="unix">macOS / Linux</option><option value="win">Windows</option></select></label></p>
+<div id="fields" style="display:grid;gap:8px"></div>
+<pre id="cmd" style="white-space:pre-wrap;word-break:break-all;background:#0b1020;color:#e6e9f2;padding:14px;border-radius:10px;margin:14px 0 8px;font-size:.95rem"></pre>
+<p style="margin:0"><button class="btn primary" id="copy" type="button">Copy command</button> <span id="msg" class="small muted"></span></p>
+<div id="explain" class="small" style="margin-top:12px"></div></div>
+<p class="small muted" style="margin:14px 0 0">Unofficial — DuckDB is made by DuckDB Labs and contributors (MIT). Prefer buttons to a terminal? <a href="/tools/duckdb.html">GUI Hub’s Spreadsheet &amp; Data Toolkit</a> runs these same commands from a form, offline.</p>
+<h2>Common DuckDB commands</h2><h3>Look inside a file</h3><p>See the columns, a preview of the first rows, and per-column stats (types, empty cells, min/max, unique values) of any CSV, Excel, Parquet or JSON file — even huge ones.</p><pre style="white-space:pre-wrap;word-break:break-all;background:#f3f4f7;padding:12px;border-radius:8px">duckdb -markdown -c &#39;SELECT * FROM &#39;\&#39;&#39;data.csv&#39;\&#39;&#39; LIMIT 10; SUMMARIZE SELECT * FROM &#39;\&#39;&#39;data.csv&#39;\&#39;&#39;;&#39;</pre><h3>Convert</h3><p>Turn CSV into Excel, Excel into CSV, or either into Parquet or JSON.</p><pre style="white-space:pre-wrap;word-break:break-all;background:#f3f4f7;padding:12px;border-radius:8px">duckdb -cmd &#39;INSTALL excel; LOAD excel;&#39; -c &#39;COPY (SELECT * FROM &#39;\&#39;&#39;data.csv&#39;\&#39;&#39;) TO &#39;\&#39;&#39;output.xlsx&#39;\&#39;&#39; (FORMAT xlsx, HEADER true);&#39;</pre><h3>Combine files</h3><p>Stack many CSV files (e.g. monthly exports) into one table. Columns are matched by name, so files with different column orders still line up.</p><pre style="white-space:pre-wrap;word-break:break-all;background:#f3f4f7;padding:12px;border-radius:8px">duckdb -cmd &#39;INSTALL excel; LOAD excel;&#39; -c &#39;COPY (SELECT * FROM read_csv([&#39;\&#39;&#39;jan.csv&#39;\&#39;&#39;, &#39;\&#39;&#39;feb.csv&#39;\&#39;&#39;], union_by_name = true)) TO &#39;\&#39;&#39;output.xlsx&#39;\&#39;&#39; (FORMAT xlsx, HEADER true);&#39;</pre><h3>Remove duplicates</h3><p>Save a copy with exact duplicate rows removed.</p><pre style="white-space:pre-wrap;word-break:break-all;background:#f3f4f7;padding:12px;border-radius:8px">duckdb -cmd &#39;INSTALL excel; LOAD excel;&#39; -c &#39;COPY (SELECT DISTINCT * FROM &#39;\&#39;&#39;data.csv&#39;\&#39;&#39;) TO &#39;\&#39;&#39;output.xlsx&#39;\&#39;&#39; (FORMAT xlsx, HEADER true);&#39;</pre><h3>Ask with SQL</h3><p>Answer questions about your data with SQL — totals, filters, joins across files. Refer to files by path in single quotes, e.g. SELECT region, sum(amount) FROM &#39;/path/sales.csv&#39; GROUP BY region.</p><pre style="white-space:pre-wrap;word-break:break-all;background:#f3f4f7;padding:12px;border-radius:8px">duckdb -markdown -cmd &#39;.maxrows 100&#39; -c &#39;SELECT region, sum(amount) FROM &#39;\&#39;&#39;sales.csv&#39;\&#39;&#39; GROUP BY region&#39;</pre>
+
+<h2>Questions</h2><h3>Why does the Excel command start with INSTALL excel?</h3><p>Writing .xlsx needs DuckDB’s excel extension; the first run downloads it once, after that it works offline.</p><h3>How big a file can it handle?</h3><p>DuckDB streams the data, so CSV files of many gigabytes work on an ordinary laptop.</p><h3>Are these the right options for my version?</h3><p>They are the commands GUI Hub itself runs, and every option is checked against the real DuckDB 2.0.0 help output on Windows, macOS and Linux in our automated tests.</p><h3>Do I need to install anything?</h3><p>Only DuckDB itself (duckdb.org/docs/installation (single file), or <code>winget install DuckDB.cli</code> / <code>brew install duckdb</code>). This page just writes the command; nothing is uploaded. If you’d rather not use a terminal, the GUI Hub desktop app runs the same commands from a form, offline, and its MCP server lets Claude or Cursor run them for you.</p><h3>Windows: why do the quotes look different?</h3><p>cmd and PowerShell don’t understand single quotes, so the Windows version wraps arguments with spaces in double quotes. Pick your system above the command.</p>
+<h2>More free tools</h2><ul class="jobs"><li><a href="/free/csv-to-excel-free.html">CSV to Excel in your browser</a></li><li><a href="/tools/duckdb.html">DuckDB GUI (desktop app)</a></li><li><a href="/free/ffmpeg-command-generator.html">FFmpeg command generator</a></li><li><a href="/free/pandoc-command-generator.html">Pandoc command generator</a></li><li><a href="/free/7zip-command-generator.html">7-Zip command generator</a></li><li><a href="/free/">All free tools →</a></li></ul>
+</article></main>
+<script>(function(){var module={exports:{}};'use strict';
+// Turns a tool spec action + user-entered values into argv/env for spawning.
+// This is the only place that knows the argv DSL; keep it small and tested.
+//
+// argv items:
+//   "literal"                          -> pushed as-is
+//   {"field": "id"}                    -> value (files/multiline lists expand to many args); skipped if empty
+//   {"field": "id", "flag": "--x"}     -> checkbox: push flag when true
+//                                         other:    push flag + value when non-empty
+//   {"field": "id", "flag": "--x", "join": "="} -> push "--x=value"
+//   {"when": "id", "equals": v, "argv": [...]}  -> nested items, only if field matches (truthy when no equals)
+//   {"sql": "COPY (SELECT * FROM {input}) TO {out} (FORMAT {format})"} -> ONE argument built from a
+//      template: text/path values become SQL string literals ('it''s'), files become lists
+//      (['a','b']), numbers stay numbers, select values are inserted as-is (validated enum only).
+
+const LIST_TYPES = new Set(['files']);
+
+function isEmpty(v) {
+  return v === undefined || v === null || v === '' || v === false || (Array.isArray(v) && v.length === 0);
+}
+
+function fieldMap(action) {
+  const m = new Map();
+  for (const f of action.fields || []) m.set(f.id, f);
+  return m;
+}
+
+function resolveValues(action, values) {
+  const out = {};
+  // Internal values set by prepare steps (names starting with _) pass through untouched.
+  for (const [k, v] of Object.entries(values || {})) if (k.startsWith('_')) out[k] = v;
+  for (const f of action.fields || []) {
+    let v = values[f.id];
+    if (v === undefined) v = f.default;
+    if (f.type === 'checkbox') v = v === true || v === 'true';
+    if (f.type === 'number' && !isEmpty(v)) v = String(Number(v));
+    if (LIST_TYPES.has(f.type) && typeof v === 'string') v = v ? [v] : [];
+    out[f.id] = v;
+  }
+  return out;
+}
+
+function isVisible(field, vals) {
+  if (!field.showIf) return true;
+  const cur = vals[field.showIf.field];
+  if ('equals' in field.showIf) return cur === field.showIf.equals;
+  return !isEmpty(cur);
+}
+
+function validate(action, values) {
+  const vals = resolveValues(action, values);
+  const errors = [];
+  for (const f of action.fields || []) {
+    if (!isVisible(f, vals)) continue;
+    const v = vals[f.id];
+    if (f.required && isEmpty(v)) errors.push({ field: f.id, message: `${f.label} is required` });
+    if (f.type === 'number' && !isEmpty(v) && Number.isNaN(Number(v))) errors.push({ field: f.id, message: `${f.label} must be a number` });
+    if (f.type === 'select' && !isEmpty(v) && f.options && !f.options.some((o) => o.value === v)) {
+      errors.push({ field: f.id, message: `${f.label} has an invalid choice` });
+    }
+    if (f.minLength && typeof v === 'string' && v.length > 0 && v.length < f.minLength) {
+      errors.push({ field: f.id, message: `${f.label} must be at least ${f.minLength} characters` });
+    }
+  }
+  return errors;
+}
+
+const sqlString = (v) => `'${String(v).replace(/'/g, "''")}'`;
+
+function sqlTemplate(tpl, vals, fields) {
+  return tpl.replace(/\{([A-Za-z0-9_]+)\}/g, (_, id) => {
+    const f = fields.get(id);
+    if (!f) throw new Error(`sql template references unknown field "${id}"`);
+    const v = vals[id];
+    if (f.type === 'select') return String(v ?? '');
+    if (f.type === 'number') { const n = Number(v); if (!Number.isFinite(n)) throw new Error(`${f.label} must be a number`); return String(n); }
+    if (LIST_TYPES.has(f.type)) return `[${(Array.isArray(v) ? v : []).map(sqlString).join(', ')}]`;
+    if (f.type === 'textarea' && f.sqlRaw) return String(v ?? ''); // a whole statement the user/AI wrote
+    return sqlString(v ?? '');
+  });
+}
+
+function expand(items, vals, fields, out) {
+  for (const item of items) {
+    if (typeof item === 'string') { out.push(item); continue; }
+    if (item.sql) { out.push(sqlTemplate(item.sql, vals, fields)); continue; }
+    // {fmt:"subtitles={_srt|filter}:fontsdir=…"}: one argument built from values. "|filter" escapes a
+    // path for an FFmpeg filter option (Windows C:\x → C\:/x), so filters work on every OS.
+    if (item.fmt) {
+      out.push(item.fmt.replace(/\{([A-Za-z0-9_]+)(\|filter)?\}/g, (_, k, f) => {
+        const v = String(vals[k] ?? '');
+        // Quoted at graph level + "\:" at option level: the form FFmpeg documents for Windows paths.
+        // An apostrophe closes the quote, is escaped for both levels (\\\') and reopens it.
+        return f ? `'${v.replace(/\\/g, '/').replace(/:/g, '\\:').replace(/'/g, "'\\\\\\''")}'` : v;
+      }));
+      continue;
+    }
+    if (item.when) {
+      const cur = vals[item.when];
+      const hit = 'equals' in item ? cur === item.equals : !isEmpty(cur);
+      if (hit) expand(item.argv, vals, fields, out);
+      continue;
+    }
+    const f = fields.get(item.field);
+    if (!f) throw new Error(`argv references unknown field "${item.field}"`);
+    if (!isVisible(f, vals)) continue;
+    const v = vals[item.field];
+    if (isEmpty(v)) continue;
+    if (f.type === 'checkbox') { if (item.flag) out.push(item.flag); continue; }
+    const list = Array.isArray(v) ? v : [String(v)];
+    if (item.flag) {
+      if (item.join !== undefined) out.push(`${item.flag}${item.join}${list.join(',')}`);
+      else { out.push(item.flag); out.push(list.join(',')); }
+    } else {
+      out.push(...list);
+    }
+  }
+  return out;
+}
+
+function buildCommand(action, values) {
+  const errors = validate(action, values);
+  if (errors.length) { const e = new Error(errors.map((x) => x.message).join('; ')); e.fieldErrors = errors; throw e; }
+  const vals = resolveValues(action, values);
+  const fields = fieldMap(action);
+  const argv = expand(action.argv || [], vals, fields, []);
+  const env = {};
+  for (const [k, spec] of Object.entries(action.env || {})) {
+    if (typeof spec === 'string') { env[k] = spec; continue; }
+    const v = vals[spec.field];
+    if (!isEmpty(v)) env[k] = String(v);
+  }
+  // stdinField: the named field's text is piped to the tool's stdin (e.g. `typst compile -`),
+  // so an AI assistant can hand over a whole document without writing a file first.
+  const stdin = action.stdinField ? String(vals[action.stdinField] ?? '') : undefined;
+  return { argv, env, stdin };
+}
+
+module.exports = { buildCommand, validate, resolveValues, isVisible };
+
+var A=module.exports,sizePlan=function sizePlan(probe, mb, noAudio) {
+  const t = String(probe || '');
+  const d = t.match(/Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)/);
+  if (!d) throw new Error('could not read the video\'s length (is it a video file?)');
+  const dur = (+d[1]) * 3600 + (+d[2]) * 60 + (+d[3]);
+  const size = parseFloat(mb);
+  if (!(size > 0)) throw new Error('enter a target size in MB');
+  if (!(dur > 0)) throw new Error('could not read the video\'s length (is it a video file?)');
+  const abr = noAudio || !/Stream #[^\n]*Audio:/.test(t) ? 0 : 96;
+  let vbr = Math.floor((size * 8000 * 0.92) / dur - abr);
+  const src = t.match(/Duration:[^\n]*bitrate:\s*(\d+)\s*kb\/s/);
+  if (src && +src[1] > 0) vbr = Math.min(vbr, +src[1]);
+  if (vbr < 40) throw new Error(`a ${Math.round(dur)}-second video can't fit in ${size} MB at watchable quality — pick a bigger size, remove the sound, or trim it first`);
+  const height = vbr >= 2500 ? 2160 : vbr >= 1200 ? 1080 : vbr >= 600 ? 720 : vbr >= 250 ? 480 : 360;
+  return { vbr, buf: vbr * 2, height, abr: abr || 96 };
+};
+var ACTS=[{"id":"summarize","label":"Look inside a file","runLabel":"Show","description":"See the columns, a preview of the first rows, and per-column stats (types, empty cells, min/max, unique values) of any CSV, Excel, Parquet or JSON file — even huge ones.","mcpDescription":"Inspect a local data file (CSV/TSV, Excel .xlsx, Parquet, JSON) without loading it into the chat: returns the first rows and per-column statistics (type, nulls, min, max, distinct count) as Markdown tables. Use this before writing a query.","fields":[{"id":"input","label":"Data file","type":"file","required":true,"filters":[{"name":"Spreadsheets & data","extensions":["csv","tsv","txt","xlsx","parquet","json","jsonl","ndjson"]}]},{"id":"rows","label":"Preview rows","type":"number","default":"10"}],"argv":["-markdown","-c",{"sql":"SELECT * FROM {input} LIMIT {rows}; SUMMARIZE SELECT * FROM {input};"}],"helpArgs":[["-help"]]},{"id":"convert","label":"Convert","runLabel":"Convert","description":"Turn CSV into Excel, Excel into CSV, or either into Parquet or JSON.","mcpDescription":"Convert a local data file between CSV, Excel (.xlsx), Parquet and JSON. Writes a new file; the original is not changed.","fields":[{"id":"input","label":"Data file","type":"file","required":true,"filters":[{"name":"Spreadsheets & data","extensions":["csv","tsv","txt","xlsx","parquet","json","jsonl","ndjson"]}]},{"id":"format","label":"Save as","type":"select","default":"xlsx, HEADER true","options":[{"value":"xlsx, HEADER true","label":"Excel (.xlsx)"},{"value":"csv, HEADER true","label":"CSV (.csv)"},{"value":"parquet","label":"Parquet (.parquet) — compact, for data tools"},{"value":"json, ARRAY true","label":"JSON (.json)"}]},{"id":"out","label":"Save as file","type":"savefile","required":true,"help":"Use the extension that matches the format (.xlsx, .csv, .parquet or .json).","filters":[{"name":"Data","extensions":["xlsx","csv","parquet","json"]}]}],"argv":[{"when":"format","equals":"xlsx, HEADER true","argv":["-cmd","INSTALL excel; LOAD excel;"]},"-c",{"sql":"COPY (SELECT * FROM {input}) TO {out} (FORMAT {format});"}],"openAfter":"out","successMessage":"Converted.","helpArgs":[["-help"]]},{"id":"combine","label":"Combine files","runLabel":"Combine","description":"Stack many CSV files (e.g. monthly exports) into one table. Columns are matched by name, so files with different column orders still line up.","mcpDescription":"Combine several local CSV files into one file (rows stacked, columns matched by name; missing columns become empty). Output format CSV, Excel, Parquet or JSON.","fields":[{"id":"inputs","label":"CSV files","type":"files","required":true,"filters":[{"name":"CSV","extensions":["csv","tsv","txt"]}]},{"id":"format","label":"Save as","type":"select","default":"xlsx, HEADER true","options":[{"value":"xlsx, HEADER true","label":"Excel (.xlsx)"},{"value":"csv, HEADER true","label":"CSV (.csv)"},{"value":"parquet","label":"Parquet (.parquet) — compact, for data tools"},{"value":"json, ARRAY true","label":"JSON (.json)"}]},{"id":"out","label":"Save as file","type":"savefile","required":true,"help":"Use the extension that matches the format (.xlsx, .csv, .parquet or .json).","filters":[{"name":"Data","extensions":["xlsx","csv","parquet","json"]}]}],"argv":[{"when":"format","equals":"xlsx, HEADER true","argv":["-cmd","INSTALL excel; LOAD excel;"]},"-c",{"sql":"COPY (SELECT * FROM read_csv({inputs}, union_by_name = true)) TO {out} (FORMAT {format});"}],"openAfter":"out","successMessage":"Combined.","helpArgs":[["-help"]]},{"id":"dedupe","label":"Remove duplicates","runLabel":"Clean","description":"Save a copy with exact duplicate rows removed.","mcpDescription":"Write a copy of a local data file with exact duplicate rows removed (CSV, Excel, Parquet or JSON in; chosen format out).","fields":[{"id":"input","label":"Data file","type":"file","required":true,"filters":[{"name":"Spreadsheets & data","extensions":["csv","tsv","txt","xlsx","parquet","json","jsonl","ndjson"]}]},{"id":"format","label":"Save as","type":"select","default":"xlsx, HEADER true","options":[{"value":"xlsx, HEADER true","label":"Excel (.xlsx)"},{"value":"csv, HEADER true","label":"CSV (.csv)"},{"value":"parquet","label":"Parquet (.parquet) — compact, for data tools"},{"value":"json, ARRAY true","label":"JSON (.json)"}]},{"id":"out","label":"Save as file","type":"savefile","required":true,"help":"Use the extension that matches the format (.xlsx, .csv, .parquet or .json).","filters":[{"name":"Data","extensions":["xlsx","csv","parquet","json"]}]}],"argv":[{"when":"format","equals":"xlsx, HEADER true","argv":["-cmd","INSTALL excel; LOAD excel;"]},"-c",{"sql":"COPY (SELECT DISTINCT * FROM {input}) TO {out} (FORMAT {format});"}],"openAfter":"out","successMessage":"Duplicates removed.","helpArgs":[["-help"]]},{"id":"query","label":"Ask with SQL","runLabel":"Run","description":"Answer questions about your data with SQL — totals, filters, joins across files. Refer to files by path in single quotes, e.g. SELECT region, sum(amount) FROM '/path/sales.csv' GROUP BY region.","mcpDescription":"Run DuckDB SQL over local data files and get the answer as a Markdown table. Read files by quoted path: SELECT * FROM '/abs/path/file.csv' (also .xlsx, .parquet, .json; globs like '/dir/*.csv'). Use for totals, filters, group-bys, joins across files on data too big to paste into chat. Results are capped by the row limit; to save results use COPY (query) TO '/abs/out.xlsx' (FORMAT xlsx, HEADER true).","fields":[{"id":"sql","label":"SQL","type":"textarea","required":true,"sqlRaw":true,"placeholder":"SELECT region, sum(amount) AS total\nFROM '/Users/you/Downloads/sales.csv'\nGROUP BY region ORDER BY total DESC;"},{"id":"maxRows","label":"Show at most (rows)","type":"select","default":"100","options":[{"value":"40","label":"40"},{"value":"100","label":"100"},{"value":"1000","label":"1,000"}]}],"argv":["-markdown","-cmd",{"sql":".maxrows {maxRows}"},"-c",{"sql":"{sql}"}],"helpArgs":[["-help"]]}],FLAGS={"-c":"run this SQL and exit","-cmd":"run this first (here: load the Excel extension, or set how many rows to show)","-markdown":"print results as a Markdown table"},G={"prog":{"unix":"duckdb","win":"duckdb"},"demo":{"input":"data.csv","inputs":"jan.csv, feb.csv","sql":"SELECT region, sum(amount) FROM 'sales.csv' GROUP BY region"},"demoBy":{}},EXT={"gfm":"md","plain":"txt","xlsx, HEADER true":"xlsx","csv, HEADER true":"csv","json, ARRAY true":"json"};
+var job=document.getElementById('job'),os=document.getElementById('os'),box=document.getElementById('fields'),cmd=document.getElementById('cmd'),ex=document.getElementById('explain'),msg=document.getElementById('msg');
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function act(){for(var i=0;i<ACTS.length;i++)if(ACTS[i].id===job.value)return ACTS[i]}
+function demo(a,id){var d=(G.demoBy[a.id]||{})[id];return d!==undefined?d:G.demo[id]}
+function inExt(a,v){var fi=a.fields.filter(function(x){return x.type==='file'})[0];var m=fi&&String(v[fi.id]||'').match(/\.([A-Za-z0-9]+)$/);return m?m[1].toLowerCase():'out'}
+function outName(a,f,v){var sel=v.to||v.format;var ext=sel?(EXT[sel]||sel):((f.filters||[])[0]||{extensions:[inExt(a,v)]}).extensions[0];return 'output.'+ext}
+function form(){var a=act(),h='';a.fields.forEach(function(f){var id='f_'+f.id,l=esc(f.label),w='<label id="w_'+f.id+'">';
+ if(f.type==='select')h+=w+l+': <select id="'+id+'">'+f.options.map(function(o){return '<option value="'+esc(o.value)+'"'+(o.value===f.default?' selected':'')+'>'+esc(o.label)+'</option>'}).join('')+'</select></label>';
+ else if(f.type==='checkbox')h+=w+'<input type="checkbox" id="'+id+'"'+(f.default?' checked':'')+'> '+l+'</label>';
+ else if(f.type==='textarea')h+=w+l+':<br><textarea id="'+id+'" rows="3" style="width:100%">'+esc(demo(a,f.id)||'')+'</textarea></label>';
+ else{var v=f.type==='savefile'||f.type==='password'?'':(demo(a,f.id)!==undefined?demo(a,f.id):(f.default!==undefined?f.default:''));h+=w+l+(f.type==='files'?' (comma-separated)':'')+': <input id="'+id+'" value="'+esc(v)+'" size="'+(f.type==='number'?6:28)+'"'+(f.type==='savefile'?' placeholder="(automatic)"':f.type==='password'?' placeholder="(none)"':'')+'></label>'}});
+ if(a.id==='compress-size')h+='<label>Video length (minutes:seconds): <input id="f__len" value="1:00" size="7"></label>';
+ box.innerHTML=h;box.querySelectorAll('input,select,textarea').forEach(function(e){e.addEventListener('input',build);e.addEventListener('change',build)});build()}
+function q(t){if(os.value==='win')return /^[-A-Za-z0-9_+=:.,/@%\\]+$/.test(t)?t:'"'+t.replace(/"/g,'""')+'"';return /^[-A-Za-z0-9_+=:.,/@%]+$/.test(t)?t:"'"+t.replace(/'/g,"'\\''")+"'"}
+function build(){var a=act(),v={};msg.textContent='';
+ a.fields.forEach(function(f){var e=document.getElementById('f_'+f.id);if(!e)return;var x=f.type==='checkbox'?e.checked:e.value;if(f.type==='files')x=x.split(',').map(function(s){return s.trim()}).filter(Boolean);v[f.id]=x});
+ a.fields.forEach(function(f){var w=document.getElementById('w_'+f.id);if(w)w.style.display=A.isVisible(f,A.resolveValues(a,v))?'':'none';if(f.type==='savefile'&&!v[f.id])v[f.id]=a.id==='loudness'?'output.'+(((v.input||'').match(/\.([A-Za-z0-9]+)$/)||[0,'mp3'])[1].toLowerCase()):outName(a,f,v)});
+ try{if(a.id==='compress-size'){var p=(document.getElementById('f__len').value||'').split(':').map(Number),s=p.reduce(function(t,x){return t*60+(x||0)},0);if(!(s>0))throw new Error('enter the video length, e.g. 2:30');
+  var hh=Math.floor(s/3600),mm=Math.floor(s%3600/60),ss=(s%60).toFixed(2);var r=sizePlan('Duration: '+hh+':'+mm+':'+ss+'\nStream #0:1: Audio: aac\n',v.mb,v.audio==='remove');v._vbr=String(r.vbr);v._buf=String(r.buf);v._h=String(r.height)}
+  var argv=A.buildCommand(a,v).argv;cmd.textContent=G.prog[os.value]+' '+argv.map(q).join(' ');
+  var seen={},rows=[];argv.forEach(function(t,i){var k=FLAGS[t]?t:Object.keys(FLAGS).filter(function(f){return f.charAt(0)==='-'&&f.length>1&&t.indexOf(f)===0&&!FLAGS[t]}).sort(function(x,y){return y.length-x.length})[0];
+   if(i===0&&FLAGS[t])k=t;if(k&&!seen[k]&&(k.charAt(0)==='-'||i===0)){seen[k]=1;var nx=argv[i+1],shown=t===k&&nx&&nx.charAt(0)!=='-'&&k!=='-i'&&k!=='-y'&&k!=='-o'?t+' '+nx:t;if(k==='-p'&&t.length>2)shown='-p•••';rows.push('<li><code>'+esc(shown.length>80?shown.slice(0,77)+'…':shown)+'</code> — '+esc(FLAGS[k])+'</li>')}});
+  ex.innerHTML=rows.length?'<b>What the options do</b><ul>'+rows.join('')+'</ul>':''}catch(e){cmd.textContent='';ex.innerHTML='';msg.textContent=e.message}}
+document.getElementById('copy').onclick=function(){navigator.clipboard.writeText(cmd.textContent).then(function(){msg.textContent='Copied.'},function(){msg.textContent='Select the command and copy it.'})};
+job.onchange=form;os.onchange=build;form()})();</script>
+<footer><div class="wrap"><p>GUI Hub is an independent app and MCP server for free, open-source programs (7-Zip, Caesium, Czkawka, GTCRN denoiser (sherpa-onnx), FFmpeg + Whisper, croc, Xpdf, Supertonic voices (sherpa-onnx) + FFmpeg, DuckDB, F2, FFmpeg, immich-go, FFmpeg, UVR + Whisper + FFmpeg, Rescribe, Pandoc, pdfcpu, llama.cpp, Kokoro voices (sherpa-onnx), pyannote + TitaNet (sherpa-onnx), Whisper (sherpa-onnx), Typst, Real-ESRGAN, Kokoro + Whisper + FFmpeg, UVR MDX-Net (sherpa-onnx), FFmpeg + Whisper). Each program is downloaded from its official release and verified before use. Those projects are not affiliated with GUI Hub; all trademarks belong to their owners.</p><p><a href="/legal.html">Terms, privacy &amp; refunds</a> · <a href="/guides/">Guides</a> · <a href="https://guihub.cc/support.html">Support</a> · <a href="/llms.txt">llms.txt</a></p></div></footer>
+<script>(function(){var d={"essentials":{"mac":"https://guihub.cc/download/essentials/mac","macIntel":"https://guihub.cc/download/essentials/macIntel","windows":"https://guihub.cc/download/essentials/windows","linux":"https://guihub.cc/download/essentials/linux","mcpb":"https://guihub.cc/download/essentials/mcpb"},"data":{"mac":"https://guihub.cc/download/data/mac","macIntel":"https://guihub.cc/download/data/macIntel","windows":"https://guihub.cc/download/data/windows","linux":"https://guihub.cc/download/data/linux","mcpb":"https://guihub.cc/download/data/mcpb"},"audio":{"mac":"https://guihub.cc/download/audio/mac","macIntel":"https://guihub.cc/download/audio/macIntel","windows":"https://guihub.cc/download/audio/windows","linux":"https://guihub.cc/download/audio/linux","mcpb":"https://guihub.cc/download/audio/mcpb"}};var ua=navigator.userAgent,os=/Mac/i.test(ua)&&!/iPhone|iPad/i.test(ua)?'mac':/Linux|X11/i.test(ua)&&!/Android/i.test(ua)?'linux':'windows';var name={mac:'macOS',windows:'Windows',linux:'Linux'}[os];var phone=/Android|iPhone|iPad|iPod/i.test(ua);document.querySelectorAll('[data-dl]').forEach(function(a){if(phone){a.href='/#install';a.textContent='Install on a computer';return;}a.href=(d[a.getAttribute('data-dl')]||d.essentials)[os];var n=a.querySelector('.os-name');if(n)n.textContent=name;});document.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){navigator.clipboard&&navigator.clipboard.writeText(b.getAttribute('data-copy')).then(function(){var t=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=t;},1500);});});});})();</script>
+<script src="https://cdn.jsdelivr.net/npm/@polar-sh/checkout@0.4.3/dist/embed.global.js" defer></script><script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('a[href^="https://buy.polar.sh/"]').forEach(function(a){if(a.classList.contains('ghbuy'))a.addEventListener('click',function(e){if(window.GH){e.preventDefault();GH.checkout(a.href,a.classList.contains('ghpass'))}});else{a.setAttribute('data-polar-checkout','');a.setAttribute('data-polar-checkout-theme','light')}});if(window.Polar&&Polar.EmbedCheckout)Polar.EmbedCheckout.init()})</script>
+</body></html>
