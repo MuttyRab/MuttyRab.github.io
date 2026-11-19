@@ -666,3 +666,21 @@ test('every prepare step argv is plain strings ({field} placeholders), never {fi
     }
   }
 });
+
+test('free launch period: remote launchFree lets every tool run without using a try; off again restores trials', () => {
+  const fs = require('fs'); const os = require('os'); const path = require('path');
+  const { LicenseStore } = require('../src/core/license');
+  const { mergeProducts } = require('../src/core/products');
+  const bundled = { products: [{ id: 'essentials', name: 'Essentials', benefitIds: [] }], allAccess: null };
+  assert.strictEqual(mergeProducts(bundled, { products: [], launchFree: true }).launchFree, true);
+  assert.strictEqual(mergeProducts(bundled, { products: [], launchFree: false }).launchFree, false);
+  assert.strictEqual(mergeProducts(bundled, { products: [] }).launchFree, false);
+  let data = mergeProducts(bundled, { products: [], launchFree: true });
+  const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'lic-')), 'license.json');
+  const lic = new LicenseStore(file, { trialRuns: 3 }, { products: () => data });
+  const spec = { id: 'ffmpeg', tier: 'pro' };
+  for (let i = 0; i < 5; i++) { assert.deepStrictEqual(lic.canRun(spec), { ok: true, reason: 'launch' }); lic.recordRun(spec); }
+  assert.strictEqual(lic.trialsLeft('ffmpeg'), 3, 'launch runs do not use free tries');
+  data = mergeProducts(bundled, { products: [], launchFree: false });
+  assert.strictEqual(lic.canRun(spec).reason, 'trial');
+});

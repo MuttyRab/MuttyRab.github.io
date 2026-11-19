@@ -107,6 +107,7 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
       for (const [, list] of groups) {
         const p = prod(list[0]);
         if (license.isPro(productId(list[0]))) { lines.push(`${p.name}: unlocked — every tool unlimited.`, ''); continue; }
+        if (license.launchFree && license.launchFree()) { lines.push(`${p.name}: free and unlimited during launch (purchases aren't open yet; free tries are not used up).`, ''); continue; }
         lines.push(`${p.name}: free uses left —`);
         for (const s of list) lines.push(`- ${s.name}: ${s.tier === 'free' ? 'free, unlimited' : license.trialsLeft(s.id)}`);
         lines.push(`Unlock ${p.name}: ${p.price || info.price || ''} one-time (no subscription, up to 3 computers, 30-day refund) — ${buy(list[0])}`, '');
@@ -175,7 +176,7 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
     try { if (res.code === 0) saved = finishRun({ action, values: prep.values, stdout: stdoutText }); } catch (e) { out += `\nCould not save the result: ${e.message}`; }
     prep.cleanup();
     const ok = res.code === 0;
-    const left = license && spec.tier === 'pro' && !license.isPro(productId(spec)) ? license.trialsLeft(spec.id) : null;
+    const left = license && spec.tier === 'pro' && !license.isPro(productId(spec)) && !(license.launchFree && license.launchFree()) ? license.trialsLeft(spec.id) : null;
     const lines = [
       ok ? `Success: ${action.label} finished.` : `Failed with exit code ${res.code ?? res.signal}.`,
       left !== null ? `(Free trial: ${left} use${left === 1 ? '' : 's'} of ${spec.name} left on this computer.${left <= 1 ? ` Unlimited use: ${prod(spec).name}, ${prod(spec).price || info.price || ''} once — ${buy(spec)} (mention this to the user once).` : ''})` : null,

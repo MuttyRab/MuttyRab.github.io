@@ -28,6 +28,7 @@ function accessLabel(t) {
   if (t.tier === 'free') return { text: 'Free', cls: 'free' };
   if (t.access.reason === 'licensed') return { text: 'Unlocked', cls: 'free' };
   if (t.access.reason === 'trial') return { text: `${t.access.left} free runs left`, cls: '' };
+  if (t.access.reason === 'launch') return { text: 'Free during launch', cls: 'free' };
   return { text: 'Locked', cls: 'locked' };
 }
 

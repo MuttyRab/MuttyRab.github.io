@@ -31,7 +31,9 @@ function mergeProducts(bundled, remote) {
   const byId = new Map((bundled.products || []).map((p) => [p.id, p]));
   for (const p of remote.products) if (!productProblems(p).length) byId.set(p.id, p);
   const aa = remote.allAccess && !productProblems({ id: 'all-access', name: 'x', ...remote.allAccess }).length ? remote.allAccess : bundled.allAccess;
-  return { products: [...byId.values()], allAccess: aa || null };
+  // launchFree: the site says purchases aren't open yet, so every tool runs without using a free try.
+  const launchFree = typeof remote.launchFree === 'boolean' ? remote.launchFree : Boolean(bundled.launchFree);
+  return { products: [...byId.values()], allAccess: aa || null, launchFree };
 }
 
 module.exports = { DEFAULT_PRODUCT, loadProducts, productId, findProduct, mergeProducts, productProblems };

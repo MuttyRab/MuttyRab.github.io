@@ -75,14 +75,18 @@ class LicenseStore {
     return Math.max(0, (this.config.trialRuns ?? 3) - used);
   }
 
+  // Free launch period (remote catalog launchFree, while purchases aren't open): everything runs, no try is used.
+  launchFree() { const d = this.products && this.products(); return Boolean(d && d.launchFree); }
+
   canRun(spec) {
     if (spec.tier === 'free' || this.isPro(productId(spec))) return { ok: true, reason: 'licensed' };
+    if (this.launchFree()) return { ok: true, reason: 'launch' };
     if (this.trialsLeft(spec.id) > 0) return { ok: true, reason: 'trial', left: this.trialsLeft(spec.id) };
     return { ok: false, reason: 'locked' };
   }
 
   recordRun(spec) {
-    if (spec.tier === 'free' || this.isPro(productId(spec))) return;
+    if (spec.tier === 'free' || this.isPro(productId(spec)) || this.launchFree()) return;
     this.state.trials[spec.id] = (this.state.trials[spec.id] || 0) + 1;
     this.save();
   }
