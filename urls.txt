@@ -71,6 +71,7 @@ https://guihub.cc/free/compress-image-to-500kb.html
 https://guihub.cc/free/ffmpeg-command-generator.html
 https://guihub.cc/free/pandoc-command-generator.html
 https://guihub.cc/free/7zip-command-generator.html
+https://guihub.cc/free/pdfcpu-command-generator.html
 https://guihub.cc/free/duckdb-command-generator.html
 https://guihub.cc/free/merge-pdf-free.html
 https://guihub.cc/free/csv-to-excel-free.html
