@@ -26,7 +26,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 - Runs the official, pinned, SHA-256-verified release of each tool.
 - Files never leave your computer.
 
-## MCP tools (72)
+## MCP tools (73)
 
 | Tool | What it does |
 |---|---|
@@ -60,6 +60,7 @@ GUI Hub is a desktop app for **Windows, macOS and Linux** that gives well-known 
 | `f2_rename` | Bulk-rename files in a folder by find & replace (regex unless literal=true; variables like {%03d} counter and {ext}). Without apply=true it is a dry run that returns the old→new table — show it to the user before applying. |
 | `f2_undo` | Undo the most recent rename that was applied in this folder. |
 | `ffmpeg_compress` | Make a video much smaller (or turn any video into a widely playable MP4). Lower quality and smaller size = smaller file. |
+| `ffmpeg_compress_size` | Make a video fit under a size limit (e.g. 10 MB for Discord, 25 MB for email). Works out the bitrate from the video's length and lowers the resolution only when it has to. Lands a little under the target; very long videos may need trimming first. |
 | `ffmpeg_audio` | Save just the sound of a video as an MP3 — for music, lectures or podcasts. |
 | `ffmpeg_audio_convert` | Convert an audio or video file's sound to mp3, m4a, wav or flac. normalize=true applies EBU R128 loudness normalization (loudnorm) — good for voice recordings and podcasts. |
 | `ffmpeg_gif` | Turn a short part of a video into a good-looking animated GIF. |

@@ -170,6 +170,7 @@ No MCP needed: run `npx -y https://guihub.cc/cli.tgz list`, then `npx -y https:/
 - f2_rename: Bulk-rename files in a folder by find & replace (regex unless literal=true; variables like {%03d} counter and {ext}). Without apply=true it is a dry run that returns the old→new table — show it to the user before applying. (engine: F2 2.2.2)
 - f2_undo: Undo the most recent rename that was applied in this folder. (engine: F2 2.2.2)
 - ffmpeg_compress: Make a video much smaller (or turn any video into a widely playable MP4). Lower quality and smaller size = smaller file. (engine: FFmpeg 6.1.1)
+- ffmpeg_compress_size: Make a video fit under a size limit (e.g. 10 MB for Discord, 25 MB for email). Works out the bitrate from the video's length and lowers the resolution only when it has to. Lands a little under the target; very long videos may need trimming first. (engine: FFmpeg 6.1.1)
 - ffmpeg_audio: Save just the sound of a video as an MP3 — for music, lectures or podcasts. (engine: FFmpeg 6.1.1)
 - ffmpeg_audio_convert: Convert an audio or video file's sound to mp3, m4a, wav or flac. normalize=true applies EBU R128 loudness normalization (loudnorm) — good for voice recordings and podcasts. (engine: FFmpeg 6.1.1)
 - ffmpeg_gif: Turn a short part of a video into a good-looking animated GIF. (engine: FFmpeg 6.1.1)

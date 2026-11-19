@@ -229,6 +229,151 @@
       "successMessage": "Done — compare the new file size in the folder."
     },
     {
+      "id": "compress-size",
+      "label": "Compress to a file size",
+      "runLabel": "Compress",
+      "description": "Make a video fit under a size limit (e.g. 10 MB for Discord, 25 MB for email). Works out the bitrate from the video's length and lowers the resolution only when it has to. Lands a little under the target; very long videos may need trimming first.",
+      "helpArgs": [
+        [
+          "-h",
+          "full"
+        ]
+      ],
+      "fields": [
+        {
+          "id": "input",
+          "label": "Video",
+          "type": "file",
+          "required": true,
+          "filters": [
+            {
+              "name": "Video",
+              "extensions": [
+                "mp4",
+                "mov",
+                "mkv",
+                "avi",
+                "webm",
+                "m4v",
+                "wmv",
+                "flv",
+                "3gp"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mb",
+          "label": "Target size (MB)",
+          "type": "number",
+          "default": "10"
+        },
+        {
+          "id": "audio",
+          "label": "Sound",
+          "type": "select",
+          "default": "keep",
+          "options": [
+            {
+              "value": "keep",
+              "label": "Keep sound"
+            },
+            {
+              "value": "remove",
+              "label": "Remove sound (more room for picture)"
+            }
+          ]
+        },
+        {
+          "id": "out",
+          "label": "Save as",
+          "type": "savefile",
+          "required": true,
+          "filters": [
+            {
+              "name": "MP4 video",
+              "extensions": [
+                "mp4"
+              ]
+            }
+          ]
+        }
+      ],
+      "prepare": [
+        {
+          "tool": "ffmpeg",
+          "argv": [
+            "-hide_banner",
+            "-i",
+            "{input}"
+          ],
+          "captureStderr": "_probe"
+        },
+        {
+          "pick": "_probe",
+          "transform": "sizePlan",
+          "size": "mb",
+          "audio": "audio",
+          "sets": "_vbr",
+          "buf": "_buf",
+          "height": "_h"
+        }
+      ],
+      "argv": [
+        "-y",
+        "-i",
+        {
+          "field": "input"
+        },
+        "-vcodec",
+        "libx264",
+        "-b",
+        {
+          "fmt": "{_vbr}k"
+        },
+        "-maxrate",
+        {
+          "fmt": "{_vbr}k"
+        },
+        "-bufsize",
+        {
+          "fmt": "{_buf}k"
+        },
+        "-preset",
+        "medium",
+        "-pix_fmt",
+        "yuv420p",
+        "-vf",
+        {
+          "fmt": "scale=-2:'min({_h},ih)'"
+        },
+        {
+          "when": "audio",
+          "equals": "keep",
+          "argv": [
+            "-acodec",
+            "aac",
+            "-ab",
+            "96k"
+          ]
+        },
+        {
+          "when": "audio",
+          "equals": "remove",
+          "argv": [
+            "-an"
+          ]
+        },
+        "-movflags",
+        "+faststart",
+        {
+          "field": "out"
+        }
+      ],
+      "openAfter": "out",
+      "successMessage": "Done — the new file should be just under the size you asked for."
+    },
+    {
       "id": "audio",
       "label": "Extract audio (MP3)",
       "runLabel": "Extract",

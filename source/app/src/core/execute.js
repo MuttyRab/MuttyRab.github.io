@@ -49,6 +49,13 @@ async function prepareRun({ spec, action, values, specs, binCache, onOutput = ()
     if (p.when && ('equals' in p ? v[p.when] !== p.equals : !v[p.when])) continue;
     if (p.unless && v[p.unless]) continue;
     // { pick: "_devices", transform: "dshowAudio", sets: "_mic" }: choose a value from earlier output.
+    // { pick: "_probe", transform: "sizePlan", size: "mb", audio: "audio", sets: "_vbr", buf: "_buf", height: "_h" }:
+    // a video bitrate (kbit/s) and max height that make the output fit in that many MB.
+    if (p.pick && p.transform === 'sizePlan') {
+      const r = sizePlan(v[p.pick], v[p.size], v[p.audio] === 'remove');
+      v[p.sets] = String(r.vbr); if (p.buf) v[p.buf] = String(r.buf); if (p.height) v[p.height] = String(r.height); if (p.audioRate) v[p.audioRate] = `${r.abr}k`;
+      continue;
+    }
     if (p.pick) { const val = p.transform === 'dshowAudio' ? dshowAudio(v[p.pick]) : p.transform === 'dshowVideo' ? dshowVideo(v[p.pick]) : String(v[p.pick] ?? ''); if (val) v[p.sets] = val; continue; }
     // { listFiles: "folder", exts: ["jpg"], skipIndexed: "out", limit: "limit", sets: "_imgs", left: "_left" }:
     // the matching files under a folder (subfolders too), sorted, minus those already listed in an
@@ -363,6 +370,25 @@ function dshowVideo(text) {
   for (const l of String(text || '').split(/\r?\n/)) { const m = l.match(/"([^"]+)"\s*\(video\)/); if (m) return m[1]; }
   return '';
 }
+// FFmpeg "-i file" output + a target size in MB → { vbr, buf (kbit/s), height, abr }. Budgets 92% of the
+// size (container overhead, rate-control drift), 96k sound, lowers the resolution as the bitrate drops,
+// and never asks for more than the source's own bitrate (so a small file doesn't grow).
+function sizePlan(probe, mb, noAudio) {
+  const t = String(probe || '');
+  const d = t.match(/Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)/);
+  if (!d) throw new Error('could not read the video\'s length (is it a video file?)');
+  const dur = (+d[1]) * 3600 + (+d[2]) * 60 + (+d[3]);
+  const size = parseFloat(mb);
+  if (!(size > 0)) throw new Error('enter a target size in MB');
+  if (!(dur > 0)) throw new Error('could not read the video\'s length (is it a video file?)');
+  const abr = noAudio || !/Stream #[^\n]*Audio:/.test(t) ? 0 : 96;
+  let vbr = Math.floor((size * 8000 * 0.92) / dur - abr);
+  const src = t.match(/Duration:[^\n]*bitrate:\s*(\d+)\s*kb\/s/);
+  if (src && +src[1] > 0) vbr = Math.min(vbr, +src[1]);
+  if (vbr < 40) throw new Error(`a ${Math.round(dur)}-second video can't fit in ${size} MB at watchable quality — pick a bigger size, remove the sound, or trim it first`);
+  const height = vbr >= 2500 ? 2160 : vbr >= 1200 ? 1080 : vbr >= 600 ? 720 : vbr >= 250 ? 480 : 360;
+  return { vbr, buf: vbr * 2, height, abr: abr || 96 };
+}
 // SRT text → [{start, end, text}] (seconds). Tolerates BOMs, CRLF, "," or "." millis and blank lines.
 function parseSrt(text) {
   const out = []; const t = (h, m, sec, ms) => (+h) * 3600 + (+m) * 60 + (+sec) + (+ms) / 1000;
@@ -487,4 +513,4 @@ function finishRun({ action, values, stdout }) {
   return text;
 }
 
-module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript, keepGraph, rangesToKeep, silenceToKeep, parseTime, parseSrt, buildDubTrack, fill, dshowAudio, dshowVideo, listFilesDeep, captionIndex, searchIndex, docIndex, docSearch, docRead, untrusted };
+module.exports = { prepareRun, finishRun, segmentsToText, segmentsToSrt, scriptToSrt, speakersToText, speakerTranscript, keepGraph, rangesToKeep, silenceToKeep, parseTime, parseSrt, buildDubTrack, fill, dshowAudio, dshowVideo, sizePlan, listFilesDeep, captionIndex, searchIndex, docIndex, docSearch, docRead, untrusted };

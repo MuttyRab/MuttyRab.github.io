@@ -635,3 +635,34 @@ test('MCP: camera/screen tools ask the person first via elicitation when the cli
   assert.ok(res.result.isError && /declined/.test(res.result.content[0].text) && /could not show the permission prompt/.test(res.result.content[0].text));
   input.end(); await new Promise((r) => setTimeout(r, 100)); process.exit = origExit; // let readline's close (→ exit) fire on the stub
 });
+
+test('compress to a file size: bitrate and height from the probe; refuses impossible targets', () => {
+  const { sizePlan } = require('../src/core/execute');
+  const probe = 'Input #0, mov,mp4\n  Duration: 00:01:40.00, start: 0.000000, bitrate: 8000 kb/s\n  Stream #0:0(und): Video: h264\n  Stream #0:1(und): Audio: aac\n';
+  const r = sizePlan(probe, '10', false); // 10 MB * 0.92 over 100 s, minus 96k sound
+  assert.strictEqual(r.vbr, Math.floor(10 * 8000 * 0.92 / 100 - 96));
+  assert.strictEqual(r.height, 720); assert.strictEqual(r.buf, r.vbr * 2);
+  assert.strictEqual(sizePlan(probe, '10', true).vbr, Math.floor(10 * 8000 * 0.92 / 100));
+  assert.strictEqual(sizePlan(probe, '500', false).vbr, 8000); // never above the source bitrate
+  assert.strictEqual(sizePlan(probe.replace(/.*Audio.*\n/, ''), '10', false).vbr, Math.floor(10 * 8000 * 0.92 / 100));
+  assert.throws(() => sizePlan(probe.replace('00:01:40', '05:00:00'), '1', false), /can't fit/);
+  assert.throws(() => sizePlan('No such file', '10', false), /length/);
+  const a = action('ffmpeg', 'compress-size');
+  const { argv } = buildCommand(a, { input: '/i.mov', mb: '10', audio: 'keep', out: '/o.mp4', _vbr: '640', _buf: '1280', _h: '720' });
+  assert.deepStrictEqual(argv.slice(argv.indexOf('-b'), argv.indexOf('-b') + 6), ['-b', '640k', '-maxrate', '640k', '-bufsize', '1280k']);
+  assert.ok(argv.includes("scale=-2:'min(720,ih)'"));
+});
+
+test('every prepare step argv is plain strings ({field} placeholders), never {field: …} objects', () => {
+  const fs = require('fs'); const path = require('path');
+  const root = path.join(__dirname, '..', '..', 'catalog');
+  for (const id of fs.readdirSync(root)) {
+    const f = path.join(root, id, 'spec.json'); if (!fs.existsSync(f)) continue;
+    for (const a of JSON.parse(fs.readFileSync(f, 'utf8')).actions || []) {
+      for (const st of [].concat(a.prepare || [])) {
+        const all = [...(st.argv || []), ...((st.forEach && st.forEach.argv) || []), ...(st.eachArgv || [])];
+        for (const t of all) assert.strictEqual(typeof t, 'string', `${id}/${a.id}: prepare argv item ${JSON.stringify(t)} must be a string`);
+      }
+    }
+  }
+});
