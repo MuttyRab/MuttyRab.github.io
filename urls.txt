@@ -192,6 +192,10 @@ https://guihub.cc/free/png-to-webp.html
 https://guihub.cc/free/jpg-to-webp.html
 https://guihub.cc/free/webp-to-jpg.html
 https://guihub.cc/free/webp-to-png.html
+https://guihub.cc/free/avif-to-jpg.html
+https://guihub.cc/free/avif-to-png.html
+https://guihub.cc/free/bmp-to-jpg.html
+https://guihub.cc/free/ico-to-png.html
 https://guihub.cc/free/excel-to-csv.html
 https://guihub.cc/free/excel-to-json.html
 https://guihub.cc/free/json-to-excel.html
