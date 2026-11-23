@@ -115,7 +115,11 @@ status('Transcribing… (about real time on most computers)');
 var lg=document.getElementById('lang'),lv=lg&&lg.value;var r=await asr(data,Object.assign({chunk_length_s:30,stride_length_s:5,return_timestamps:true},lv?{language:lv,task:'transcribe'}:{}));
 var text=(r.chunks&&r.chunks.length?r.chunks.map(function(c){return '['+fmt(c.timestamp[0])+'] '+c.text.trim()}).join('\n'):r.text.trim());
 if(cut)text+='\n\n[The free browser version stops at 10 minutes. GUI Hub Essentials transcribes any length, offline.]';
-return [{name:f.name.replace(/\.[^.]+$/,'')+'-transcript.txt',blob:new Blob([text],{type:'text/plain'}),info:cut?'first 10 minutes':'done',preview:text}];}
+var out=[{name:f.name.replace(/\.[^.]+$/,'')+'-transcript.txt',blob:new Blob([text],{type:'text/plain'}),info:cut?'first 10 minutes':'done',preview:text}];
+if(r.chunks&&r.chunks.length){var st=function(t){t=Math.max(0,t||0);var ms=Math.min(999,Math.round((t%1)*1000));return [Math.floor(t/3600),Math.floor(t%3600/60),Math.floor(t%60)].map(function(v){return String(v).padStart(2,'0')}).join(':')+','+String(ms).padStart(3,'0')};
+ var srt=r.chunks.map(function(c,i){var a=c.timestamp[0]||0,e=c.timestamp[1]!=null?c.timestamp[1]:(r.chunks[i+1]?r.chunks[i+1].timestamp[0]:a+3);if(!(e>a))e=a+2;return (i+1)+'\n'+st(a)+' --> '+st(e)+'\n'+c.text.trim()+'\n'}).join('\n');
+ out.push({name:f.name.replace(/\.[^.]+$/,'')+'.srt',blob:new Blob([srt],{type:'application/x-subrip'}),info:'subtitle file (.srt) — burn it into the video with the free “Add subtitles to a video” tool'})}
+return out;}
 var pick=document.getElementById('pick'),txt=document.getElementById('txt'),res=document.getElementById('res');
 var recd=null,recb=document.getElementById('rec');function input(){return recd?[recd]:txt?(txt.value.trim()?[txt.value.trim()]:[]):pick.files}
 GH.again=function(){if(input().length)start()};
