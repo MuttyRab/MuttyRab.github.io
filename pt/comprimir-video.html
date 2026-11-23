@@ -102,7 +102,7 @@ GH.gate=function(files,res){files=[...files];if(GH.unlocked())return files;var l
 document.addEventListener('DOMContentLoaded',GH.meter);
 if(location.hash==='#handoff')window.addEventListener('load',function(){try{var r=indexedDB.open('guihub',1);r.onupgradeneeded=function(){r.result.createObjectStore('h')};r.onsuccess=function(){var db=r.result,t=db.transaction('h','readwrite'),st=t.objectStore('h'),g=st.get('f');g.onsuccess=function(){var fl=g.result,pick=document.getElementById('pick');st.delete('f');if(!fl||!fl.length||!pick)return;var dt=new DataTransfer();fl.forEach(function(x){dt.items.add(x)});pick.files=dt.files;history.replaceState(null,'',location.pathname);setTimeout(function(){pick.dispatchEvent(new Event('change'))},150)}}}catch(e){}});</script><script>(function(){async function run(files,status){var f=files[0];status('Loading the video engine…');
 var M=await import('https://cdn.jsdelivr.net/npm/mediabunny@1.62.1/dist/bundles/mediabunny.min.mjs');
-var mb=+document.getElementById('mb').value,limit=mb*1000*1000*0.95;
+var mv=String(document.getElementById('mb').value),mb=mv[0]==='p'?Math.max(1,Math.round(f.size*(+mv.slice(1))/1e5)/10):+mv,limit=mb*1000*1000*0.95;
 if(f.size<=limit)return [{name:f.name,blob:f,info:'already under '+mb+' MB — no change needed'}];
 var input=new M.Input({source:new M.BlobSource(f),formats:M.ALL_FORMATS});
 var vt=await input.getPrimaryVideoTrack();if(!vt)throw new Error('no video track found in this file');
