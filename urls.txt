@@ -144,6 +144,7 @@ https://guihub.cc/free/resize-video.html
 https://guihub.cc/free/extract-frames-from-video.html
 https://guihub.cc/free/gif-to-mp4.html
 https://guihub.cc/free/add-music-to-video.html
+https://guihub.cc/free/add-subtitles-to-video.html
 https://guihub.cc/free/crop-video-9-16.html
 https://guihub.cc/free/crop-video-square.html
 https://guihub.cc/free/compress-mp3.html
