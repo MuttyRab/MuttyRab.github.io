@@ -74,5 +74,12 @@
       "fe173897-5452-4c6c-b4ec-ae55799ff498"
     ],
     "scope": "browser tools only, 24 hours"
+  },
+  "tip": {
+    "name": "Tip GUI Hub",
+    "price": "from $1",
+    "checkoutUrl": "https://buy.polar.sh/polar_cl_EHdGKICFBoOVURV89iVPuLR1mlnG9UwgWJY043IdUNV",
+    "productId": "f71e02e5-24c2-4b7d-91c0-c20351fc6b8d",
+    "scope": "pay-what-you-want thank-you, not a license"
   }
 }
