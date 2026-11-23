@@ -107,11 +107,11 @@ for(var round=0;round<8&&!best;round++){var c=document.createElement('canvas');c
  var lo=0.3,hi=0.95;for(var i=0;i<7;i++){var q=(lo+hi)/2,b=await blob(c,q);if(b.size<=limit){best={b:b,w:c.width,h:c.height};lo=q}else hi=q}
  if(!best){var b2=await blob(c,0.3);if(b2.size<=limit)best={b:b2,w:c.width,h:c.height}}scale*=0.8}
 return best}
-async function run(files,status){var limit=+document.getElementById('kb').value*1024,out=[];
+async function run(files,status){var limit=+document.getElementById('kb').value*1000,out=[];
 for(var k=0;k<files.length;k++){var f=files[k];status('Compressing '+(k+1)+'/'+files.length+'…');
  if(f.size<=limit&&/jpe?g$/i.test(f.type)){out.push({name:f.name,blob:f,info:'already '+Math.round(f.size/1024)+' KB — under the limit, kept as it is'});continue}
  var r=await squeeze(f,limit);if(!r)throw new Error(f.name+': could not get under the limit');
- out.push({name:f.name.replace(/\.[^.]+$/,'')+'-'+Math.round(limit/1024)+'kb.jpg',blob:r.b,info:Math.round(f.size/1024)+' KB → '+Math.round(r.b.size/1024)+' KB · '+r.w+'×'+r.h,play:'img'})}
+ out.push({name:f.name.replace(/\.[^.]+$/,'')+'-'+Math.round(limit/1000)+'kb.jpg',blob:r.b,info:Math.round(f.size/1024)+' KB → '+Math.round(r.b.size/1024)+' KB · '+r.w+'×'+r.h,play:'img'})}
 return out}
 var pick=document.getElementById('pick'),txt=document.getElementById('txt'),res=document.getElementById('res');
 var recd=null,recb=document.getElementById('rec');function input(){return recd?[recd]:txt?(txt.value.trim()?[txt.value.trim()]:[]):pick.files}
