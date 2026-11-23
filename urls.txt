@@ -140,6 +140,7 @@ https://guihub.cc/free/change-video-speed.html
 https://guihub.cc/free/merge-videos.html
 https://guihub.cc/free/resize-video.html
 https://guihub.cc/free/extract-frames-from-video.html
+https://guihub.cc/free/gif-to-mp4.html
 https://guihub.cc/free/crop-video-9-16.html
 https://guihub.cc/free/crop-video-square.html
 https://guihub.cc/free/compress-mp3.html
@@ -155,6 +156,7 @@ https://guihub.cc/free/extract-pages-from-pdf.html
 https://guihub.cc/free/add-page-numbers-to-pdf.html
 https://guihub.cc/free/crop-pdf-pages.html
 https://guihub.cc/free/watermark-pdf.html
+https://guihub.cc/free/rearrange-pdf-pages.html
 https://guihub.cc/free/merge-mp3.html
 https://guihub.cc/free/sign-pdf.html
 https://guihub.cc/free/photo-collage-maker.html
