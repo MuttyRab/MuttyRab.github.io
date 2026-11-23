@@ -138,6 +138,8 @@ https://guihub.cc/free/remove-audio-from-video.html
 https://guihub.cc/free/rotate-video.html
 https://guihub.cc/free/change-video-speed.html
 https://guihub.cc/free/merge-videos.html
+https://guihub.cc/free/resize-video.html
+https://guihub.cc/free/extract-frames-from-video.html
 https://guihub.cc/free/crop-video-9-16.html
 https://guihub.cc/free/crop-video-square.html
 https://guihub.cc/free/compress-mp3.html
