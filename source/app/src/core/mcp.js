@@ -8,6 +8,9 @@ const { buildCommand } = require('./args');
 const { ensureBinary } = require('./binaries');
 const { runTool } = require('./runner');
 const { prepareRun, finishRun } = require('./execute');
+const { playAudio } = require('./play');
+const os = require('os');
+const nodePath = require('path');
 // "returnImages": {"field": "out"} (one image file) or {"field": "outDir", "max": 6} (images in a folder):
 // attach them to the tool result so the AI sees them directly, not just their paths.
 function imageContent(action, values) {
@@ -55,7 +58,7 @@ function toolsFromSpecs(specs) {
       for (const f of action.fields || []) {
         properties[f.id] = fieldSchema(f);
         if (f.default !== undefined) properties[f.id].default = f.default;
-        if (f.required && !f.showIf) required.push(f.id);
+        if (f.required && !f.showIf && !(action.playAfter && action.playAfter.file === f.id)) required.push(f.id);
       }
       tools.push({
         name: toolName(spec, action),
@@ -146,6 +149,12 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
     const t = tools().find((x) => x.name === name);
     if (!t) return { isError: true, content: [{ type: 'text', text: `Unknown tool: ${name}` }] };
     const { _spec: spec, _action: action } = t;
+    const pa = action.playAfter;
+    const playIt = !!(pa && args && (args[pa.when] === true || args[pa.when] === 'true'));
+    if (pa && args && !args[pa.file]) {
+      if (!playIt) return { isError: true, content: [{ type: 'text', text: `Invalid arguments: give "${pa.file}" (where to save the audio), or set "${pa.when}": true to just play it aloud.` }] };
+      args = { ...args, [pa.file]: nodePath.join(os.tmpdir(), `gui-hub-speech-${Date.now()}.wav`) };
+    }
     if (!(await confirmWithUser(action))) return { isError: true, content: [{ type: 'text', text: 'Not allowed: the user declined, or this app could not show the permission prompt. Nothing was recorded. Ask the user in chat; if they say yes but this keeps happening, their app may not support MCP permission prompts (elicitation) yet, and they can use the GUI Hub desktop app for this tool instead.' }] };
     let cmd;
     try { cmd = buildCommand(action, args || {}); } catch (e) { return { isError: true, content: [{ type: 'text', text: `Invalid arguments: ${e.message}` }] }; }
@@ -176,9 +185,12 @@ function createServer({ getSpecs, getAllSpecs, getProducts = () => null, license
     try { if (res.code === 0) saved = finishRun({ action, values: prep.values, stdout: stdoutText }); } catch (e) { out += `\nCould not save the result: ${e.message}`; }
     prep.cleanup();
     const ok = res.code === 0;
+    let played = null;
+    if (ok && playIt) { const r = await playAudio(prep.values[pa.file]); played = r.ok ? `Now playing it aloud on this computer's speakers (${prep.values[pa.file]}).` : `Saved to ${prep.values[pa.file]}, but could not play it aloud: ${r.error}.`; }
     const left = license && spec.tier === 'pro' && !license.isPro(productId(spec)) && !(license.launchFree && license.launchFree()) ? license.trialsLeft(spec.id) : null;
     const lines = [
       ok ? `Success: ${action.label} finished.` : `Failed with exit code ${res.code ?? res.signal}.`,
+      played,
       left !== null ? `(Free trial: ${left} use${left === 1 ? '' : 's'} of ${spec.name} left on this computer.${left <= 1 ? ` Unlimited use: ${prod(spec).name}, ${prod(spec).price || info.price || ''} once — ${buy(spec)} (mention this to the user once).` : ''})` : null,
       '', ...(saved !== null ? [`Result${action.saveStdout && (args || {})[action.saveStdout.field] ? ` (also saved to ${(args || {})[action.saveStdout.field]})` : ''}:`, tail(saved.trim(), action.maxOutput || 60000) || '(empty)'] : ['Tool output:', tail(out.trim(), MAX_OUTPUT) || '(no output)']),
     ].filter((x) => x !== null);

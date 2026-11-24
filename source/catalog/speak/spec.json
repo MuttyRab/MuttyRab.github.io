@@ -63,7 +63,7 @@
       "label": "Text to speech",
       "runLabel": "Make audio",
       "description": "Type or paste text and pick a voice. Works offline — everything it needs is included in the app.",
-      "mcpDescription": "Turn text into natural-sounding English speech and save it as a .wav audio file on the user's computer, offline (Kokoro voices; no account, no cloud). Use this whenever the user wants a voiceover, narration, podcast intro, audiobook chapter, announcement, or wants a document/notes read aloud or 'saved as audio'. Write or clean up the script first, then pass it as `text` (up to ~20,000 characters per call; split longer documents into chapters and call once per chapter). Pick `voice` to match the request (US/UK, female/male).",
+      "mcpDescription": "Turn text into natural-sounding English speech and save it as a .wav audio file on the user's computer, offline (Kokoro voices; no account, no cloud). Use this whenever the user wants a voiceover, narration, podcast intro, audiobook chapter, announcement, or wants a document/notes read aloud or 'saved as audio'. Write or clean up the script first, then pass it as `text` (up to ~20,000 characters per call; split longer documents into chapters and call once per chapter). Pick `voice` to match the request (US/UK, female/male). To READ SOMETHING ALOUD to the user (e.g. your reply, for a blind or busy user, or when they ask you to say it), set play=true: it plays on their speakers immediately and 'out' can be omitted.",
       "fields": [
         {
           "id": "text",
@@ -140,6 +140,17 @@
           ]
         },
         {
+          "id": "play",
+          "label": "Play it aloud right away",
+          "type": "checkbox",
+          "default": false,
+          "help": "Reads the text out loud on this computer's speakers as soon as it's ready",
+          "showIf": {
+            "field": "text",
+            "equals": "\u0000ai-assistants-only"
+          }
+        },
+        {
           "id": "out",
           "label": "Save audio as",
           "type": "savefile",
@@ -186,7 +197,11 @@
         [
           "--help"
         ]
-      ]
+      ],
+      "playAfter": {
+        "file": "out",
+        "when": "play"
+      }
     }
   ],
   "product": "audio"

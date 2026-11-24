@@ -102,7 +102,7 @@ In the desktop app every program and model is included (works offline); via npx 
   `npx -y https://guihub.cc/cli.tgz run photos_index --folder /path/to/folder --out /path/to/output.tsv`
 - find a specific photo on my computer → `photos_search`
   `npx -y https://guihub.cc/cli.tgz run photos_search --index /path/to/input.tsv --query "…"`
-- make a voiceover or read a document aloud as an audio file → `speak_speak`
+- read its answers out loud → `speak_speak`
   `npx -y https://guihub.cc/cli.tgz run speak_speak --text "…" --out /path/to/output.wav`
 - tell who said what in a meeting recording → `speakers_diarize`
   `npx -y https://guihub.cc/cli.tgz run speakers_diarize --input /path/to/input.mp3`
